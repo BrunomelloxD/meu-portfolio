@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
-import { Menu, X, ChevronRight, Moon, Sun, Github, Linkedin, Twitter, Mail } from "lucide-react"
+import { Menu, X, ChevronRight, Moon, Sun, Github, Linkedin, Mail } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useTheme } from "next-themes"
+import Image from 'next/image'
 import ExperienceTimeline from "@/components/experience-timeline"
-import ProjectGrid from "@/components/project-grid"
+// import ProjectGrid from "@/components/project-grid"
 import SkillsCloud from "@/components/skills-cloud"
 import TestimonialCarousel from "@/components/testimonial-carousel"
 import ContactSection from "@/components/contact-section"
@@ -97,7 +98,7 @@ export default function Home() {
           {/* Logo/Avatar Section */}
           <div className="flex items-center py-8 transition-all duration-300">
             <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-xl flex-shrink-0">
-              <img src={ProfileImage.src} alt="Bruno Mello" className="w-full h-full rounded-full object-cover" />
+              <Image src={ProfileImage.src} alt="Bruno Mello" className="w-full h-full rounded-full object-cover" width={48} height={48} />
             </div>
             <h1
               className={`ml-3 font-bold text-xl text-foreground transition-all duration-300 whitespace-nowrap overflow-hidden ${
@@ -234,10 +235,12 @@ export default function Home() {
             >
               <div className="relative">
                 <div className="w-full aspect-square rounded-2xl overflow-hidden border-4 border-primary">
-                  <img
+                  <Image
                     src={ProfileImage.src}
                     alt="Bruno Mello"
                     className="w-full h-full object-cover"
+                    width={400}
+                    height={400}
                   />
                 </div>
                 <div className="absolute -bottom-6 -right-6 bg-card p-4 rounded-lg shadow-lg border border-border">

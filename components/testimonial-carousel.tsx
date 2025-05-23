@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { ChevronLeft, ChevronRight, Quote } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
@@ -23,9 +23,9 @@ export default function TestimonialCarousel() {
   const [current, setCurrent] = useState(0)
   const [autoplay, setAutoplay] = useState(true)
 
-  const next = () => {
+  const next = useCallback(() => {
     setCurrent((current + 1) % testimonials.length)
-  }
+  }, [current])
 
   const prev = () => {
     setCurrent((current - 1 + testimonials.length) % testimonials.length)
@@ -36,7 +36,7 @@ export default function TestimonialCarousel() {
 
     const interval = setInterval(next, 5000)
     return () => clearInterval(interval)
-  }, [current, autoplay])
+  }, [autoplay, next])
 
   return (
     <div className="relative max-w-4xl mx-auto">
@@ -56,7 +56,7 @@ export default function TestimonialCarousel() {
           <Card className="border-none shadow-none bg-transparent">
             <CardContent className="p-0">
               <blockquote className="text-xl md:text-2xl text-center italic mb-8">
-                "{testimonials[current].content}"
+                &ldquo;{testimonials[current].content}&rdquo;
               </blockquote>
 
               <div className="flex flex-col items-center">

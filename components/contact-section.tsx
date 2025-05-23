@@ -60,6 +60,7 @@ export default function ContactSection() {
       
     } catch (error) {
       setIsSubmitting(false)
+      console.error("Error sending email:", error)
       setSubmitStatus({
         success: false,
         message: "Erro ao enviar mensagem. Tente novamente.",

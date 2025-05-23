@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { motion } from "framer-motion"
+import Image from "next/image"
 import { Github, ExternalLink, Code } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -101,10 +102,12 @@ export default function ProjectGrid() {
           >
             <Card className="overflow-hidden h-full flex flex-col transition-all hover:shadow-lg group">
               <div className="relative overflow-hidden aspect-video">
-                <img
+                <Image
                   src={project.image || "/placeholder.svg"}
                   alt={project.title}
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  width={600}
+                  height={400}
                 />
                 <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-4">
                   <a href={project.github} target="_blank" rel="noopener noreferrer" aria-label="Ver código no GitHub">
