@@ -12,6 +12,9 @@ import SkillsCloud from "@/components/skills-cloud"
 import TestimonialCarousel from "@/components/testimonial-carousel"
 import ContactSection from "@/components/contact-section"
 import ProfileImage from "@/public/images/profile-img.jpg"
+import Link from "next/link"
+import { cn } from "@/lib/utils"
+import { cva, type VariantProps } from "class-variance-authority"
 
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -45,6 +48,32 @@ export default function Home() {
   }, [])
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
+
+  const buttonVariants = cva(
+    "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+    {
+      variants: {
+        variant: {
+          default: "bg-primary text-primary-foreground hover:bg-primary/90",
+          destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+          outline: "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+          secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+          ghost: "hover:bg-accent hover:text-accent-foreground",
+          link: "text-primary underline-offset-4 hover:underline",
+        },
+        size: {
+          default: "h-10 px-4 py-2",
+          sm: "h-9 rounded-md px-3",
+          lg: "h-11 rounded-md px-8",
+          icon: "h-10 w-10",
+        },
+      },
+      defaultVariants: {
+        variant: "default",
+        size: "default",
+      },
+    },
+  )
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId)
@@ -200,9 +229,9 @@ export default function Home() {
                 Nest.js e arquitetura de sistemas modernos.
               </p>
               <div className="flex flex-wrap gap-4">
-                <Button size="lg" onClick={() => scrollToSection("projetos")}>
+                <Link href="https://www.github.com/BrunomelloxD" target="_blank" className={cn(buttonVariants({ variant: "default", size: "lg" }))}>
                   Ver Projetos
-                </Button>
+                </Link>
                 <Button size="lg" variant="outline" onClick={() => scrollToSection("contato")}>
                   Fale Comigo
                 </Button>
@@ -275,8 +304,8 @@ export default function Home() {
                   </div>
                   <div>
                     <h3 className="font-bold text-xl mb-2">Localização</h3>
-                    <p className="text-muted-foreground">Mococa, SP, Brasil</p>
-                    <p className="text-sm">Disponível para trabalho remoto</p>
+                    <p className="text-muted-foreground">Mococa, SP, Brasil - Maringá, PA, Brasil</p>
+                    <p className="text-sm">Disponível para trabalho remoto e presencial</p>
                   </div>
                 </div>
 
@@ -362,7 +391,7 @@ export default function Home() {
           <div className="container mx-auto px-4">
             <div className="flex flex-col md:flex-row justify-between items-center">
               <div className="mb-4 md:mb-0">
-                <p className="text-muted-foreground">© 2024 Bruno Mello. Todos os direitos reservados.</p>
+                <p className="text-muted-foreground">©2025 Bruno Mello. Todos os direitos reservados.</p>
               </div>
 
               <div className="flex space-x-4">

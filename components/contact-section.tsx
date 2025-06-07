@@ -207,7 +207,7 @@ export default function ContactSection() {
               </div>
               <div>
                 <h4 className="font-medium mb-1">Localização</h4>
-                <p className="text-muted-foreground">Mococa, SP - Brasil</p>
+                <p className="text-muted-foreground">Mococa, SP - Brasil - Maringá, PA, Brasil</p>
                 <p className="text-sm mt-1">Disponível para trabalho remoto/presencial, e reuniões presenciais</p>
               </div>
             </CardContent>
