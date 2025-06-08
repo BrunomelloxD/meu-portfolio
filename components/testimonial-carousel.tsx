@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import FelipeSasakiProfile from "@/public/images/felipe-sasaki-profile.jpg"
+import LucasLopesProfile from "@/public/images/lucas-lopes.jpg"
 
 const testimonials = [
   {
@@ -16,6 +17,18 @@ const testimonials = [
     avatar: FelipeSasakiProfile.src,
     content:
       "Bruno é um profissional extremamente dedicado e ágil em suas entregas, sempre preocupado com boas práticas de desenvolvimento em seus projetos. Tive o privilégio de trabalhar como par em projetos importantes, e como grande amigo também. O recomendo com desenvolvimento Back-end, e desenvolvimento ágil.",
+  },
+  {
+    id: 2,
+    name: "Lucas Lopes de Souza Guilha",
+    role: "Desenvolvedor Full Stack, Gazin Tech",
+    avatar: LucasLopesProfile.src,
+    content:
+      `Tive a oportunidade de trabalhar com o Bruno e posso dizer com tranquilidade que ele é um profissional extremamente proativo, ele não espera os problemas acontecerem: vai atrás, se antecipa e busca soluções práticas com agilidade e inteligência.
+
+      Uma das qualidades que mais admiro nele é sua capacidade de aprender rápido. Mesmo diante de desafios complexos ou de tecnologias novas, ele mergulha no problema, estuda o necessário e entrega resultado com eficiência. Além disso, tem uma postura colaborativa e está sempre disposto a ajudar o time.
+
+      Trabalhar com ele é saber que você pode contar com alguém comprometido, que não tem medo de arregaçar as mangas e fazer o que for preciso para o sucesso do projeto. Recomendo fortemente`,
   }
 ]
 
@@ -90,7 +103,7 @@ export default function TestimonialCarousel() {
                 setCurrent(index)
                 setAutoplay(false)
               }}
-              className={`w-3 h-3 rounded-full transition-colors ${index === current ? "bg-primary" : "bg-muted"}`}
+              className={`w-3 h-3 rounded-full transition-colors ${index === current ? "bg-primary" : "bg-muted-foreground"}`}
               aria-label={`Ir para depoimento ${index + 1}`}
             />
           ))}
