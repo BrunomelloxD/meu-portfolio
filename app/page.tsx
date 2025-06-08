@@ -14,7 +14,7 @@ import ContactSection from "@/components/contact-section"
 import ProfileImage from "@/public/images/profile-img.jpg"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
-import { cva, type VariantProps } from "class-variance-authority"
+import { cva } from "class-variance-authority"
 
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
