@@ -40,14 +40,16 @@ export default function TestimonialCarousel() {
     setCurrent((current + 1) % testimonials.length)
   }, [current])
 
+  const TEN_SECONDS_IN_MILLISECONDS = 10000
+  
   const prev = () => {
     setCurrent((current - 1 + testimonials.length) % testimonials.length)
   }
 
   useEffect(() => {
     if (!autoplay) return
-
-    const interval = setInterval(next, 5000)
+    
+    const interval = setInterval(next, TEN_SECONDS_IN_MILLISECONDS)
     return () => clearInterval(interval)
   }, [autoplay, next])
 
