@@ -299,6 +299,12 @@ export default function Home() {
                 <div className="grid grid-cols-2 gap-4 mb-8">
                   <div>
                     <h3 className="font-bold text-xl mb-2">Educação</h3>
+
+                    <p className="text-muted-foreground">Pós Graduação em Engenharia da Computação</p>
+                    <p className="text-sm">Faculdade Focus Brasil</p>
+
+                    <br />
+
                     <p className="text-muted-foreground">Analise e Desenvolvimento de Sistemas</p>
                     <p className="text-sm">Faculdade de Tecnologia de Mococa - Fatec Mococa</p>
                   </div>
