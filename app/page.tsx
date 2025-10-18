@@ -300,6 +300,11 @@ export default function Home() {
                   <div>
                     <h3 className="font-bold text-xl mb-2">Educação</h3>
 
+                    <p className="text-muted-foreground">Pós Graduação em Engenharia de Software</p>
+                    <p className="text-sm">Faculdade Focus Brasil</p>
+
+                    <br />
+
                     <p className="text-muted-foreground">Pós Graduação em Engenharia da Computação</p>
                     <p className="text-sm">Faculdade Focus Brasil</p>
 

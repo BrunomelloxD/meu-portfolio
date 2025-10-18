@@ -8,15 +8,24 @@ import { Badge } from "@/components/ui/badge"
 const experiences = [
   {
     id: 1,
-    role: "Software Developer I",
+    role: "Desenvolvedor I.III",
     company: "Gazin Tech",
-    period: "2024 - Presente",
+    period: "2025 - Presente",
     description:
       "Manutenho e desenvolvo aplicações web, focando na melhoria contínua e na implementação de novas funcionalidades. Participo ativamente de reuniões de planejamento e revisão de código.",
     technologies: ["Angular", "Nest.js", "Next", "Docker", "TypeScript", "PHP", "Git", "PostgreSQL"],
   },
   {
     id: 2,
+    role: "Desenvolvedor I.II",
+    company: "Gazin Tech",
+    period: "2024 - 2025",
+    description:
+      "Manutenho e desenvolvo aplicações web, focando na melhoria contínua e na implementação de novas funcionalidades. Participo ativamente de reuniões de planejamento e revisão de código.",
+    technologies: ["Angular", "Nest.js", "Next", "Docker", "TypeScript", "PHP", "Git", "PostgreSQL"],
+  },
+  {
+    id: 3,
     role: "Desenvolvedor Backend Júnior",
     company: "Alares Internet",
     period: "2023 - 2024",
