@@ -311,11 +311,11 @@ export default function Home() {
                     <br />
 
                     <p className="text-muted-foreground">Analise e Desenvolvimento de Sistemas</p>
-                    <p className="text-sm">Faculdade de Tecnologia de Mococa - Fatec Mococa</p>
+                    <p className="text-sm">Fatec São Paulo</p>
                   </div>
                   <div>
                     <h3 className="font-bold text-xl mb-2">Localização</h3>
-                    <p className="text-muted-foreground">Mococa, SP, Brasil - Maringá, PA, Brasil</p>
+                    <p className="text-muted-foreground">Maringá, PR, Brasil</p>
                     <p className="text-sm">Disponível para trabalho remoto e presencial</p>
                   </div>
                 </div>
