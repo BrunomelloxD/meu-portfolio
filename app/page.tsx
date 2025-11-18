@@ -226,7 +226,7 @@ export default function Home() {
               </h2>
               <p className="text-lg md:text-xl mb-8 max-w-2xl">
                 Criando experiências digitais excepcionais com código limpo e design intuitivo. Especializado em React,
-                Nest.js e arquitetura de sistemas modernos.
+                Nest.js, PHP e arquitetura de sistemas modernos.
               </p>
               <div className="flex flex-wrap gap-4">
                 <Link href="https://www.github.com/BrunomelloxD" target="_blank" className={cn(buttonVariants({ variant: "default", size: "lg" }))}>
