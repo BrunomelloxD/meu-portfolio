@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { useTheme } from "next-themes"
 import Image from 'next/image'
 import ExperienceTimeline from "@/components/experience-timeline"
-// import ProjectGrid from "@/components/project-grid"
+import ProjectGrid from "@/components/project-grid"
 import SkillsCloud from "@/components/skills-cloud"
 import TestimonialCarousel from "@/components/testimonial-carousel"
 import ContactSection from "@/components/contact-section"
@@ -146,7 +146,7 @@ export default function Home() {
               { id: "home", label: "Início" },
               { id: "sobre", label: "Sobre" },
               { id: "experiencia", label: "Experiência" },
-              // { id: "projetos", label: "Projetos" },
+              { id: "projetos", label: "Projetos" },
               { id: "habilidades", label: "Habilidades" },
               { id: "depoimentos", label: "Depoimentos" },
               { id: "contato", label: "Contato" },
@@ -341,7 +341,7 @@ export default function Home() {
         </section>
 
         {/* Projects Section */}
-        {/* <section id="projetos" className="py-20 bg-muted/30">
+        <section id="projetos" className="py-20 bg-muted/30">
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
               <h2 className="text-3xl font-bold mb-4">Projetos em Destaque</h2>
@@ -353,7 +353,7 @@ export default function Home() {
 
             <ProjectGrid />
           </div>
-        </section> */}
+        </section>
 
         {/* Skills Section */}
         <section id="habilidades" className="py-20">
