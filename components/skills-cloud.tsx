@@ -1,8 +1,9 @@
 "use client"
 
+import { useState } from "react"
 import { motion } from "framer-motion"
 import { Card, CardContent } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Button } from "@/components/ui/button"
 
 const skillCategories = [
   {
@@ -10,13 +11,13 @@ const skillCategories = [
     label: "Frontend",
     skills: [
       { name: "React", level: 70 },
-      { name: "Angular", level: 60 },
+      { name: "Angular", level: 40 },
       { name: "TypeScript", level: 75 },
       { name: "JavaScript", level: 90 },
       { name: "HTML/CSS", level: 80 },
       { name: "Tailwind CSS", level: 70 },
       { name: "Next.js", level: 65 },
-      { name: "Jest", level: 75 },
+      { name: "Jest", level: 60 },
     ],
   },
   {
@@ -39,7 +40,6 @@ const skillCategories = [
       { name: "Git", level: 90 },
       { name: "Docker", level: 50 },
       { name: "CI/CD", level: 30 },
-      { name: "Netlify", level: 85 },
       { name: "Agile/Scrum", level: 90 },
       { name: "Jira", level: 85 },
       { name: "Performance", level: 75 },
@@ -49,49 +49,54 @@ const skillCategories = [
 ]
 
 export default function SkillsCloud() {
-  return (
-    <Tabs defaultValue="frontend" className="w-full">
-      <TabsList className="grid grid-cols-2 md:grid-cols-4 mb-8 justify-center">
-        {skillCategories.map((category) => (
-          <TabsTrigger key={category.id} value={category.id} className="text-center">
-            {category.label}
-          </TabsTrigger>
-        ))}
-      </TabsList>
+  const [activeCategory, setActiveCategory] = useState("frontend")
 
-      {skillCategories.map((category) => (
-        <TabsContent key={category.id} value={category.id} className="mt-0">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {category.skills.map((skill, index) => (
-              <motion.div
-                key={skill.name}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3, delay: index * 0.05 }}
-              >
-                <Card>
-                  <CardContent className="p-4">
-                    <div className="text-center mb-2">
-                      <span className="font-medium">{skill.name}</span>
-                    </div>
-                    <div className="w-full bg-muted rounded-full h-2">
-                      <motion.div
-                        className="bg-primary h-2 rounded-full"
-                        initial={{ width: 0 }}
-                        animate={{ width: `${skill.level}%` }}
-                        transition={{ duration: 1, delay: 0.2 }}
-                      ></motion.div>
-                    </div>
-                    <div className="text-right mt-1">
-                      <span className="text-xs text-muted-foreground">{skill.level}%</span>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </TabsContent>
-      ))}
-    </Tabs>
+  const currentSkills = skillCategories.find((cat) => cat.id === activeCategory)?.skills || []
+
+  return (
+    <div>
+      <div className="flex flex-wrap justify-center gap-2 mb-8">
+        {skillCategories.map((category) => (
+          <Button
+            key={category.id}
+            variant={activeCategory === category.id ? "default" : "outline"}
+            onClick={() => setActiveCategory(category.id)}
+            className="capitalize"
+          >
+            {category.label}
+          </Button>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {currentSkills.map((skill, index) => (
+          <motion.div
+            key={skill.name}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3, delay: index * 0.05 }}
+          >
+            <Card>
+              <CardContent className="p-4">
+                <div className="text-center mb-2">
+                  <span className="font-medium">{skill.name}</span>
+                </div>
+                <div className="w-full bg-muted rounded-full h-2">
+                  <motion.div
+                    className="bg-primary h-2 rounded-full"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${skill.level}%` }}
+                    transition={{ duration: 1, delay: 0.2 }}
+                  ></motion.div>
+                </div>
+                <div className="text-right mt-1">
+                  <span className="text-xs text-muted-foreground">{skill.level}%</span>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
+      </div>
+    </div>
   )
 }

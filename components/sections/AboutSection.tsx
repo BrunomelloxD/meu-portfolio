@@ -35,7 +35,7 @@ export function AboutSection({ onNavigate }: AboutSectionProps) {
               Sobre Mim
             </h2>
             <p className="text-lg mb-4">
-              Olá! Sou Bruno, um desenvolvedor full stack apaixonado por criar soluções digitais que combinam funcionalidade e
+              Olá! Sou Bruno, um engenheiro de software full stack apaixonado por criar soluções digitais que combinam funcionalidade e
               estética.
             </p>
             <p className="text-lg mb-4">

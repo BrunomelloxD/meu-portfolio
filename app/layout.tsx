@@ -7,9 +7,9 @@ import { AccessLogger } from "@/components/AccessLogger"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata = {
-  title: "Bruno Mello | Desenvolvedor Full Stack ",
+  title: "Bruno Mello | Engenheiro de Software Full Stack ",
   description:
-    "Portfolio de Bruno Mello, desenvolvedor full stack com experiência em React, Next.js, Nest.js, PHP e muito mais. Confira meus projetos e habilidades.",
+    "Portfolio de Bruno Mello, engenheiro de software full stack com experiência em React, Next.js, Nest.js, PHP e muito mais. Confira meus projetos e habilidades.",
 }
 
 export default function RootLayout({

@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge"
 const experiences = [
   {
     id: 1,
-    role: "Desenvolvedor I.III",
+    role: "Engenheiro de Software I.III",
     company: "Gazin Tech",
     period: "2025 - Presente",
     description:
@@ -17,7 +17,7 @@ const experiences = [
   },
   {
     id: 2,
-    role: "Desenvolvedor I.II",
+    role: "Engenheiro de Software I.II",
     company: "Gazin Tech",
     period: "2024 - 2025",
     description:
