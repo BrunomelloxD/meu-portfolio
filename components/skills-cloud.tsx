@@ -14,6 +14,8 @@ const skillCategories = [
       { name: "Angular", level: 40 },
       { name: "TypeScript", level: 75 },
       { name: "JavaScript", level: 90 },
+      { name: "Ext JS", level: 70 },
+      { name: "React Native", level: 60 },
       { name: "HTML/CSS", level: 80 },
       { name: "Tailwind CSS", level: 70 },
       { name: "Next.js", level: 65 },
@@ -24,13 +26,16 @@ const skillCategories = [
     id: "backend",
     label: "Backend",
     skills: [
-      { name: "Node.js", level: 70 },
-      { name: "Express", level: 60 },
+      { name: "Node.js", level: 80 },
+      { name: "Express", level: 70 },
       { name: "NestJS", level: 80 },
       { name: "PHP", level: 75 },
+      { name: "Laravel", level: 75 },
+      { name: "Symfony", level: 75 },
+      { name: "Zend Framework", level: 75 },
+      { name: "PHPUnit", level: 75 },
       { name: "REST API", level: 90 },
-      { name: "PostgreSQL", level: 80 },
-      { name: "MySQL", level: 75 },
+      { name: "SQL", level: 90 }
     ],
   },
   {
@@ -44,6 +49,7 @@ const skillCategories = [
       { name: "Jira", level: 85 },
       { name: "Performance", level: 75 },
       { name: "Acessibilidade", level: 60 },
+      { name: "ElasticSearch", level: 60 },
     ],
   },
 ]

@@ -8,21 +8,21 @@ import { Badge } from "@/components/ui/badge"
 const experiences = [
   {
     id: 1,
-    role: "Engenheiro de Software I.III",
+    role: "Desenvolvedor Pleno",
     company: "Gazin Tech",
     period: "2025 - Presente",
     description:
-      "Manutenho e desenvolvo aplicações web, focando na melhoria contínua e na implementação de novas funcionalidades. Participo ativamente de reuniões de planejamento e revisão de código.",
-    technologies: ["Angular", "Nest.js", "Next", "Docker", "TypeScript", "PHP", "Git", "PostgreSQL"],
+      "Desenvolvimento e manutenção de sistemas internos com foco em desempenho, escalabilidade e integração entre serviços. Atuação em sistema de renegociação de títulos, incluindo regras de negócio e fluxos financeiros. Implementação de fluxo de cadastro de novos clientes com integrações externas (Serasa, SPC e Unico). Desenvolvimento de funcionalidades para parcelamento de títulos e integração com canais do Teams via Webhook.",
+    technologies: ["Angular", "React Native", "Next.js", "ExtJS", "NestJS", "PHP", "Laravel", "Symfony", "Docker", "TypeScript", "SQL", "Git", "Claude Code", "GitHub Copilot"],
   },
   {
     id: 2,
-    role: "Engenheiro de Software I.II",
+    role: "Desenvolvedor Júnior",
     company: "Gazin Tech",
     period: "2024 - 2025",
     description:
-      "Manutenho e desenvolvo aplicações web, focando na melhoria contínua e na implementação de novas funcionalidades. Participo ativamente de reuniões de planejamento e revisão de código.",
-    technologies: ["Angular", "Nest.js", "Next", "Docker", "TypeScript", "PHP", "Git", "PostgreSQL"],
+      "Desenvolvimento e manutenção de sistemas internos com foco em desempenho e escalabilidade. Atuação em sistema de renegociação de títulos e fluxos financeiros. Desenvolvimento de funcionalidades para parcelamento de títulos, incluindo cálculos e validações. Integração com avisos em canais do Teams (PHP/Webhook).",
+    technologies: ["Angular", "React Native", "Next.js", "ExtJS", "NestJS", "PHP", "Laravel", "Symfony", "Slim", "Docker", "TypeScript", "SQL", "Git"],
   },
   {
     id: 3,
@@ -30,8 +30,8 @@ const experiences = [
     company: "Alares Internet",
     period: "2023 - 2024",
     description:
-      "Desenvolvi e mantive aplicações web de alta performance, trabalhando tanto no frontend quanto no backend. Implementei novas funcionalidades e otimizei sistemas existentes. Participei ativamente no desenvolvimento do e-commerce Alares Internet: www.alaresinternet.com.br",
-    technologies: ["Nest.js", "Docker", "TypeScript", "PHP", "Git", "Prisma", "PostgreSQL"],
+      "Participação ativa no desenvolvimento do e-commerce da Alares Internet (www.alaresinternet.com.br), contribuindo para a evolução da plataforma e melhoria da experiência do usuário. Desenvolvimento e manutenção de sistemas internos garantindo estabilidade e escalabilidade. Integração com Elasticsearch para otimização de buscas e performance de consultas. Desenvolvimento de sistema de Flyers Digitais.",
+    technologies: ["NestJS", "PHP", "Laravel", "Docker", "TypeScript", "SQL", "Prisma", "Git", "Elasticsearch"],
   }
 ]
 

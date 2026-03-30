@@ -27,8 +27,8 @@ export const SOCIAL_LINKS = {
 export const PERSONAL_INFO = {
   name: "Bruno Mello",
   role: "Engenheiro de Software Full Stack",
-  location: "Maringá, PR, Brasil",
-  experience: "+2 anos de experiência",
+  location: "Mococa, SP / Maringá, PR, Brasil",
+  experience: "+3 anos de experiência",
   experienceType: "Desenvolvimento Full Stack",
 } as const
 
