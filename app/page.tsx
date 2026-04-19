@@ -36,7 +36,7 @@ export default function Home() {
     return (
       <div className="min-h-screen bg-background text-foreground">
         <div className="flex items-center justify-center min-h-screen">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary" />
+          <div className="animate-spin rounded-full h-10 w-10 border-2 border-primary border-t-transparent" />
         </div>
       </div>
     )
@@ -55,7 +55,8 @@ export default function Home() {
         <section id={SECTION_IDS.EXPERIENCE} className="py-20">
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
-              <h2 className="text-3xl font-bold mb-4">Minha Jornada Profissional</h2>
+              <p className="text-primary font-medium mb-2 tracking-wide text-sm uppercase">Trajetória</p>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">Minha Jornada Profissional</h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                 Um histórico das empresas e projetos que contribuíram para minha experiência e crescimento profissional.
               </p>
@@ -67,7 +68,8 @@ export default function Home() {
         <section id={SECTION_IDS.PROJECTS} className="py-20 bg-muted/30">
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
-              <h2 className="text-3xl font-bold mb-4">Meus Projetos</h2>
+              <p className="text-primary font-medium mb-2 tracking-wide text-sm uppercase">Portfólio</p>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">Meus Projetos</h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                 Alguns dos projetos mais recentes e relevantes que desenvolvi, demonstrando minhas habilidades e experiência em diferentes áreas.
               </p>
@@ -79,7 +81,8 @@ export default function Home() {
         <section id={SECTION_IDS.SKILLS} className="py-20">
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
-              <h2 className="text-3xl font-bold mb-4">Minhas Habilidades</h2>
+              <p className="text-primary font-medium mb-2 tracking-wide text-sm uppercase">Competências</p>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">Minhas Habilidades</h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                 Tecnologias e ferramentas que domino e utilizo para criar soluções digitais de alta qualidade.
               </p>
@@ -91,7 +94,8 @@ export default function Home() {
         <section id={SECTION_IDS.TESTIMONIALS} className="py-20 bg-muted/30">
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
-              <h2 className="text-3xl font-bold mb-4">O Que Dizem Sobre Mim</h2>
+              <p className="text-primary font-medium mb-2 tracking-wide text-sm uppercase">Depoimentos</p>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">O Que Dizem Sobre Mim</h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                 Feedback de clientes e colegas com quem tive o prazer de trabalhar ao longo da minha carreira.
               </p>

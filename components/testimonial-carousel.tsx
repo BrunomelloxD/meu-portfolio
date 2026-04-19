@@ -105,9 +105,11 @@ export default function TestimonialCarousel() {
                 setCurrent(index)
                 setAutoplay(false)
               }}
-              className={`w-3 h-3 rounded-full transition-colors ${index === current ? "bg-primary" : "bg-muted-foreground"}`}
+              className="p-2 group"
               aria-label={`Ir para depoimento ${index + 1}`}
-            />
+            >
+              <span className={`block w-3 h-3 rounded-full transition-all duration-300 ${index === current ? "bg-primary scale-125" : "bg-muted-foreground/40 group-hover:bg-muted-foreground"}`} />
+            </button>
           ))}
         </div>
 

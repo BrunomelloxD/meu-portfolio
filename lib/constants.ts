@@ -9,13 +9,13 @@ export const SECTION_IDS = {
 } as const
 
 export const NAVIGATION_ITEMS = [
-  { id: SECTION_IDS.HOME, label: "Início" },
-  { id: SECTION_IDS.ABOUT, label: "Sobre" },
-  { id: SECTION_IDS.EXPERIENCE, label: "Experiência" },
-  { id: SECTION_IDS.PROJECTS, label: "Projetos" },
-  { id: SECTION_IDS.SKILLS, label: "Habilidades" },
-  { id: SECTION_IDS.TESTIMONIALS, label: "Depoimentos" },
-  { id: SECTION_IDS.CONTACT, label: "Contato" },
+  { id: SECTION_IDS.HOME, label: "Início", icon: "Home" },
+  { id: SECTION_IDS.ABOUT, label: "Sobre", icon: "User" },
+  { id: SECTION_IDS.EXPERIENCE, label: "Experiência", icon: "Briefcase" },
+  { id: SECTION_IDS.PROJECTS, label: "Projetos", icon: "FolderKanban" },
+  { id: SECTION_IDS.SKILLS, label: "Habilidades", icon: "Code2" },
+  { id: SECTION_IDS.TESTIMONIALS, label: "Depoimentos", icon: "MessageSquareQuote" },
+  { id: SECTION_IDS.CONTACT, label: "Contato", icon: "Mail" },
 ] as const
 
 export const SOCIAL_LINKS = {

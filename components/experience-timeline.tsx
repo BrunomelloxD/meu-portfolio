@@ -39,7 +39,7 @@ export default function ExperienceTimeline() {
   return (
     <div className="relative">
       {/* Timeline line */}
-      <div className="absolute left-0 md:left-1/2 transform md:-translate-x-1/2 h-full w-1 bg-border"></div>
+      <div className="absolute left-4 md:left-1/2 transform md:-translate-x-1/2 h-full w-0.5 bg-border"></div>
 
       <div className="space-y-12">
         {experiences.map((exp, index) => (
@@ -51,10 +51,10 @@ export default function ExperienceTimeline() {
             viewport={{ once: true }}
             className={`relative flex flex-col ${
               index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"
-            } gap-8 md:gap-0`}
+            } gap-8 md:gap-0 pl-12 md:pl-0`}
           >
             {/* Timeline dot */}
-            <div className="absolute left-0 md:left-1/2 transform -translate-x-1/2 w-6 h-6 rounded-full bg-primary border-4 border-background"></div>
+            <div className="absolute left-4 md:left-1/2 transform -translate-x-1/2 w-4 h-4 rounded-full bg-primary ring-4 ring-background"></div>
 
             {/* Content */}
             <div className="md:w-1/2 md:px-12">

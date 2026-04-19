@@ -53,6 +53,7 @@ export default function ContactSection() {
         success: true,
         message: "Mensagem enviada com sucesso! Entrarei em contato em breve.",
       })
+      setFormData({ name: "", email: "", subject: "", message: "" })
       
       setTimeout(() => {
         setSubmitStatus(null)

@@ -20,18 +20,18 @@ export function AboutSection({ onNavigate }: AboutSectionProps) {
           className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center"
         >
           <div className="relative">
-            <div className="w-full aspect-square rounded-2xl overflow-hidden border-4 border-primary">
+            <div className="w-full aspect-square rounded-2xl overflow-hidden border-2 border-primary/20 shadow-xl shadow-primary/5">
               <Image src={ProfileImage.src} alt={PERSONAL_INFO.name} className="w-full h-full object-cover" width={400} height={400} />
             </div>
-            <div className="absolute -bottom-6 -right-6 bg-card p-4 rounded-lg shadow-lg border border-border">
-              <p className="font-medium">{PERSONAL_INFO.experience}</p>
+            <div className="absolute -bottom-4 -right-4 bg-card p-4 rounded-xl shadow-lg border border-border/50 backdrop-blur-sm">
+              <p className="font-bold text-primary text-lg">{PERSONAL_INFO.experience}</p>
               <p className="text-sm text-muted-foreground">{PERSONAL_INFO.experienceType}</p>
             </div>
           </div>
 
           <div>
-            <h2 className="text-3xl font-bold mb-6 flex items-center">
-              <span className="w-12 h-1 bg-primary mr-4" />
+            <p className="text-primary font-medium mb-2 tracking-wide text-sm uppercase">Quem sou eu</p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">
               Sobre Mim
             </h2>
             <p className="text-lg mb-4">

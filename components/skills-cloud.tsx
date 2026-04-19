@@ -54,6 +54,12 @@ const skillCategories = [
   },
 ]
 
+function getSkillLabel(level: number): { text: string; color: string } {
+  if (level >= 80) return { text: "Avançado", color: "text-foreground font-semibold" }
+  if (level >= 60) return { text: "Intermediário", color: "text-primary" }
+  return { text: "Básico", color: "text-muted-foreground" }
+}
+
 export default function SkillsCloud() {
   const [activeCategory, setActiveCategory] = useState("frontend")
 
@@ -61,7 +67,7 @@ export default function SkillsCloud() {
 
   return (
     <div>
-      <div className="flex flex-wrap justify-center gap-2 mb-8">
+      <div className="flex flex-wrap justify-center gap-2 mb-10">
         {skillCategories.map((category) => (
           <Button
             key={category.id}
@@ -75,33 +81,34 @@ export default function SkillsCloud() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {currentSkills.map((skill, index) => (
-          <motion.div
-            key={skill.name}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3, delay: index * 0.05 }}
-          >
-            <Card>
-              <CardContent className="p-4">
-                <div className="text-center mb-2">
-                  <span className="font-medium">{skill.name}</span>
-                </div>
-                <div className="w-full bg-muted rounded-full h-2">
-                  <motion.div
-                    className="bg-primary h-2 rounded-full"
-                    initial={{ width: 0 }}
-                    animate={{ width: `${skill.level}%` }}
-                    transition={{ duration: 1, delay: 0.2 }}
-                  ></motion.div>
-                </div>
-                <div className="text-right mt-1">
-                  <span className="text-xs text-muted-foreground">{skill.level}%</span>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        ))}
+        {currentSkills.map((skill, index) => {
+          const label = getSkillLabel(skill.level)
+          return (
+            <motion.div
+              key={skill.name}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3, delay: index * 0.05 }}
+            >
+              <Card className="hover:shadow-md transition-shadow">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="font-semibold">{skill.name}</span>
+                    <span className={`text-xs font-medium ${label.color}`}>{label.text}</span>
+                  </div>
+                  <div className="w-full bg-muted rounded-full h-1.5">
+                    <motion.div
+                      className="bg-primary h-1.5 rounded-full"
+                      initial={{ width: 0 }}
+                      animate={{ width: `${skill.level}%` }}
+                      transition={{ duration: 1, delay: 0.2 }}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          )
+        })}
       </div>
     </div>
   )

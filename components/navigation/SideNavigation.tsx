@@ -1,8 +1,18 @@
 import Image from "next/image"
-import { ChevronRight } from "lucide-react"
+import { Home, User, Briefcase, FolderKanban, Code2, MessageSquareQuote, Mail } from "lucide-react"
 import ProfileImage from "@/public/images/profile-img.jpg"
 import { PERSONAL_INFO, NAVIGATION_ITEMS } from "@/lib/constants"
 import { ThemeToggle } from "./ThemeToggle"
+
+const iconMap: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
+  Home,
+  User,
+  Briefcase,
+  FolderKanban,
+  Code2,
+  MessageSquareQuote,
+  Mail,
+}
 
 interface SideNavigationProps {
   isMenuOpen: boolean
@@ -37,30 +47,31 @@ export function SideNavigation({ isMenuOpen, activeSection, onNavigate }: SideNa
           </h1>
         </div>
 
-        <div className="mt-8 flex-1 space-y-2">
-          {NAVIGATION_ITEMS.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => onNavigate(item.id)}
-              className={`w-full flex items-center p-3 rounded-lg transition-all duration-300 text-left group/item ${
-                activeSection === item.id
-                  ? "bg-primary text-primary-foreground shadow-md"
-                  : "text-foreground hover:bg-muted hover:text-foreground"
-              }`}
-            >
-              <ChevronRight
-                size={20}
-                className={`transition-transform duration-200 flex-shrink-0 ${activeSection === item.id ? "rotate-90" : ""}`}
-              />
-              <span
-                className={`ml-2 transition-all duration-300 whitespace-nowrap overflow-hidden ${
-                  isMenuOpen ? "opacity-100 w-auto" : "opacity-0 w-0 md:group-hover:opacity-100 md:group-hover:w-auto"
+        <div className="mt-8 flex-1 space-y-1">
+          {NAVIGATION_ITEMS.map((item) => {
+            const Icon = iconMap[item.icon]
+            return (
+              <button
+                key={item.id}
+                onClick={() => onNavigate(item.id)}
+                className={`w-full flex items-center p-3 rounded-lg transition-all duration-300 text-left group/item ${
+                  activeSection === item.id
+                    ? "bg-primary text-primary-foreground shadow-md"
+                    : "text-foreground hover:bg-muted hover:text-foreground"
                 }`}
+                aria-label={item.label}
               >
-                {item.label}
-              </span>
-            </button>
-          ))}
+                {Icon && <Icon size={20} className="flex-shrink-0" />}
+                <span
+                  className={`ml-3 transition-all duration-300 whitespace-nowrap overflow-hidden ${
+                    isMenuOpen ? "opacity-100 w-auto" : "opacity-0 w-0 md:group-hover:opacity-100 md:group-hover:w-auto"
+                  }`}
+                >
+                  {item.label}
+                </span>
+              </button>
+            )
+          })}
         </div>
 
         <div className="mt-auto pt-4 border-t border-border">
