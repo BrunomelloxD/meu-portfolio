@@ -8,14 +8,13 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 
-// TODO: Adicione seus projetos reais aqui
 // Estrutura recomendada para cada projeto:
 // - title: Nome do projeto
 // - description: Descrição breve (1-2 frases)
 // - image: Caminho da screenshot em /public/images/projects/nome-projeto.png
 // - tags: Array de tecnologias usadas
-// - category: "fullstack" | "frontend" | "backend" | "mobile"
-// - github: Link do repositório (opcional se for privado)
+// - categories: Array de categorias ("fullstack" | "frontend" | "backend" | "mobile")
+// - github: Array de { label, url } para múltiplos repositórios
 // - demo: Link do projeto em produção
 
 const projects = [
@@ -25,8 +24,8 @@ const projects = [
     description: "Portfólio moderno e responsivo desenvolvido com Next.js 15, TypeScript e Tailwind CSS. Inclui modo escuro/claro e animações suaves.",
     image: "/images/projects/portfolio.png",
     tags: ["Next.js", "TypeScript", "Tailwind CSS", "Framer Motion"],
-    category: "frontend",
-    github: "https://github.com/BrunomelloxD/meu-portfolio",
+    categories: ["frontend"],
+    github: [{ label: "GitHub", url: "https://github.com/BrunomelloxD/meu-portfolio" }],
     demo: "https://www.brunomellodev.com.br/",
   },
   {
@@ -35,8 +34,8 @@ const projects = [
     description: "Aplicativo de cronômetro simples e eficiente com funcionalidades de iniciar, pausar e resetar. Desenvolvido com Next.",
     image: "/images/projects/cronometro-codecon.png",
     tags: ["Next.js", "TypeScript", "Tailwind CSS"],
-    category: "frontend",
-    github: "https://github.com/BrunomelloxD/cronometro-codecon",
+    categories: ["frontend"],
+    github: [{ label: "GitHub", url: "https://github.com/BrunomelloxD/cronometro-codecon" }],
     demo: "https://cronometro.up.railway.app/",
   },
   {
@@ -45,16 +44,29 @@ const projects = [
     description: "API RESTful para consulta de CEPs brasileiros, integrada com banco de dados PostgreSQL e ViaCEP. Desenvolvida com Nest.js e Prisma.",
     image: "/images/projects/api.png",
     tags: ["Nest.js", "TypeScript", "PostgreSQL", "Prisma", "ViaCEP"],
-    category: "backend",
-    github: "",
+    categories: ["backend"],
+    github: [],
     demo: "https://generic-api.up.railway.app/api/v1/cep/95555-000",
+  },
+  {
+    id: 4,
+    title: "Speed Test - Medidor de Velocidade",
+    description: "Aplicação fullstack para medir a velocidade da conexão de internet em tempo real. Frontend em React + Vite e API em Nest.js com PostgreSQL.",
+    image: "/images/projects/speed-test.png",
+    tags: ["React", "Vite", "Tailwind CSS", "Nest.js", "TypeScript", "PostgreSQL", "Prisma"],
+    categories: ["fullstack", "frontend", "backend"],
+    github: [
+      { label: "Frontend", url: "https://github.com/BrunomelloxD/front-speed-test" },
+      { label: "API", url: "https://github.com/BrunomelloxD/api-speed-test" },
+    ],
+    demo: "https://front-speed-test-production.up.railway.app/",
   },
 ]
 
 export default function ProjectGrid() {
   const [filter, setFilter] = useState("all")
 
-  const filteredProjects = filter === "all" ? projects : projects.filter((project) => project.category === filter)
+  const filteredProjects = filter === "all" ? projects : projects.filter((project) => project.categories.includes(filter))
 
   // Se não houver projetos, mostra mensagem
   if (projects.length === 0) {
@@ -102,13 +114,13 @@ export default function ProjectGrid() {
                   unoptimized
                 />
                 <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-4">
-                  {project.github && (
-                    <a href={project.github} target="_blank" rel="noopener noreferrer" aria-label="Ver código no GitHub">
-                      <Button size="icon" variant="secondary" className="rounded-full">
+                  {project.github.map((repo) => (
+                    <a key={repo.url} href={repo.url} target="_blank" rel="noopener noreferrer" aria-label={`Ver código: ${repo.label}`}>
+                      <Button size="icon" variant="secondary" className="rounded-full" title={repo.label}>
                         <Github className="h-5 w-5" />
                       </Button>
                     </a>
-                  )}
+                  ))}
                   {project.demo && (
                     <a href={project.demo} target="_blank" rel="noopener noreferrer" aria-label="Ver demonstração">
                       <Button size="icon" className="rounded-full">
