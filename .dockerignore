@@ -1,0 +1,32 @@
+# Dependencies (will be installed fresh inside the build)
+node_modules
+npm-debug.log*
+
+# Next.js build output
+.next
+out
+build
+
+# Tests
+coverage
+*.lcov
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE / OS
+.vscode
+.idea
+.DS_Store
+
+# Git
+.git
+.gitignore
+
+# CI
+.github
+
+# Logs
+*.log
