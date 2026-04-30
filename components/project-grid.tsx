@@ -61,6 +61,19 @@ const projects = [
     ],
     demo: "https://front-speed-test-production.up.railway.app/",
   },
+  {
+    id: 5,
+    title: "TypeRacer",
+    description: "Aplicação fullstack de corrida de digitação em tempo real. Frontend interativo e API com WebSockets para multiplayer.",
+    image: "/images/projects/typeracer.png",
+    tags: ["React", "TypeScript", "Tailwind CSS", "Nest.js", "WebSocket"],
+    categories: ["fullstack", "frontend", "backend"],
+    github: [
+      { label: "Frontend", url: "https://github.com/BrunomelloxD/typeracer-front" },
+      { label: "API", url: "https://github.com/BrunomelloxD/typeracer-api" },
+    ],
+    demo: "",
+  },
 ]
 
 export default function ProjectGrid() {
