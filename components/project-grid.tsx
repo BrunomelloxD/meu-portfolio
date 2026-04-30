@@ -72,7 +72,7 @@ const projects = [
       { label: "Frontend", url: "https://github.com/BrunomelloxD/typeracer-front" },
       { label: "API", url: "https://github.com/BrunomelloxD/typeracer-api" },
     ],
-    demo: "",
+    demo: "https://typeracer-front-production.up.railway.app/",
   },
 ]
 
