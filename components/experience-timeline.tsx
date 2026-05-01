@@ -19,7 +19,7 @@ const experiences = [
     id: 2,
     role: "Desenvolvedor Pleno",
     company: "Gazin Tech",
-    period: "2025 - Presente",
+    period: "2025 - 2026",
     description:
       "Desenvolvimento e manutenção de sistemas internos com foco em desempenho, escalabilidade e integração entre serviços. Atuação em sistema de renegociação de títulos, incluindo regras de negócio e fluxos financeiros. Implementação de fluxo de cadastro de novos clientes com integrações externas (Serasa, SPC e Unico). Desenvolvimento de funcionalidades para parcelamento de títulos e integração com canais do Teams via Webhook.",
     technologies: ["Angular", "React Native", "Next.js", "ExtJS", "NestJS", "PHP", "Laravel", "Symfony", "Docker", "TypeScript", "SQL", "Git", "Claude Code", "GitHub Copilot"],
