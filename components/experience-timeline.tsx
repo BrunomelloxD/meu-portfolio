@@ -13,7 +13,7 @@ const experiences = [
     period: "2026 - Presente",
     description:
       "Desenvolvimento e manutenção de sistemas internos com foco em desempenho, escalabilidade e integração entre serviços.",
-    technologies: ["Vue.JS", "Next.js", "PHP", "Laravel", "Symfony", "Docker", "TypeScript", "SQL", "Git", "Claude Code", "GitHub Copilot"],
+    technologies: ["Vue.JS", "Next.js", "PHP", "Laravel", "Docker", "TypeScript", "SQL", "Git", "Claude Code", "GitHub Copilot"],
   },
   {
     id: 2,
