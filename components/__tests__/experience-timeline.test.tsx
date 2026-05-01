@@ -6,14 +6,17 @@ describe("<ExperienceTimeline />", () => {
   it("should render all experience entries with role, company and period", () => {
     render(<ExperienceTimeline />);
 
+    expect(screen.getByText("Engenheiro de Software Sênior")).toBeInTheDocument();
     expect(screen.getByText("Desenvolvedor Pleno")).toBeInTheDocument();
     expect(screen.getByText("Desenvolvedor Júnior")).toBeInTheDocument();
     expect(screen.getByText("Desenvolvedor Backend Júnior")).toBeInTheDocument();
 
+    expect(screen.getByText("Grupo UND")).toBeInTheDocument();
     expect(screen.getAllByText(/Gazin Tech/).length).toBeGreaterThanOrEqual(2);
     expect(screen.getAllByText(/Alares Internet/).length).toBeGreaterThan(0);
 
-    expect(screen.getByText("2025 - Presente")).toBeInTheDocument();
+    expect(screen.getByText("2026 - Presente")).toBeInTheDocument();
+    expect(screen.getByText("2025 - 2026")).toBeInTheDocument();
     expect(screen.getByText("2024 - 2025")).toBeInTheDocument();
     expect(screen.getByText("2023 - 2024")).toBeInTheDocument();
   });
