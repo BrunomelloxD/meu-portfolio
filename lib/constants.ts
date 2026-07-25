@@ -32,6 +32,13 @@ export const PERSONAL_INFO = {
   experienceType: "Desenvolvimento Full Stack",
 } as const
 
+export const STATS = [
+  { value: "3+", label: "Anos de experiência" },
+  { value: "20+", label: "Projetos entregues" },
+  { value: "10+", label: "Tecnologias dominadas" },
+  { value: "100%", label: "Dedicação em cada linha de código" },
+] as const
+
 export const EDUCATION = [
   {
     degree: "Pós Graduação em Engenharia de Software",

@@ -1,14 +1,8 @@
 import { motion } from "framer-motion"
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import ProfileImage from "@/public/images/profile-img.jpg"
-import { PERSONAL_INFO, SECTION_IDS, EDUCATION } from "@/lib/constants"
+import { Card, CardContent } from "@/components/ui/card"
+import { PERSONAL_INFO, SECTION_IDS, EDUCATION, STATS } from "@/lib/constants"
 
-interface AboutSectionProps {
-  onNavigate: (sectionId: string) => void
-}
-
-export function AboutSection({ onNavigate }: AboutSectionProps) {
+export function AboutSection() {
   return (
     <section id={SECTION_IDS.ABOUT} className="py-20 bg-muted/30">
       <div className="container mx-auto px-4">
@@ -17,54 +11,43 @@ export function AboutSection({ onNavigate }: AboutSectionProps) {
           whileInView={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center"
         >
-          <div className="relative">
-            <div className="w-full aspect-square rounded-2xl overflow-hidden border-2 border-primary/20 shadow-xl shadow-primary/5">
-              <Image src={ProfileImage.src} alt={PERSONAL_INFO.name} className="w-full h-full object-cover" width={400} height={400} />
-            </div>
-            <div className="absolute -bottom-4 -right-4 bg-card p-4 rounded-xl shadow-lg border border-border/50 backdrop-blur-sm">
-              <p className="font-bold text-primary text-lg">{PERSONAL_INFO.experience}</p>
-              <p className="text-sm text-muted-foreground">{PERSONAL_INFO.experienceType}</p>
-            </div>
-          </div>
+          <p className="font-mono text-sm text-primary mb-3">$ cat sobre.md</p>
+          <h2 className="text-3xl md:text-4xl font-bold mb-10">Sobre mim</h2>
 
-          <div>
-            <p className="text-primary font-medium mb-2 tracking-wide text-sm uppercase">Quem sou eu</p>
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Sobre Mim
-            </h2>
-            <p className="text-lg mb-4">
-              Olá! Sou Bruno, um engenheiro de software full stack apaixonado por criar soluções digitais que combinam funcionalidade e
-              estética.
-            </p>
-            <p className="text-lg mb-4">
-              Com mais de 2 anos de experiência no mercado, já trabalhei em diversos projetos, desde startups até grandes
-              empresas, sempre buscando inovação e excelência técnica.
-            </p>
-            <p className="text-lg mb-6">
-              Minha abordagem combina pensamento estratégico, design centrado no usuário e desenvolvimento técnico sólido para
-              criar produtos que realmente fazem a diferença.
-            </p>
-
-            <div className="grid grid-cols-2 gap-4 mb-8">
-              <div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+            <div>
+              <p className="text-lg mb-4">
+                Sou engenheiro de software full stack com mais de {PERSONAL_INFO.experience.replace("+", "")} construindo
+                produtos digitais do zero ao deploy. Trabalho na fronteira entre front-end e back-end, unindo interfaces
+                cuidadosas a arquiteturas de servidor sólidas e escaláveis.
+              </p>
+              <p className="text-lg mb-4">
+                Já atuei em times ágeis, integrando sistemas legados, modernizando stacks e liderando decisões técnicas.
+                Curioso por natureza, gosto de entender o problema de negócio antes de escrever a primeira linha de
+                código.
+              </p>
+              <div className="mt-8">
                 <h3 className="font-bold text-xl mb-2">Educação</h3>
                 {EDUCATION.map((edu, index) => (
-                  <div key={index} className={index > 0 ? "mt-4" : ""}>
+                  <div key={index} className={index > 0 ? "mt-3" : ""}>
                     <p className="text-muted-foreground">{edu.degree}</p>
                     <p className="text-sm">{edu.institution}</p>
                   </div>
                 ))}
               </div>
-              <div>
-                <h3 className="font-bold text-xl mb-2">Localização</h3>
-                <p className="text-muted-foreground">{PERSONAL_INFO.location}</p>
-                <p className="text-sm">Disponível para trabalho remoto e presencial</p>
-              </div>
             </div>
 
-            <Button onClick={() => onNavigate(SECTION_IDS.EXPERIENCE)}>Minha Experiência</Button>
+            <div className="grid grid-cols-2 gap-4">
+              {STATS.map((stat) => (
+                <Card key={stat.label}>
+                  <CardContent className="p-6">
+                    <p className="text-3xl font-bold text-primary mb-1">{stat.value}</p>
+                    <p className="text-sm text-muted-foreground">{stat.label}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
         </motion.div>
       </div>

@@ -1,15 +1,11 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { AboutSection } from "../AboutSection";
-import { SECTION_IDS, PERSONAL_INFO, EDUCATION } from "@/lib/constants";
+import { EDUCATION, STATS } from "@/lib/constants";
 
 describe("<AboutSection />", () => {
-  it("should render personal info and all education entries", () => {
-    render(<AboutSection onNavigate={() => {}} />);
-
-    expect(screen.getByText(PERSONAL_INFO.location)).toBeInTheDocument();
-    expect(screen.getByText(PERSONAL_INFO.experience)).toBeInTheDocument();
+  it("should render all education entries", () => {
+    render(<AboutSection />);
 
     EDUCATION.forEach((edu) => {
       expect(screen.getByText(edu.degree)).toBeInTheDocument();
@@ -17,13 +13,12 @@ describe("<AboutSection />", () => {
     });
   });
 
-  it("should navigate to experience section when CTA is clicked", async () => {
-    const onNavigate = vi.fn();
-    const user = userEvent.setup();
+  it("should render the stats grid", () => {
+    render(<AboutSection />);
 
-    render(<AboutSection onNavigate={onNavigate} />);
-    await user.click(screen.getByRole("button", { name: "Minha Experiência" }));
-
-    expect(onNavigate).toHaveBeenCalledWith(SECTION_IDS.EXPERIENCE);
+    STATS.forEach((stat) => {
+      expect(screen.getByText(stat.value)).toBeInTheDocument();
+      expect(screen.getByText(stat.label)).toBeInTheDocument();
+    });
   });
 });

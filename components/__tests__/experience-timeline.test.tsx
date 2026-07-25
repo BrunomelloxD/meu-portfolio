@@ -15,10 +15,10 @@ describe("<ExperienceTimeline />", () => {
     expect(screen.getAllByText(/Gazin Tech/).length).toBeGreaterThanOrEqual(2);
     expect(screen.getAllByText(/Alares Internet/).length).toBeGreaterThan(0);
 
-    expect(screen.getByText("2026 - Presente")).toBeInTheDocument();
-    expect(screen.getByText("2025 - 2026")).toBeInTheDocument();
-    expect(screen.getByText("2024 - 2025")).toBeInTheDocument();
-    expect(screen.getByText("2023 - 2024")).toBeInTheDocument();
+    expect(screen.getByText("2026 — Presente")).toBeInTheDocument();
+    expect(screen.getByText("2025 — 2026")).toBeInTheDocument();
+    expect(screen.getByText("2024 — 2025")).toBeInTheDocument();
+    expect(screen.getByText("2023 — 2024")).toBeInTheDocument();
   });
 
   it("should render technology badges for each experience", () => {

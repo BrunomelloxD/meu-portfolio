@@ -75,7 +75,7 @@ export default function TestimonialCarousel() {
               </blockquote>
 
               <div className="flex flex-col items-center">
-                <Avatar className="h-16 w-16 mb-4">
+                <Avatar className="h-16 w-16 mb-4 border-2 border-primary/30">
                   <AvatarImage
                     src={testimonials[current].avatar || "/placeholder.svg"}
                     alt={testimonials[current].name}

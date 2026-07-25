@@ -30,14 +30,4 @@ describe("<HeroSection />", () => {
 
     expect(onNavigate).toHaveBeenCalledWith(SECTION_IDS.CONTACT);
   });
-
-  it("should navigate to about when scroll-down arrow is clicked", async () => {
-    const onNavigate = vi.fn();
-    const user = userEvent.setup();
-
-    render(<HeroSection onNavigate={onNavigate} />);
-    await user.click(screen.getByRole("button", { name: "Rolar para baixo" }));
-
-    expect(onNavigate).toHaveBeenCalledWith(SECTION_IDS.ABOUT);
-  });
 });

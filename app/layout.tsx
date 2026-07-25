@@ -1,10 +1,10 @@
 import type React from "react"
 import "@/app/globals.css"
-import { Inter } from "next/font/google"
-import { ThemeProvider } from "@/components/theme-provider"
+import { Inter, JetBrains_Mono } from "next/font/google"
 import { AccessLogger } from "@/components/AccessLogger"
 
 const inter = Inter({ subsets: ["latin"] })
+const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" })
 
 export const metadata = {
   title: "Bruno Mello | Engenheiro de Software Full Stack ",
@@ -18,12 +18,10 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="pt-BR" suppressHydrationWarning>
-      <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
-          <AccessLogger />
-          {children}
-        </ThemeProvider>
+    <html lang="pt-BR">
+      <body className={`${inter.className} ${jetbrainsMono.variable}`}>
+        <AccessLogger />
+        {children}
       </body>
     </html>
   )
