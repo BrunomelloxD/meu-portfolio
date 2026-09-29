@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { TopNav } from "../TopNav";
-import { SECTION_IDS } from "@/lib/constants";
+import { SECTION_IDS, PERSONAL_INFO } from "@/lib/constants";
 
 describe("<TopNav />", () => {
   it("should render the logo and nav links, excluding Home", () => {
@@ -11,6 +11,13 @@ describe("<TopNav />", () => {
     expect(screen.getByRole("button", { name: "Ir para o início" })).toBeInTheDocument();
     expect(screen.getAllByText("Sobre").length).toBeGreaterThan(0);
     expect(screen.queryByText("Início")).not.toBeInTheDocument();
+  });
+
+  it("should render the brand nameplate as PERSONAL_INFO.name", () => {
+    render(<TopNav activeSection={SECTION_IDS.HOME} onNavigate={() => {}} />);
+
+    expect(screen.getByText(PERSONAL_INFO.name)).toBeInTheDocument();
+    expect(screen.queryByText("bruno_mello()")).not.toBeInTheDocument();
   });
 
   it("should call onNavigate with HOME when the logo is clicked", async () => {

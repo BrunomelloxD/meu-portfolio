@@ -98,4 +98,10 @@ describe("<ContactSection />", () => {
       "tel:+5519997119007",
     );
   });
+
+  it("should render the contact-info cards inside PanelFrame panels", () => {
+    render(<ContactSection />);
+    const panel = screen.getByRole("link", { name: "brunomello.ti@gmail.com" }).closest(".border-er-line");
+    expect(panel).toHaveClass("bg-er-surface");
+  });
 });

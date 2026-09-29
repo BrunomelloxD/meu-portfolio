@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { NAVIGATION_ITEMS, SECTION_IDS } from "@/lib/constants"
+import { NAVIGATION_ITEMS, SECTION_IDS, PERSONAL_INFO } from "@/lib/constants"
 
 interface TopNavProps {
   activeSection: string
@@ -21,14 +21,14 @@ export function TopNav({ activeSection, onNavigate }: TopNavProps) {
   }
 
   return (
-    <nav className="fixed top-0 left-0 w-full z-50 border-b border-border bg-background/80 backdrop-blur-md">
+    <nav className="fixed top-0 left-0 w-full z-50 border-b border-er-line bg-er-bg/80 backdrop-blur-md">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <button
           onClick={() => navigate(SECTION_IDS.HOME)}
-          className="font-mono font-bold text-foreground"
+          className="font-display tracking-widest text-er-text hover:text-er-gold-bright transition-colors"
           aria-label="Ir para o início"
         >
-          bruno_mello()
+          {PERSONAL_INFO.name}
         </button>
 
         <div className="hidden md:flex items-center gap-8">
@@ -36,8 +36,8 @@ export function TopNav({ activeSection, onNavigate }: TopNavProps) {
             <button
               key={item.id}
               onClick={() => navigate(item.id)}
-              className={`text-sm transition-colors ${
-                activeSection === item.id ? "text-primary" : "text-muted-foreground hover:text-foreground"
+              className={`font-display text-xs uppercase tracking-wider transition-colors ${
+                activeSection === item.id ? "text-er-gold-bright" : "text-er-muted hover:text-er-gold"
               }`}
             >
               {item.label}
@@ -45,13 +45,13 @@ export function TopNav({ activeSection, onNavigate }: TopNavProps) {
           ))}
         </div>
 
-        <Button className="hidden md:inline-flex rounded-full" onClick={() => navigate(SECTION_IDS.CONTACT)}>
+        <Button variant="gold" className="hidden md:inline-flex" onClick={() => navigate(SECTION_IDS.CONTACT)}>
           Fale Comigo
         </Button>
 
         <button
           onClick={() => setIsOpen((prev) => !prev)}
-          className="md:hidden p-2 text-foreground"
+          className="md:hidden p-2 text-er-text"
           aria-label={isOpen ? "Fechar menu" : "Abrir menu"}
         >
           {isOpen ? <X size={24} /> : <Menu size={24} />}
@@ -59,19 +59,19 @@ export function TopNav({ activeSection, onNavigate }: TopNavProps) {
       </div>
 
       {isOpen && (
-        <div className="md:hidden border-t border-border bg-background px-4 py-4 flex flex-col gap-4">
+        <div className="md:hidden border-t border-er-line bg-er-bg px-4 py-4 flex flex-col gap-4">
           {navLinks.map((item) => (
             <button
               key={item.id}
               onClick={() => navigate(item.id)}
-              className={`text-left text-sm ${
-                activeSection === item.id ? "text-primary" : "text-muted-foreground"
+              className={`text-left font-display text-xs uppercase tracking-wider ${
+                activeSection === item.id ? "text-er-gold-bright" : "text-er-muted"
               }`}
             >
               {item.label}
             </button>
           ))}
-          <Button className="rounded-full w-full" onClick={() => navigate(SECTION_IDS.CONTACT)}>
+          <Button variant="gold" className="w-full" onClick={() => navigate(SECTION_IDS.CONTACT)}>
             Fale Comigo
           </Button>
         </div>

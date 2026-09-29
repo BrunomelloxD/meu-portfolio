@@ -1,10 +1,12 @@
 import type React from "react"
 import "@/app/globals.css"
-import { Inter, JetBrains_Mono } from "next/font/google"
+import { Inter, JetBrains_Mono, Cinzel, EB_Garamond } from "next/font/google"
 import { AccessLogger } from "@/components/AccessLogger"
 
 const inter = Inter({ subsets: ["latin"] })
 const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" })
+const cinzel = Cinzel({ subsets: ["latin"], variable: "--font-display" })
+const ebGaramond = EB_Garamond({ subsets: ["latin"], variable: "--font-serif" })
 
 export const metadata = {
   title: "Bruno Mello | Engenheiro de Software Full Stack ",
@@ -19,7 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body className={`${inter.className} ${jetbrainsMono.variable}`}>
+      <body className={`${inter.className} ${jetbrainsMono.variable} ${cinzel.variable} ${ebGaramond.variable}`}>
         <AccessLogger />
         {children}
       </body>

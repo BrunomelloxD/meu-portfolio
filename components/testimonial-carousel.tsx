@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { ChevronLeft, ChevronRight, Quote } from "lucide-react"
-import { Card, CardContent } from "@/components/ui/card"
+import { PanelFrame } from "@/components/rpg/panel-frame"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import FelipeSasakiProfile from "@/public/images/felipe-sasaki-profile.jpg"
@@ -55,7 +55,7 @@ export default function TestimonialCarousel() {
 
   return (
     <div className="relative max-w-4xl mx-auto">
-      <div className="absolute top-1/2 left-0 transform -translate-y-1/2 -translate-x-1/2 text-primary opacity-10">
+      <div className="absolute top-1/2 left-0 transform -translate-y-1/2 -translate-x-1/2 text-er-gold opacity-10">
         <Quote size={120} />
       </div>
 
@@ -68,32 +68,30 @@ export default function TestimonialCarousel() {
           transition={{ duration: 0.5 }}
           className="mb-8"
         >
-          <Card className="border-none shadow-none bg-transparent">
-            <CardContent className="p-0">
-              <blockquote className="text-xl md:text-2xl text-center italic mb-8">
-                &ldquo;{testimonials[current].content}&rdquo;
-              </blockquote>
+          <PanelFrame className="p-8 md:p-12">
+            <blockquote className="font-serif italic text-xl md:text-2xl text-center text-er-text mb-8">
+              &ldquo;{testimonials[current].content}&rdquo;
+            </blockquote>
 
-              <div className="flex flex-col items-center">
-                <Avatar className="h-16 w-16 mb-4 border-2 border-primary/30">
-                  <AvatarImage
-                    src={testimonials[current].avatar || "/placeholder.svg"}
-                    alt={testimonials[current].name}
-                  />
-                  <AvatarFallback>{testimonials[current].name.charAt(0)}</AvatarFallback>
-                </Avatar>
-                <div className="text-center">
-                  <div className="font-bold text-lg">{testimonials[current].name}</div>
-                  <div className="text-muted-foreground">{testimonials[current].role}</div>
-                </div>
+            <div className="flex flex-col items-center">
+              <Avatar className="h-16 w-16 mb-4 border-2 border-er-gold/40">
+                <AvatarImage
+                  src={testimonials[current].avatar || "/placeholder.svg"}
+                  alt={testimonials[current].name}
+                />
+                <AvatarFallback>{testimonials[current].name.charAt(0)}</AvatarFallback>
+              </Avatar>
+              <div className="text-center">
+                <div className="font-display text-lg text-er-gold-bright">{testimonials[current].name}</div>
+                <div className="text-er-muted">{testimonials[current].role}</div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </PanelFrame>
         </motion.div>
       </AnimatePresence>
 
       <div className="flex justify-center items-center gap-4 mt-8">
-        <Button variant="outline" size="icon" onClick={prev} className="rounded-full" aria-label="Depoimento anterior">
+        <Button variant="gold-outline" size="icon" onClick={prev} className="rounded-full" aria-label="Depoimento anterior">
           <ChevronLeft className="h-5 w-5" />
         </Button>
 
@@ -108,12 +106,12 @@ export default function TestimonialCarousel() {
               className="p-2 group"
               aria-label={`Ir para depoimento ${index + 1}`}
             >
-              <span className={`block w-3 h-3 rounded-full transition-all duration-300 ${index === current ? "bg-primary scale-125" : "bg-muted-foreground/40 group-hover:bg-muted-foreground"}`} />
+              <span className={`block w-3 h-3 rounded-full transition-all duration-300 ${index === current ? "bg-er-gold scale-125" : "bg-er-muted/40 group-hover:bg-er-muted"}`} />
             </button>
           ))}
         </div>
 
-        <Button variant="outline" size="icon" onClick={next} className="rounded-full" aria-label="Próximo depoimento">
+        <Button variant="gold-outline" size="icon" onClick={next} className="rounded-full" aria-label="Próximo depoimento">
           <ChevronRight className="h-5 w-5" />
         </Button>
       </div>

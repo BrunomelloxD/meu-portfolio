@@ -30,4 +30,19 @@ describe("<HeroSection />", () => {
 
     expect(onNavigate).toHaveBeenCalledWith(SECTION_IDS.CONTACT);
   });
+
+  it("should render the Erdtree background via next/image with 100vw sizes", () => {
+    const { container } = render(<HeroSection onNavigate={() => {}} />);
+    const img = container.querySelector("img");
+
+    expect(img).toHaveAttribute("src", "/images/hero-erdtree.jpg");
+    expect(img).toHaveAttribute("sizes", "100vw");
+  });
+
+  it("should not render the removed terminal window code blocks", () => {
+    render(<HeroSection onNavigate={() => {}} />);
+
+    expect(screen.queryByText(/portfolio\.ts/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/\$ whoami/)).not.toBeInTheDocument();
+  });
 });

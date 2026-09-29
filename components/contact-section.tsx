@@ -5,8 +5,8 @@ import type React from "react"
 import { useState } from "react"
 import { motion } from "framer-motion"
 import emailjs from '@emailjs/browser';
-import { Send, Mail, Phone, MapPin } from "lucide-react"
-import { Card, CardContent } from "@/components/ui/card"
+import { Send, Mail, Phone, MapPin, Flame } from "lucide-react"
+import { PanelFrame } from "@/components/rpg/panel-frame"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -81,7 +81,10 @@ export default function ContactSection() {
         transition={{ duration: 0.5 }}
         viewport={{ once: true }}
       >
-        <h3 className="text-2xl font-bold mb-6">Entre em Contato</h3>
+        <div className="flex items-center gap-3 mb-6">
+          <Flame className="h-6 w-6 text-er-gold" />
+          <h3 className="font-display text-2xl text-er-text">Acender a Graça</h3>
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -165,52 +168,46 @@ export default function ContactSection() {
         transition={{ duration: 0.5 }}
         viewport={{ once: true }}
       >
-        <h3 className="text-2xl font-bold mb-6">Informações de Contato</h3>
+        <h3 className="font-display text-2xl text-er-text mb-6">Sinais da Graça</h3>
 
         <div className="space-y-6">
-          <Card>
-            <CardContent className="p-6 flex items-start gap-4">
-              <div className="bg-primary/10 p-3 rounded-full">
-                <Mail className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <h4 className="font-medium mb-1">Email</h4>
-                <a
-                  href="mailto:brunomello.ti@gmail.com"
-                  className="text-muted-foreground hover:text-primary transition-colors"
-                >
-                  brunomello.ti@gmail.com
-                </a>
-              </div>
-            </CardContent>
-          </Card>
+          <PanelFrame className="p-6 flex items-start gap-4">
+            <div className="bg-er-gold/10 p-3 rounded-full">
+              <Mail className="h-6 w-6 text-er-gold" />
+            </div>
+            <div>
+              <h4 className="font-display text-sm uppercase tracking-wide text-er-gold-bright mb-1">Email</h4>
+              <a
+                href="mailto:brunomello.ti@gmail.com"
+                className="text-er-muted hover:text-er-gold transition-colors"
+              >
+                brunomello.ti@gmail.com
+              </a>
+            </div>
+          </PanelFrame>
 
-          <Card>
-            <CardContent className="p-6 flex items-start gap-4">
-              <div className="bg-primary/10 p-3 rounded-full">
-                <Phone className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <h4 className="font-medium mb-1">Telefone</h4>
-                <a href="tel:+5519997119007" className="text-muted-foreground hover:text-primary transition-colors">
-                  +55 (19) 99711-9007
-                </a>
-              </div>
-            </CardContent>
-          </Card>
+          <PanelFrame className="p-6 flex items-start gap-4">
+            <div className="bg-er-gold/10 p-3 rounded-full">
+              <Phone className="h-6 w-6 text-er-gold" />
+            </div>
+            <div>
+              <h4 className="font-display text-sm uppercase tracking-wide text-er-gold-bright mb-1">Telefone</h4>
+              <a href="tel:+5519997119007" className="text-er-muted hover:text-er-gold transition-colors">
+                +55 (19) 99711-9007
+              </a>
+            </div>
+          </PanelFrame>
 
-          <Card>
-            <CardContent className="p-6 flex items-start gap-4">
-              <div className="bg-primary/10 p-3 rounded-full">
-                <MapPin className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <h4 className="font-medium mb-1">Localização</h4>
-                <p className="text-muted-foreground">Mococa, SP / Maringá, PR, Brasil</p>
-                <p className="text-sm mt-1">Disponível para trabalho remoto/presencial, e reuniões presenciais</p>
-              </div>
-            </CardContent>
-          </Card>
+          <PanelFrame className="p-6 flex items-start gap-4">
+            <div className="bg-er-gold/10 p-3 rounded-full">
+              <MapPin className="h-6 w-6 text-er-gold" />
+            </div>
+            <div>
+              <h4 className="font-display text-sm uppercase tracking-wide text-er-gold-bright mb-1">Localização</h4>
+              <p className="text-er-muted">Mococa, SP / Maringá, PR, Brasil</p>
+              <p className="text-sm text-er-muted mt-1">Disponível para trabalho remoto/presencial, e reuniões presenciais</p>
+            </div>
+          </PanelFrame>
         </div>
       </motion.div>
     </div>

@@ -43,7 +43,16 @@ export default {
   			},
   			border: 'hsl(var(--border))',
   			input: 'hsl(var(--input))',
-  			ring: 'hsl(var(--ring))'
+  			ring: 'hsl(var(--ring))',
+  			er: {
+  				bg: '#0B0A08',
+  				surface: '#14120E',
+  				gold: '#C9A95C',
+  				'gold-bright': '#EAD394',
+  				line: '#C9A95C40',
+  				text: '#E9E1CE',
+  				muted: '#A39A86'
+  			}
   		},
   		borderRadius: {
   			lg: 'var(--radius)',
@@ -51,7 +60,9 @@ export default {
   			sm: 'calc(var(--radius) - 4px)'
   		},
   		fontFamily: {
-  			mono: ['var(--font-mono)', 'ui-monospace', 'monospace']
+  			mono: ['var(--font-mono)', 'ui-monospace', 'monospace'],
+  			display: ['var(--font-display)', 'Georgia', 'serif'],
+  			serif: ['var(--font-serif)', 'Georgia', 'serif']
   		}
   	}
   },

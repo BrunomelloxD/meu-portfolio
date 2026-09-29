@@ -13,6 +13,12 @@ describe("<TestimonialCarousel />", () => {
     expect(screen.getByText(/Felipe Sasaki/)).toBeInTheDocument();
   });
 
+  it("should render the active testimonial inside a PanelFrame panel", () => {
+    render(<TestimonialCarousel />);
+    const panel = screen.getByText(/Felipe Sasaki/).closest(".border-er-line");
+    expect(panel).toHaveClass("bg-er-surface");
+  });
+
   it("should advance to the next testimonial when 'Próximo' is clicked", async () => {
     const user = userEvent.setup();
     render(<TestimonialCarousel />);

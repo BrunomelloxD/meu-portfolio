@@ -6,8 +6,13 @@ describe("<SectionHeading />", () => {
   it("should render the command and title", () => {
     render(<SectionHeading command="ls skills/" title="Skills & Tecnologias" />);
 
-    expect(screen.getByText("$ ls skills/")).toBeInTheDocument();
+    expect(screen.getByText("ls skills/")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Skills & Tecnologias" })).toBeInTheDocument();
+  });
+
+  it("should render an ornament divider between the title and the description", () => {
+    render(<SectionHeading command="ls skills/" title="Skills" />);
+    expect(screen.getByRole("separator")).toBeInTheDocument();
   });
 
   it("should render the description when provided", () => {

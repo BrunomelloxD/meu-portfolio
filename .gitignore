@@ -42,3 +42,11 @@ next-env.d.ts
 # tests
 coverage/
 *.lcov
+
+# agent tooling
+.claude/
+.agents/
+.cursor/
+.windsurf/
+pen/
+.specs/

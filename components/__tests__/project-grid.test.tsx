@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import ProjectGrid from "../project-grid";
 
 describe("<ProjectGrid />", () => {
@@ -24,5 +24,15 @@ describe("<ProjectGrid />", () => {
   it("should render a 'Ver projeto' link for each project", () => {
     render(<ProjectGrid />);
     expect(screen.getAllByRole("link", { name: /Ver projeto/i })).toHaveLength(3);
+  });
+
+  it("should render only the demo link, no broken GitHub link, for a project with an empty github array", () => {
+    render(<ProjectGrid />);
+
+    const cepsCard = screen.getByText("API Ceps BR").closest("div");
+    expect(cepsCard).not.toBeNull();
+
+    expect(within(cepsCard as HTMLElement).queryAllByRole("link", { name: /Ver código/i })).toHaveLength(0);
+    expect(within(cepsCard as HTMLElement).getByRole("link", { name: /Ver projeto/i })).toBeInTheDocument();
   });
 });

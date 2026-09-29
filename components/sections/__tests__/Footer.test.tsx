@@ -27,4 +27,9 @@ describe("<Footer />", () => {
       `mailto:${SOCIAL_LINKS.email}`,
     );
   });
+
+  it("should render the Cinzel micro-label", () => {
+    render(<Footer />);
+    expect(screen.getByText("Sítio da Graça")).toBeInTheDocument();
+  });
 });

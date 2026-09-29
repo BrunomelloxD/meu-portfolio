@@ -16,4 +16,11 @@ describe("<SkillsCloud />", () => {
     expect(screen.getByText("NestJS")).toBeInTheDocument();
     expect(screen.getByText("Docker")).toBeInTheDocument();
   });
+
+  it("should expose each skill as an accessible equipment slot with a distinct icon", () => {
+    render(<SkillsCloud />);
+    expect(screen.getByRole("img", { name: "React" })).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: "Docker" })).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: "Acessibilidade" })).toBeInTheDocument();
+  });
 });

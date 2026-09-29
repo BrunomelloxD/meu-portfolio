@@ -39,7 +39,12 @@ vi.mock("framer-motion", () => {
   const AnimatePresence = ({ children }: { children: React.ReactNode }) =>
     React.createElement(React.Fragment, null, children);
 
-  return { motion, AnimatePresence };
+  const MotionConfig = ({ children }: { children: React.ReactNode }) =>
+    React.createElement(React.Fragment, null, children);
+
+  const useReducedMotion = () => false;
+
+  return { motion, AnimatePresence, MotionConfig, useReducedMotion };
 });
 
 vi.mock("next/image", () => ({

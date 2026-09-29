@@ -27,4 +27,14 @@ describe("<ExperienceTimeline />", () => {
     expect(screen.getAllByText("Docker").length).toBeGreaterThan(0);
     expect(screen.getAllByText("NestJS").length).toBeGreaterThan(0);
   });
+
+  it("should render a boss-defeated phrase for every experience entry", () => {
+    render(<ExperienceTimeline />);
+
+    expect(screen.getAllByTestId("boss-defeated")).toHaveLength(4);
+    expect(screen.getByText(/Sistemas internos com desempenho e integração/)).toBeInTheDocument();
+    expect(screen.getByText(/Integrações com Serasa, SPC e Unico/)).toBeInTheDocument();
+    expect(screen.getByText(/Parcelamento de títulos e webhooks Teams/)).toBeInTheDocument();
+    expect(screen.getByText(/E-commerce com Elasticsearch e Flyers Digitais/)).toBeInTheDocument();
+  });
 });

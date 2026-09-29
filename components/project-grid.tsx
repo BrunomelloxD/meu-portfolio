@@ -2,8 +2,7 @@
 
 import { motion } from "framer-motion"
 import { Github, ArrowRight, Layers, Database } from "lucide-react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { RelicCard } from "@/components/rpg/relic-card"
 
 const projects = [
   {
@@ -45,7 +44,15 @@ export default function ProjectGrid() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       {projects.map((project, index) => {
-        const Icon = project.icon
+        const links = [
+          { label: "Ver projeto", href: project.demo, icon: ArrowRight },
+          ...project.github.map((repo) => ({
+            label: `Ver código: ${repo.label}`,
+            href: repo.url,
+            icon: Github,
+          })),
+        ]
+
         return (
           <motion.div
             key={project.id}
@@ -53,38 +60,15 @@ export default function ProjectGrid() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: index * 0.1 }}
             viewport={{ once: true }}
+            className="h-full"
           >
-            <Card className="h-full flex flex-col transition-all hover:border-primary/50">
-              <CardContent className="p-6 flex-1 flex flex-col">
-                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                  <Icon className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="text-xl font-bold mb-2">{project.title}</h3>
-                <p className="text-muted-foreground mb-4 flex-1">{project.description}</p>
-                <div className="flex flex-wrap gap-2 mb-6">
-                  {project.tags.map((tag) => (
-                    <Badge key={tag} variant="outline">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-                <div className="flex items-center justify-between">
-                  <a
-                    href={project.demo}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-primary text-sm font-medium inline-flex items-center gap-1 hover:underline"
-                  >
-                    Ver projeto <ArrowRight className="h-4 w-4" />
-                  </a>
-                  {project.github.map((repo) => (
-                    <a key={repo.url} href={repo.url} target="_blank" rel="noopener noreferrer" aria-label={`Ver código: ${repo.label}`}>
-                      <Github className="h-4 w-4 text-muted-foreground hover:text-foreground" />
-                    </a>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            <RelicCard
+              icon={project.icon}
+              title={project.title}
+              tags={project.tags}
+              description={project.description}
+              links={links}
+            />
           </motion.div>
         )
       })}
