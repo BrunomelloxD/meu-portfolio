@@ -1,19 +1,26 @@
 "use client"
 
-import { useState } from "react"
-import { Menu, X } from "lucide-react"
+import { useCallback, useRef, useState } from "react"
 import { Button } from "@/components/ui/button"
-import { NAVIGATION_ITEMS, SECTION_IDS, PERSONAL_INFO } from "@/lib/constants"
+import { MobileMenu } from "@/components/navigation/MobileMenu"
+import { NAVIGATION_ITEMS, SECTION_IDS } from "@/lib/constants"
 
 interface TopNavProps {
   activeSection: string
   onNavigate: (sectionId: string) => void
 }
 
+const HEADER_LINKS = [SECTION_IDS.ABOUT, SECTION_IDS.EXPERIENCE, SECTION_IDS.PROJECTS, SECTION_IDS.SKILLS, SECTION_IDS.CONTACT]
+const navLinks = HEADER_LINKS.map((id) => NAVIGATION_ITEMS.find((item) => item.id === id)!)
+
 export function TopNav({ activeSection, onNavigate }: TopNavProps) {
   const [isOpen, setIsOpen] = useState(false)
+  const menuButtonRef = useRef<HTMLButtonElement>(null)
 
-  const navLinks = NAVIGATION_ITEMS.filter((item) => item.id !== SECTION_IDS.HOME)
+  const closeMenu = useCallback(() => {
+    setIsOpen(false)
+    menuButtonRef.current?.focus()
+  }, [])
 
   const navigate = (sectionId: string) => {
     onNavigate(sectionId)
@@ -21,61 +28,62 @@ export function TopNav({ activeSection, onNavigate }: TopNavProps) {
   }
 
   return (
-    <nav className="fixed top-0 left-0 w-full z-50 border-b border-er-line bg-er-bg/80 backdrop-blur-md">
-      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+    <header className="sticky top-0 z-40 bg-bg">
+      <a
+        href="#conteudo"
+        className="sr-only left-4 top-4 z-50 rounded-full bg-inverse px-[22px] py-[14px] font-semibold text-inverse-ink focus:not-sr-only focus:absolute focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-bg"
+      >
+        Pular para o conteúdo
+      </a>
+      <div className="mx-auto flex h-[72px] max-w-[1440px] items-center justify-between px-4 md:h-24 md:px-16">
         <button
           onClick={() => navigate(SECTION_IDS.HOME)}
-          className="font-display tracking-widest text-er-text hover:text-er-gold-bright transition-colors"
           aria-label="Ir para o início"
+          className="text-left text-base font-semibold leading-[18px] text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
         >
-          {PERSONAL_INFO.name}
+          Bruno
+          <br />
+          Mello
         </button>
 
-        <div className="hidden md:flex items-center gap-8">
-          {navLinks.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => navigate(item.id)}
-              className={`font-display text-xs uppercase tracking-wider transition-colors ${
-                activeSection === item.id ? "text-er-gold-bright" : "text-er-muted hover:text-er-gold"
-              }`}
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
+        <nav aria-label="Principal" className="hidden md:block">
+          <ul className="flex items-center gap-4">
+            {navLinks.map((item) => (
+              <li key={item.id}>
+                <a
+                  href={`#${item.id}`}
+                  aria-current={activeSection === item.id ? "true" : undefined}
+                  onClick={(event) => {
+                    event.preventDefault()
+                    navigate(item.id)
+                  }}
+                  className="group flex flex-col items-center gap-1.5 rounded-[10px] px-2.5 py-2 text-[15px] text-ink-soft transition-colors duration-200 ease-out-strong hover:text-ink aria-[current=true]:font-semibold aria-[current=true]:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                >
+                  {item.label}
+                  <span aria-hidden="true" className="h-0.5 w-4 rounded-full bg-accent opacity-0 group-aria-[current=true]:opacity-100" />
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
 
-        <Button variant="gold" className="hidden md:inline-flex" onClick={() => navigate(SECTION_IDS.CONTACT)}>
-          Fale Comigo
+        <Button variant="pill" className="hidden md:inline-flex" onClick={() => navigate(SECTION_IDS.CONTACT)}>
+          Fale comigo
         </Button>
 
-        <button
-          onClick={() => setIsOpen((prev) => !prev)}
-          className="md:hidden p-2 text-er-text"
-          aria-label={isOpen ? "Fechar menu" : "Abrir menu"}
+        <Button
+          ref={menuButtonRef}
+          variant="pill-outline"
+          className="md:hidden"
+          aria-expanded={isOpen}
+          aria-haspopup="dialog"
+          onClick={() => setIsOpen(true)}
         >
-          {isOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+          Menu
+        </Button>
       </div>
 
-      {isOpen && (
-        <div className="md:hidden border-t border-er-line bg-er-bg px-4 py-4 flex flex-col gap-4">
-          {navLinks.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => navigate(item.id)}
-              className={`text-left font-display text-xs uppercase tracking-wider ${
-                activeSection === item.id ? "text-er-gold-bright" : "text-er-muted"
-              }`}
-            >
-              {item.label}
-            </button>
-          ))}
-          <Button variant="gold" className="w-full" onClick={() => navigate(SECTION_IDS.CONTACT)}>
-            Fale Comigo
-          </Button>
-        </div>
-      )}
-    </nav>
+      {isOpen && <MobileMenu links={navLinks} activeSection={activeSection} onNavigate={navigate} onClose={closeMenu} />}
+    </header>
   )
 }

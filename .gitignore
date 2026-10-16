@@ -50,3 +50,7 @@ coverage/
 .windsurf/
 pen/
 .specs/
+
+# local tooling output
+graphify-out/
+.taste-skill/

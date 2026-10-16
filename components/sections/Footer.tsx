@@ -1,47 +1,31 @@
-import { Github, Linkedin, Mail } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { SOCIAL_LINKS } from "@/lib/constants"
+import { SocialChip } from "@/components/social-chip"
+import { PERSONAL_INFO, SECTION_IDS, SOCIAL_LINKS } from "@/lib/constants"
 
 export function Footer() {
   return (
-    <footer className="py-8 border-t border-er-line">
-      <div className="container mx-auto px-4">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="text-center md:text-left">
-            <p className="font-display text-xs uppercase tracking-widest text-er-gold mb-1">Sítio da Graça</p>
-            <p className="text-er-muted">&copy; {new Date().getFullYear()} Bruno Mello. Todos os direitos reservados.</p>
-          </div>
+    <footer className="px-4 pb-8 pt-[120px] md:px-16 lg:pb-12 lg:pt-[200px]">
+      <p className="font-mono text-[13.3vw] font-bold leading-none tracking-[-0.04em] text-ink sm:text-[52px] lg:text-[clamp(96px,10.5vw,152px)] lg:leading-[0.92]">
+        {PERSONAL_INFO.name}
+      </p>
 
-          <div className="flex space-x-4">
-            <a href={SOCIAL_LINKS.github} target="_blank" rel="noopener noreferrer" aria-label="GitHub">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-9 w-9 rounded-full text-er-muted hover:text-er-gold-bright"
-              >
-                <Github size={18} />
-              </Button>
-            </a>
-            <a href={SOCIAL_LINKS.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-9 w-9 rounded-full text-er-muted hover:text-er-gold-bright"
-              >
-                <Linkedin size={18} />
-              </Button>
-            </a>
-            <a href={`mailto:${SOCIAL_LINKS.email}`} aria-label="Email">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-9 w-9 rounded-full text-er-muted hover:text-er-gold-bright"
-              >
-                <Mail size={18} />
-              </Button>
-            </a>
-          </div>
+      <div className="mt-7 flex flex-col gap-7 lg:mt-12 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-wrap gap-2.5">
+          <SocialChip href={SOCIAL_LINKS.github} label="GitHub" />
+          <SocialChip href={SOCIAL_LINKS.linkedin} label="LinkedIn" />
+          <SocialChip href={`mailto:${SOCIAL_LINKS.email}`} label="Email" />
         </div>
+        <a
+          href={`#${SECTION_IDS.HOME}`}
+          className="inline-flex h-[52px] items-center gap-2 self-start rounded-full border border-line-strong px-7 font-semibold text-ink transition-colors duration-200 ease-out-strong hover:border-ink hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+        >
+          Voltar ao topo
+          <span aria-hidden="true">↑</span>
+        </a>
+      </div>
+
+      <div className="mt-7 flex flex-col gap-1 border-t border-line pt-5 text-sm text-ink-soft lg:mt-12 lg:flex-row lg:justify-between lg:pt-6">
+        <p>&copy; {new Date().getFullYear()} Bruno Mello. Todos os direitos reservados.</p>
+        <p>{PERSONAL_INFO.location}</p>
       </div>
     </footer>
   )

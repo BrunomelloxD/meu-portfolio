@@ -1,215 +1,67 @@
-"use client"
-
-import type React from "react"
-
-import { useState } from "react"
-import { motion } from "framer-motion"
-import emailjs from '@emailjs/browser';
-import { Send, Mail, Phone, MapPin, Flame } from "lucide-react"
-import { PanelFrame } from "@/components/rpg/panel-frame"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
+import { ContactForm } from "@/components/contact/contact-form"
+import { Reveal } from "@/components/reveal"
+import { SectionLabel } from "@/components/section-label"
+import { SocialChip } from "@/components/social-chip"
+import { PERSONAL_INFO, SECTION_IDS, SOCIAL_LINKS } from "@/lib/constants"
 
 export default function ContactSection() {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    subject: "",
-    message: "",
-  })
-
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitStatus, setSubmitStatus] = useState<{
-    success?: boolean
-    message?: string
-  } | null>(null)
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
-    
-    try {
-      await emailjs.send(
-        'service_l9gh4io',
-        'template_9glmxg6',
-        {
-          name: formData.name,
-          reply_to: formData.email,
-          subject: formData.subject,
-          message: formData.message,
-        },
-        '_BM_m6y_iJjxDI60q'
-      )
-      
-      setIsSubmitting(false)
-      setSubmitStatus({
-        success: true,
-        message: "Mensagem enviada com sucesso! Entrarei em contato em breve.",
-      })
-      setFormData({ name: "", email: "", subject: "", message: "" })
-      
-      setTimeout(() => {
-        setSubmitStatus(null)
-      }, 5000)
-      
-    } catch (error) {
-      setIsSubmitting(false)
-      console.error("Error sending email:", error)
-      setSubmitStatus({
-        success: false,
-        message: "Erro ao enviar mensagem. Tente novamente.",
-      })
-      
-      setTimeout(() => {
-        setSubmitStatus(null)
-      }, 5000)
-    }
-  }
+  const [user, domain] = SOCIAL_LINKS.email.split("@")
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-      <motion.div
-        initial={{ opacity: 0, x: -20 }}
-        whileInView={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.5 }}
-        viewport={{ once: true }}
-      >
-        <div className="flex items-center gap-3 mb-6">
-          <Flame className="h-6 w-6 text-er-gold" />
-          <h3 className="font-display text-2xl text-er-text">Acender a Graça</h3>
+    <section id={SECTION_IDS.CONTACT} aria-labelledby="contato-title" className="scroll-mt-24 px-4 pt-24 md:px-16 lg:pt-44">
+      <Reveal className="flex flex-col gap-5 lg:flex-row">
+        <div className="lg:w-[520px] lg:shrink-0 lg:pt-2.5">
+          <SectionLabel id="contato-title">Contato</SectionLabel>
         </div>
+        <div className="flex flex-col gap-3">
+          <p className="text-[22px] leading-[30px] text-ink lg:text-[28px] lg:leading-[38px]">Vamos construir algo juntos?</p>
+          <p className="text-base text-ink-soft lg:text-[17px]">
+            Disponível para trabalho remoto ou presencial, e para reuniões presenciais.
+          </p>
+        </div>
+      </Reveal>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="name">Nome</Label>
-              <Input
-                id="name"
-                name="name"
-                placeholder="Seu nome"
-                required
-                value={formData.name}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                placeholder="seu.email@exemplo.com"
-                required
-                value={formData.email}
-                onChange={handleChange}
-              />
-            </div>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="subject">Assunto</Label>
-            <Input
-              id="subject"
-              name="subject"
-              placeholder="Assunto da mensagem"
-              required
-              value={formData.subject}
-              onChange={handleChange}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="message">Mensagem</Label>
-            <Textarea
-              id="message"
-              name="message"
-              placeholder="Sua mensagem..."
-              rows={5}
-              required
-              value={formData.message}
-              onChange={handleChange}
-            />
-          </div>
+      <Reveal className="mt-8 lg:mt-14">
+        <a
+          href={`mailto:${SOCIAL_LINKS.email}`}
+          className="group inline-flex flex-wrap items-center gap-x-5 font-mono text-[40px] font-bold leading-[44px] tracking-[-0.04em] text-ink transition-colors duration-200 ease-out-strong hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent lg:text-[clamp(56px,6.6vw,96px)] lg:leading-[0.96]"
+        >
+          <span>
+            {user}@<wbr />
+            {domain}
+          </span>
+          <span aria-hidden="true" className="text-[34px] text-accent transition-transform duration-200 ease-out-strong group-hover:-translate-y-1 group-hover:translate-x-1 lg:text-5xl">
+            ↗
+          </span>
+        </a>
+      </Reveal>
 
-          {submitStatus && (
-            <div
-              className={`p-3 rounded-md ${
-                submitStatus.success ? "bg-green-900/30 text-green-400" : "bg-red-900/30 text-red-400"
-              }`}
-            >
-              {submitStatus.message}
-            </div>
-          )}
-
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? (
-              <span className="flex items-center gap-2">
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
-                Enviando...
-              </span>
-            ) : (
-              <span className="flex items-center gap-2">
-                <Send className="h-4 w-4" />
-                Enviar Mensagem
-              </span>
-            )}
-          </Button>
-        </form>
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0, x: 20 }}
-        whileInView={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.5 }}
-        viewport={{ once: true }}
-      >
-        <h3 className="font-display text-2xl text-er-text mb-6">Sinais da Graça</h3>
-
-        <div className="space-y-6">
-          <PanelFrame className="p-6 flex items-start gap-4">
-            <div className="bg-er-gold/10 p-3 rounded-full">
-              <Mail className="h-6 w-6 text-er-gold" />
-            </div>
-            <div>
-              <h4 className="font-display text-sm uppercase tracking-wide text-er-gold-bright mb-1">Email</h4>
-              <a
-                href="mailto:brunomello.ti@gmail.com"
-                className="text-er-muted hover:text-er-gold transition-colors"
-              >
-                brunomello.ti@gmail.com
-              </a>
-            </div>
-          </PanelFrame>
-
-          <PanelFrame className="p-6 flex items-start gap-4">
-            <div className="bg-er-gold/10 p-3 rounded-full">
-              <Phone className="h-6 w-6 text-er-gold" />
-            </div>
-            <div>
-              <h4 className="font-display text-sm uppercase tracking-wide text-er-gold-bright mb-1">Telefone</h4>
-              <a href="tel:+5519997119007" className="text-er-muted hover:text-er-gold transition-colors">
+      <Reveal className="mt-8 flex flex-col gap-8 lg:mt-14 lg:flex-row lg:gap-16">
+        <dl className="flex flex-col gap-6 lg:w-[456px] lg:shrink-0 lg:gap-8">
+          <div className="flex flex-col gap-1.5">
+            <dt className="font-mono text-[13px] text-ink-soft">Telefone</dt>
+            <dd>
+              <a href="tel:+5519997119007" className="text-ink hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent lg:text-[17px]">
                 +55 (19) 99711-9007
               </a>
-            </div>
-          </PanelFrame>
-
-          <PanelFrame className="p-6 flex items-start gap-4">
-            <div className="bg-er-gold/10 p-3 rounded-full">
-              <MapPin className="h-6 w-6 text-er-gold" />
-            </div>
-            <div>
-              <h4 className="font-display text-sm uppercase tracking-wide text-er-gold-bright mb-1">Localização</h4>
-              <p className="text-er-muted">Mococa, SP / Maringá, PR, Brasil</p>
-              <p className="text-sm text-er-muted mt-1">Disponível para trabalho remoto/presencial, e reuniões presenciais</p>
-            </div>
-          </PanelFrame>
+            </dd>
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <dt className="font-mono text-[13px] text-ink-soft">Localização</dt>
+            <dd className="text-ink lg:text-[17px]">{PERSONAL_INFO.location}</dd>
+          </div>
+          <div className="flex flex-col gap-2.5">
+            <dt className="font-mono text-[13px] text-ink-soft">Redes</dt>
+            <dd className="flex flex-wrap gap-2.5">
+              <SocialChip href={SOCIAL_LINKS.github} label="GitHub" />
+              <SocialChip href={SOCIAL_LINKS.linkedin} label="LinkedIn" />
+            </dd>
+          </div>
+        </dl>
+        <div className="flex-1">
+          <ContactForm />
         </div>
-      </motion.div>
-    </div>
+      </Reveal>
+    </section>
   )
 }

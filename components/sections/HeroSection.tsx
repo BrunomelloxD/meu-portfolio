@@ -1,58 +1,52 @@
-import Image from "next/image"
-import { motion } from "framer-motion"
-import { Button } from "@/components/ui/button"
-import { OrnamentDivider } from "@/components/rpg/ornament-divider"
-import { PERSONAL_INFO, SECTION_IDS } from "@/lib/constants"
+import { CtaButton } from "@/components/cta-button"
+import { SocialChip } from "@/components/social-chip"
+import { PERSONAL_INFO, SECTION_IDS, SOCIAL_LINKS } from "@/lib/constants"
 
 interface HeroSectionProps {
   onNavigate: (sectionId: string) => void
 }
 
+function MaskedLine({ children, delay, className }: { children: string; delay: number; className?: string }) {
+  return (
+    <span data-line className={`block overflow-hidden ${className ?? ""}`}>
+      <span className="block animate-mask-up" style={{ animationDelay: `${delay}ms` }}>
+        {children}
+      </span>
+    </span>
+  )
+}
+
 export function HeroSection({ onNavigate }: HeroSectionProps) {
   return (
-    <section
-      id={SECTION_IDS.HOME}
-      className="min-h-screen flex items-center relative overflow-hidden bg-er-bg"
-    >
-      <div className="absolute inset-0 z-0">
-        <Image
-          src="/images/hero-erdtree.jpg"
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover opacity-40"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-er-bg via-er-bg/70 to-er-bg/30" />
+    <section id={SECTION_IDS.HOME} className="px-4 pt-14 md:px-16 lg:pt-[120px]">
+      {/* --hero-fs drives the display size and, from xl up, the placement of the sentence and the CTA. */}
+      <div className="relative [--hero-fs:15.4vw] sm:[--hero-fs:60px] lg:[--hero-fs:clamp(96px,10.5vw,152px)]">
+        <h1 className="flex flex-col font-mono text-[length:var(--hero-fs)] font-bold leading-[0.95] tracking-[-0.04em] text-ink lg:leading-[0.92]">
+          <span className="sr-only">{PERSONAL_INFO.name}, </span>
+          <MaskedLine delay={0}>Engenheiro</MaskedLine>
+          <MaskedLine delay={110} className="lg:self-end">
+            Full Stack
+          </MaskedLine>
+        </h1>
+
+        <p
+          className="animate-fade-up mt-7 max-w-[380px] text-[17px] leading-[27px] text-ink-soft xl:absolute xl:bottom-1 xl:left-0 xl:mt-0 xl:max-w-[min(380px,calc(100%-5.6*var(--hero-fs)-48px))] xl:text-[19px] xl:leading-[29px]"
+        >
+          Crio experiências digitais robustas com <em className="text-ink">código limpo</em>,{" "}
+          <em className="text-ink">arquitetura sólida</em> e atenção aos detalhes.
+        </p>
+
+        <div
+          className="animate-fade-up mt-7 xl:absolute xl:right-0 xl:top-[calc((0.92*var(--hero-fs)-52px)/2)] xl:mt-0"
+        >
+          <CtaButton onClick={() => onNavigate(SECTION_IDS.PROJECTS)}>Ver projetos</CtaButton>
+        </div>
       </div>
 
-      <div className="container mx-auto px-4 py-32 z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="max-w-3xl mx-auto text-center"
-        >
-          <span className="inline-block font-display text-xs uppercase tracking-widest text-er-gold border border-er-gold/40 bg-er-bg/60 px-3 py-1 mb-6">
-            Portador da Chama
-          </span>
-          <h1 className="font-display text-5xl md:text-7xl text-er-text mb-4">{PERSONAL_INFO.name}</h1>
-          <h2 className="font-serif italic text-2xl md:text-3xl text-er-gold-bright mb-6">{PERSONAL_INFO.role}</h2>
-          <OrnamentDivider className="mb-6" />
-          <p className="font-serif text-lg md:text-xl mb-8 max-w-2xl mx-auto text-er-muted">
-            Crio experiências digitais robustas com código limpo, arquitetura sólida e atenção aos detalhes.
-            Especialista em React, NestJS, PHP e integração de sistemas complexos.
-          </p>
-          <div className="flex flex-wrap justify-center gap-4 mb-6">
-            <Button variant="gold" size="lg" onClick={() => onNavigate(SECTION_IDS.PROJECTS)}>
-              Ver Projetos
-            </Button>
-            <Button variant="gold-outline" size="lg" onClick={() => onNavigate(SECTION_IDS.CONTACT)}>
-              Fale Comigo
-            </Button>
-          </div>
-          <p className="text-sm text-er-muted mb-12">{PERSONAL_INFO.experience} em desenvolvimento Full Stack</p>
-        </motion.div>
+      <div className="mt-7 flex flex-wrap gap-2 lg:mt-14 lg:justify-center lg:gap-3">
+        <SocialChip href={SOCIAL_LINKS.github} label="GitHub" />
+        <SocialChip href={SOCIAL_LINKS.linkedin} label="LinkedIn" />
+        <SocialChip href={`mailto:${SOCIAL_LINKS.email}`} label="Email" />
       </div>
     </section>
   )

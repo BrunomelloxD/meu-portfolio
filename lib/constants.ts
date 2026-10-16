@@ -36,20 +36,19 @@ export const STATS = [
   { value: "3+", label: "Anos de experiência" },
   { value: "20+", label: "Projetos entregues" },
   { value: "10+", label: "Tecnologias dominadas" },
-  { value: "100%", label: "Dedicação em cada linha de código" },
 ] as const
 
 export const EDUCATION = [
   {
-    degree: "Pós Graduação em Engenharia de Software",
+    degree: "Pós-graduação em Engenharia de Software",
     institution: "Faculdade Focus Brasil",
   },
   {
-    degree: "Pós Graduação em Engenharia da Computação",
+    degree: "Pós-graduação em Engenharia da Computação",
     institution: "Faculdade Focus Brasil",
   },
   {
-    degree: "Analise e Desenvolvimento de Sistemas",
+    degree: "Análise e Desenvolvimento de Sistemas",
     institution: "Fatec São Paulo",
   },
 ] as const

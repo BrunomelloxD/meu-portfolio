@@ -1,50 +1,54 @@
-import { motion } from "framer-motion"
-import { PanelFrame } from "@/components/rpg/panel-frame"
-import { AttributeBar } from "@/components/rpg/attribute-bar"
-import { PERSONAL_INFO, SECTION_IDS, EDUCATION, STATS } from "@/lib/constants"
+import { SectionLabel } from "@/components/section-label"
+import { SkillStack } from "@/components/skills/skill-stack"
+import { Reveal } from "@/components/reveal"
+import { SECTION_IDS, EDUCATION, STATS } from "@/lib/constants"
 
 export function AboutSection() {
   return (
-    <section id={SECTION_IDS.ABOUT} className="py-20 bg-er-bg">
-      <div className="container mx-auto px-4">
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-        >
-          <p className="font-display text-xs uppercase tracking-widest text-er-gold mb-3">Status do Personagem</p>
-          <h2 className="font-display text-3xl md:text-4xl text-er-text mb-10">Sobre mim</h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-            <PanelFrame className="p-6">
-              <h3 className="font-display text-xl text-er-gold-bright mb-4">Retrato</h3>
-              <p className="text-lg text-er-text mb-1">{PERSONAL_INFO.name}</p>
-              <p className="text-er-muted mb-1">{PERSONAL_INFO.role}</p>
-              <p className="text-sm text-er-muted mb-4">{PERSONAL_INFO.location}</p>
-              <p className="font-serif italic text-sm text-er-gold-bright">Disponível para novos projetos</p>
-            </PanelFrame>
-
-            <PanelFrame className="p-6">
-              <h3 className="font-display text-xl text-er-gold-bright mb-4">Atributos</h3>
-              <div className="space-y-4">
-                {STATS.map((stat) => (
-                  <AttributeBar key={stat.label} name={stat.label} description={stat.value} value={100} max={100} />
-                ))}
-                {EDUCATION.map((edu) => (
-                  <AttributeBar
-                    key={edu.degree}
-                    name={edu.degree}
-                    description={edu.institution}
-                    value={100}
-                    max={100}
-                  />
-                ))}
+    <section
+      id={SECTION_IDS.ABOUT}
+      aria-labelledby="sobre-title"
+      className="scroll-mt-24 px-4 pt-24 md:px-16 lg:pt-44"
+    >
+      <Reveal className="flex flex-col gap-7 lg:flex-row lg:gap-0">
+        <div className="lg:w-[520px] lg:shrink-0 lg:pt-2.5">
+          <SectionLabel id="sobre-title">Sobre</SectionLabel>
+        </div>
+        <div className="flex flex-col gap-10 lg:gap-14">
+          <p className="max-w-[620px] text-[22px] leading-[30px] tracking-[-0.01em] text-ink-soft lg:text-[28px] lg:leading-[38px]">
+            Olá! Sou o Bruno, engenheiro de software <em className="text-ink">full stack</em>.{" "}
+            <em className="text-ink">+3 anos</em> de experiência.
+          </p>
+          <dl className="grid grid-cols-3 gap-4 lg:flex lg:gap-16">
+            {STATS.map((stat) => (
+              <div key={stat.label} className="flex flex-col-reverse gap-1">
+                <dt className="text-sm text-ink-soft">{stat.label}</dt>
+                <dd className="font-mono text-[34px] font-bold leading-10 tracking-[-0.03em] text-ink lg:text-5xl lg:leading-[54px]">
+                  {stat.value}
+                </dd>
               </div>
-            </PanelFrame>
+            ))}
+          </dl>
+        </div>
+      </Reveal>
+
+      <Reveal className="mt-16 lg:mt-[120px]">
+        <SkillStack>
+          <div className="flex flex-col gap-4">
+            <h3 className="font-mono text-[13px] font-medium text-ink-soft">
+              <span aria-hidden="true">…/</span>Formação<span aria-hidden="true">…</span>
+            </h3>
+            <ul className="flex flex-col gap-4">
+              {EDUCATION.map((edu) => (
+                <li key={edu.degree}>
+                  <p className="text-base text-ink">{edu.degree}</p>
+                  <p className="text-sm text-ink-soft">{edu.institution}</p>
+                </li>
+              ))}
+            </ul>
           </div>
-        </motion.div>
-      </div>
+        </SkillStack>
+      </Reveal>
     </section>
   )
 }

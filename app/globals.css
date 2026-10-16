@@ -6,26 +6,56 @@
 
 @layer base {
   :root {
-    --background: 40 16% 4%;
-    --foreground: 42 38% 86%;
-    --card: 40 18% 7%;
-    --card-foreground: 42 38% 86%;
-    --popover: 40 18% 7%;
-    --popover-foreground: 42 38% 86%;
-    --primary: 42 50% 57%;
-    --primary-foreground: 40 16% 4%;
-    --secondary: 40 14% 12%;
-    --secondary-foreground: 42 38% 86%;
-    --muted: 40 12% 10%;
-    --muted-foreground: 41 14% 58%;
-    --accent: 42 30% 16%;
-    --accent-foreground: 42 38% 86%;
-    --destructive: 11 48% 48%;
-    --destructive-foreground: 42 38% 86%;
-    --border: 42 34% 17%;
-    --input: 42 34% 17%;
-    --ring: 42 50% 57%;
-    --radius: 0.125rem;
+    /* Redesign tokens (.specs/features/portfolio-redesign/design.md §4) */
+    --bg: #111111;
+    --surface: #171717;
+    --surface-2: #202020;
+    --line: #2b2b2b;
+    --line-strong: #666666;
+    --ink: #f3f3f1;
+    --ink-soft: #a6a6a2;
+    --ink-faint: #75756f;
+    --placeholder: #8e8e8a;
+    --inverse: #f3f3f1;
+    --on-inverse: #111111;
+    --on-inverse-soft: #4a4a47;
+    --on-inverse-line: #8a8a86;
+    --accent: #c9a95c;
+    --success: #7fb685;
+    --danger: #e07a6a;
+
+    --radius-frame: 40px;
+    --radius-card: 24px;
+    --radius-image: 20px;
+    --radius-input: 12px;
+    --radius-pill: 999px;
+
+    --ease-out-strong: cubic-bezier(0.32, 0.72, 0, 1);
+    --dur-ui: 200ms;
+    --dur-slide: 400ms;
+    --dur-reveal: 700ms;
+    --dur-mask: 900ms;
+
+    /* shadcn variables, pointing at the redesign palette (HSL channels) */
+    --background: 0 0% 7%;
+    --foreground: 60 6% 95%;
+    --card: 0 0% 9%;
+    --card-foreground: 60 6% 95%;
+    --popover: 0 0% 9%;
+    --popover-foreground: 60 6% 95%;
+    --primary: 60 6% 95%;
+    --primary-foreground: 0 0% 7%;
+    --secondary: 0 0% 13%;
+    --secondary-foreground: 60 6% 95%;
+    --muted: 0 0% 13%;
+    --muted-foreground: 60 2% 64%;
+    --accent-foreground: 0 0% 7%;
+    --destructive: 8 65% 65%;
+    --destructive-foreground: 0 0% 7%;
+    --border: 0 0% 17%;
+    --input: 0 0% 40%;
+    --ring: 43 50% 57%;
+    --radius: 24px;
   }
 }
 
@@ -35,7 +65,52 @@
   * {
     @apply border-border;
   }
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* Hero entrance in CSS so the server HTML is visible without JavaScript (spec edge case). */
+@keyframes mask-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@layer utilities {
+  .animate-mask-up {
+    animation: mask-up var(--dur-mask) var(--ease-out-strong) both;
+  }
+  .animate-fade-up {
+    animation: fade-up var(--dur-reveal) var(--ease-out-strong) 350ms both;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .animate-mask-up,
+    .animate-fade-up {
+      animation: none;
+    }
   }
 }

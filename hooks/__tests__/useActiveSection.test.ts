@@ -1,83 +1,81 @@
-import { describe, it, expect, vi, afterEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { useActiveSection } from "../useActiveSection";
-import { SCROLL_THRESHOLD } from "@/lib/constants";
 
-type Rect = { top: number; bottom: number };
+type ObserverCallback = (entries: Partial<IntersectionObserverEntry>[]) => void;
 
-function mountSections(rects: Record<string, Rect>) {
-  Object.entries(rects).forEach(([id, rect]) => {
-    const el = document.createElement("section");
-    el.id = id;
-    el.getBoundingClientRect = () =>
-      ({
-        top: rect.top,
-        bottom: rect.bottom,
-        left: 0,
-        right: 0,
-        width: 0,
-        height: rect.bottom - rect.top,
-        x: 0,
-        y: rect.top,
-        toJSON: () => ({}),
-      }) as DOMRect;
-    document.body.appendChild(el);
-  });
+let callback: ObserverCallback;
+const observe = vi.fn();
+const disconnect = vi.fn();
+
+function mountSections(ids: string[]) {
+  return Object.fromEntries(
+    ids.map((id) => {
+      const el = document.createElement("section");
+      el.id = id;
+      document.body.appendChild(el);
+      return [id, el];
+    }),
+  );
 }
 
 describe("useActiveSection", () => {
+  beforeEach(() => {
+    vi.stubGlobal(
+      "IntersectionObserver",
+      vi.fn(function (cb: ObserverCallback) {
+        callback = cb;
+        return { observe, disconnect, unobserve: vi.fn(), takeRecords: vi.fn() };
+      }),
+    );
+  });
+
   afterEach(() => {
+    vi.unstubAllGlobals();
     document.body.innerHTML = "";
   });
 
   it("should default to the first section", () => {
-    const sections = ["home", "about", "contact"] as const;
-    const { result } = renderHook(() => useActiveSection(sections));
+    const { result } = renderHook(() => useActiveSection(["home", "about", "contact"]));
     expect(result.current).toBe("home");
   });
 
-  it("should activate the section that crosses the scroll threshold", () => {
-    const sections = ["home", "about", "contact"] as const;
+  it("should observe every mounted section", () => {
+    const els = mountSections(["home", "about"]);
+    renderHook(() => useActiveSection(["home", "about"]));
+    expect(observe).toHaveBeenCalledWith(els.home);
+    expect(observe).toHaveBeenCalledWith(els.about);
+  });
 
-    mountSections({
-      home: { top: -500, bottom: -100 },
-      about: { top: SCROLL_THRESHOLD - 10, bottom: SCROLL_THRESHOLD + 200 },
-      contact: { top: 800, bottom: 1200 },
-    });
-
-    const { result } = renderHook(() => useActiveSection(sections));
+  it("should activate the section that crosses the detection line (NAV-02)", () => {
+    const els = mountSections(["home", "about", "contact"]);
+    const { result } = renderHook(() => useActiveSection(["home", "about", "contact"]));
 
     act(() => {
-      window.dispatchEvent(new Event("scroll"));
+      callback([
+        { target: els.home, isIntersecting: false },
+        { target: els.about, isIntersecting: true },
+      ]);
     });
 
     expect(result.current).toBe("about");
   });
 
-  it("should not change activeSection when no section crosses the threshold", () => {
-    const sections = ["home", "about"] as const;
-
-    mountSections({
-      home: { top: -1000, bottom: -500 },
-      about: { top: 800, bottom: 1200 },
-    });
-
-    const { result } = renderHook(() => useActiveSection(sections));
+  it("should not change the active section when nothing crosses the line", () => {
+    const els = mountSections(["home", "about"]);
+    const { result } = renderHook(() => useActiveSection(["home", "about"]));
 
     act(() => {
-      window.dispatchEvent(new Event("scroll"));
+      callback([{ target: els.about, isIntersecting: false }]);
     });
 
     expect(result.current).toBe("home");
   });
 
-  it("should remove the scroll listener on unmount", () => {
-    const sections = ["home"] as const;
-    const removeSpy = vi.spyOn(window, "removeEventListener");
-
-    const { unmount } = renderHook(() => useActiveSection(sections));
+  it("should disconnect the observer on unmount", () => {
+    mountSections(["home"]);
+    const { unmount } = renderHook(() => useActiveSection(["home"]));
     unmount();
-
-    expect(removeSpy).toHaveBeenCalledWith("scroll", expect.any(Function));
+    expect(disconnect).toHaveBeenCalled();
   });
 });

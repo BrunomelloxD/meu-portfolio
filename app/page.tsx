@@ -1,110 +1,58 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { MotionConfig } from "framer-motion"
-import ExperienceTimeline from "@/components/experience-timeline"
-import ProjectGrid from "@/components/project-grid"
-import SkillsCloud from "@/components/skills-cloud"
-import TestimonialCarousel from "@/components/testimonial-carousel"
 import ContactSection from "@/components/contact-section"
 import { TopNav } from "@/components/navigation/TopNav"
 import { HeroSection } from "@/components/sections/HeroSection"
 import { AboutSection } from "@/components/sections/AboutSection"
+import { StatementBand } from "@/components/sections/StatementBand"
 import { Footer } from "@/components/sections/Footer"
-import { SectionHeading } from "@/components/section-heading"
-import { FelledBanner } from "@/components/rpg/felled-banner"
+import { ProjectCarousel } from "@/components/projects/project-carousel"
+import { WorkTable } from "@/components/work/work-table"
+import { Testimonials } from "@/components/testimonials/testimonials"
+import { SectionLabel } from "@/components/section-label"
+import { Reveal } from "@/components/reveal"
 import { useActiveSection } from "@/hooks/useActiveSection"
 import { useScrollTo } from "@/hooks/useScrollTo"
 import { NAVIGATION_ITEMS, SECTION_IDS } from "@/lib/constants"
 
+const SECTIONS = NAVIGATION_ITEMS.map((item) => item.id)
+
 export default function Home() {
-  const [mounted, setMounted] = useState(false)
-  const sections = NAVIGATION_ITEMS.map((item) => item.id)
-  const activeSection = useActiveSection(sections)
+  const activeSection = useActiveSection(SECTIONS)
   const scrollToSection = useScrollTo()
 
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  if (!mounted) {
-    return (
-      <div className="min-h-screen bg-background text-foreground">
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="animate-spin rounded-full h-10 w-10 border-2 border-primary border-t-transparent" />
-        </div>
-      </div>
-    )
-  }
-
   return (
-    <MotionConfig reducedMotion="user">
-      <div className="min-h-screen bg-background text-foreground">
-        <TopNav activeSection={activeSection} onNavigate={scrollToSection} />
+    <div className="relative min-h-[100dvh] overflow-x-clip bg-bg text-ink">
+      {/* Thin outline circles from the inspiration: decorative, behind everything. */}
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute -top-[150px] left-[200px] h-[360px] w-[360px] rounded-full border border-line md:-top-[250px] md:left-auto md:right-[-190px] md:h-[620px] md:w-[620px]"
+      />
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute right-[-380px] top-[1560px] hidden h-[760px] w-[760px] rounded-full border border-line lg:block"
+      />
 
-        <main className="pt-16">
-          <HeroSection onNavigate={scrollToSection} />
-          <AboutSection />
+      <TopNav activeSection={activeSection} onNavigate={scrollToSection} />
 
-          <section id={SECTION_IDS.EXPERIENCE} className="py-20">
-            <div className="container mx-auto px-4">
-              <SectionHeading
-                command="I · A Jornada"
-                title="Registro da Jornada"
-                description="Cada etapa percorrida, cada chefe enfrentado — a trajetória profissional contada em capítulos."
-              />
-              <ExperienceTimeline />
-            </div>
-          </section>
+      <main id="conteudo" className="relative">
+        <HeroSection onNavigate={scrollToSection} />
 
-          <FelledBanner
-            title="Integrações Críticas em Produção"
-            subtitle="Cadastro de clientes integrado a Serasa, SPC e Unico — Gazin Tech"
-          />
+        <section id={SECTION_IDS.PROJECTS} className="scroll-mt-24 pt-[88px] lg:pt-[120px]">
+          <Reveal className="mb-6 px-4 md:px-16 lg:mb-8">
+            <SectionLabel id="projetos-title">Projetos</SectionLabel>
+          </Reveal>
+          <ProjectCarousel />
+        </section>
 
-          <section id={SECTION_IDS.PROJECTS} className="py-20 bg-muted/30">
-            <div className="container mx-auto px-4">
-              <SectionHeading
-                command="II · Relíquias"
-                title="Relíquias Forjadas"
-                description="Relíquias forjadas ao longo da jornada, cada uma revelando como transformo problemas complexos em produtos simples de usar."
-              />
-              <ProjectGrid />
-            </div>
-          </section>
+        <AboutSection />
+        <StatementBand />
+        <WorkTable />
+        <Testimonials />
+        <ContactSection />
+      </main>
 
-          <section id={SECTION_IDS.SKILLS} className="py-20">
-            <div className="container mx-auto px-4">
-              <SectionHeading
-                command="III · Equipamento"
-                title="Equipamento & Domínio"
-                description="O arsenal que empunho todos os dias para construir produtos completos, do banco de dados à interface."
-              />
-              <SkillsCloud />
-            </div>
-          </section>
-
-          <section id={SECTION_IDS.TESTIMONIALS} className="py-20 bg-muted/30">
-            <div className="container mx-auto px-4">
-              <SectionHeading
-                command="IV · Crônicas"
-                title="Crônicas de Aliados"
-                description="Relatos de colegas e clientes que caminharam ao meu lado ao longo da jornada."
-              />
-              <TestimonialCarousel />
-            </div>
-          </section>
-
-          <section id={SECTION_IDS.CONTACT} className="py-20">
-            <div className="container mx-auto px-4">
-              <SectionHeading command="V · Sítio da Graça" title="Vamos construir algo juntos?" />
-              <ContactSection />
-            </div>
-          </section>
-
-          <Footer />
-        </main>
-      </div>
-    </MotionConfig>
+      <Footer />
+    </div>
   )
 }
