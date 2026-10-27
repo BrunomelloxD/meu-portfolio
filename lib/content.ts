@@ -62,15 +62,6 @@ export const projects: Project[] = [
     ],
     demo: "https://front-speed-test-production.up.railway.app/",
   },
-  {
-    title: "API Ceps BR",
-    description:
-      "API RESTful para consulta de CEPs brasileiros, integrada com banco de dados PostgreSQL e ViaCEP. Desenvolvida com Nest.js e Prisma.",
-    image: "/images/projects/api.png",
-    tags: ["Nest.js", "TypeScript", "PostgreSQL", "Prisma"],
-    repos: [],
-    demo: "https://generic-api.up.railway.app/api/v1/cep/95555-000",
-  },
 ]
 
 // Source: Curriculo_Bruno_Mello_PT-BR.pdf (2026-10). Júnior I has no technology line in the CV;

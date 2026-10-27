@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { ProjectSlide } from "../project-slide";
 import { projects } from "@/lib/content";
 
-const [, typeracer, , apiCeps] = projects;
+const [, typeracer] = projects;
 
 describe("<ProjectSlide />", () => {
   it("shows title, description, tags, screenshot and the demo link (PROJ-01)", () => {
@@ -23,7 +23,7 @@ describe("<ProjectSlide />", () => {
   });
 
   it("omits code links when the project has no repositories (PROJ-02)", () => {
-    render(<ProjectSlide project={apiCeps} />);
+    render(<ProjectSlide project={{ ...typeracer, repos: [] }} />);
     expect(screen.queryByRole("link", { name: /^Código/ })).not.toBeInTheDocument();
   });
 

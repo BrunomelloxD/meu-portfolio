@@ -12,14 +12,9 @@ describe("<ProjectCarousel />", () => {
     vi.useRealTimers();
   });
 
-  it("renders Animal Helper, TypeRacer, Speed Test and API Ceps BR as labelled slides (PROJ-01, PROJ-04)", () => {
+  it("renders Animal Helper, TypeRacer and Speed Test as labelled slides (PROJ-01, PROJ-04)", () => {
     render(<ProjectCarousel />);
-    expect(slides().map((s) => s.getAttribute("aria-label"))).toEqual([
-      "Projeto 1 de 4",
-      "Projeto 2 de 4",
-      "Projeto 3 de 4",
-      "Projeto 4 de 4",
-    ]);
+    expect(slides().map((s) => s.getAttribute("aria-label"))).toEqual(["Projeto 1 de 3", "Projeto 2 de 3", "Projeto 3 de 3"]);
     expect(screen.getByRole("region", { name: "Projetos" })).toHaveAttribute("aria-roledescription", "carrossel");
     expect(activeTitle()).toBe("Animal Helper");
   });
@@ -38,7 +33,7 @@ describe("<ProjectCarousel />", () => {
 
     await user.click(screen.getByRole("button", { name: "Próximo projeto" }));
     expect(activeTitle()).toBe("TypeRacer");
-    expect(screen.getByText("2 / 4")).toBeInTheDocument();
+    expect(screen.getByText("2 / 3")).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Projeto anterior" }));
     expect(activeTitle()).toBe("Animal Helper");
@@ -49,7 +44,7 @@ describe("<ProjectCarousel />", () => {
     const user = userEvent.setup();
     render(<ProjectCarousel />);
     await user.click(screen.getByRole("button", { name: "Projeto anterior" }));
-    expect(activeTitle()).toBe("API Ceps BR");
+    expect(activeTitle()).toBe("Speed Test");
   });
 
   it("is operable with the arrow keys when focused (PROJ-04)", () => {
