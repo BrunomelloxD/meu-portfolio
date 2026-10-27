@@ -12,11 +12,16 @@ describe("<ProjectCarousel />", () => {
     vi.useRealTimers();
   });
 
-  it("renders TypeRacer, Speed Test and API Ceps BR as labelled slides (PROJ-01, PROJ-04)", () => {
+  it("renders Animal Helper, TypeRacer, Speed Test and API Ceps BR as labelled slides (PROJ-01, PROJ-04)", () => {
     render(<ProjectCarousel />);
-    expect(slides().map((s) => s.getAttribute("aria-label"))).toEqual(["Projeto 1 de 3", "Projeto 2 de 3", "Projeto 3 de 3"]);
+    expect(slides().map((s) => s.getAttribute("aria-label"))).toEqual([
+      "Projeto 1 de 4",
+      "Projeto 2 de 4",
+      "Projeto 3 de 4",
+      "Projeto 4 de 4",
+    ]);
     expect(screen.getByRole("region", { name: "Projetos" })).toHaveAttribute("aria-roledescription", "carrossel");
-    expect(activeTitle()).toBe("TypeRacer");
+    expect(activeTitle()).toBe("Animal Helper");
   });
 
   it("hides inactive slides from assistive tech and keyboard", () => {
@@ -32,11 +37,11 @@ describe("<ProjectCarousel />", () => {
     render(<ProjectCarousel />);
 
     await user.click(screen.getByRole("button", { name: "Próximo projeto" }));
-    expect(activeTitle()).toBe("Speed Test");
-    expect(screen.getByText("2 / 3")).toBeInTheDocument();
+    expect(activeTitle()).toBe("TypeRacer");
+    expect(screen.getByText("2 / 4")).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Projeto anterior" }));
-    expect(activeTitle()).toBe("TypeRacer");
+    expect(activeTitle()).toBe("Animal Helper");
     expect(screen.getByTestId("track")).toHaveClass("duration-[400ms]");
   });
 
@@ -52,9 +57,9 @@ describe("<ProjectCarousel />", () => {
     const region = screen.getByRole("region", { name: "Projetos" });
 
     fireEvent.keyDown(region, { key: "ArrowRight" });
-    expect(activeTitle()).toBe("Speed Test");
-    fireEvent.keyDown(region, { key: "ArrowLeft" });
     expect(activeTitle()).toBe("TypeRacer");
+    fireEvent.keyDown(region, { key: "ArrowLeft" });
+    expect(activeTitle()).toBe("Animal Helper");
   });
 
   it("never advances on its own (PROJ-05)", () => {
@@ -63,7 +68,7 @@ describe("<ProjectCarousel />", () => {
     act(() => {
       vi.advanceTimersByTime(30000);
     });
-    expect(activeTitle()).toBe("TypeRacer");
+    expect(activeTitle()).toBe("Animal Helper");
   });
 
   it("uses horizontal scroll-snap with 88%-wide slides on phones (PROJ-06)", () => {

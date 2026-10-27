@@ -6,8 +6,8 @@ import { projects, experiences, skillCategories, testimonials } from "../content
 const publicPath = (src: string) => join(process.cwd(), "public", src);
 
 describe("content", () => {
-  it("lists the three portfolio projects in order (PROJ-01)", () => {
-    expect(projects.map((p) => p.title)).toEqual(["TypeRacer", "Speed Test", "API Ceps BR"]);
+  it("lists the four portfolio projects in order, newest first (PROJ-01)", () => {
+    expect(projects.map((p) => p.title)).toEqual(["Animal Helper", "TypeRacer", "Speed Test", "API Ceps BR"]);
   });
 
   it("gives every project an image that exists in public/images/projects (PROJ-01)", () => {
@@ -18,8 +18,15 @@ describe("content", () => {
   });
 
   it("labels repositories as Frontend/API and leaves API Ceps BR without repos (PROJ-02)", () => {
-    expect(projects[0].repos.map((r) => r.label)).toEqual(["Frontend", "API"]);
-    expect(projects[2].repos).toEqual([]);
+    expect(projects[1].repos.map((r) => r.label)).toEqual(["Frontend", "API"]);
+    expect(projects[3].repos).toEqual([]);
+  });
+
+  it("links Animal Helper to its monorepo and to the live demo", () => {
+    expect(projects[0].repos).toEqual([
+      { label: "Monorepo", url: "https://github.com/BrunomelloxD/ongs-de-resgate-map" },
+    ]);
+    expect(projects[0].demo).toBe("https://web-production-3794f.up.railway.app/");
   });
 
   it("lists the four experiences with role and period from the CV, newest first (WORK-01)", () => {

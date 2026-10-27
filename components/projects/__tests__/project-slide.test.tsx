@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { ProjectSlide } from "../project-slide";
 import { projects } from "@/lib/content";
 
-const [typeracer, , apiCeps] = projects;
+const [, typeracer, , apiCeps] = projects;
 
 describe("<ProjectSlide />", () => {
   it("shows title, description, tags, screenshot and the demo link (PROJ-01)", () => {

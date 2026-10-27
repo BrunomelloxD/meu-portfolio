@@ -30,6 +30,15 @@ export interface Testimonial {
 
 export const projects: Project[] = [
   {
+    title: "Animal Helper",
+    description:
+      "Plataforma fullstack que conecta quem quer adotar às ONGs de resgate da região, com mapa, perfil dos animais e contato pelo WhatsApp. Monorepo com Next.js como BFF e API em Nest.js.",
+    image: "/images/projects/animal-helper.png",
+    tags: ["Next.js", "Nest.js", "TypeScript", "PostgreSQL", "Prisma", "Docker"],
+    repos: [{ label: "Monorepo", url: "https://github.com/BrunomelloxD/ongs-de-resgate-map" }],
+    demo: "https://web-production-3794f.up.railway.app/",
+  },
+  {
     title: "TypeRacer",
     description:
       "Aplicação fullstack de corrida de digitação em tempo real. Frontend interativo e API com WebSockets para multiplayer.",
