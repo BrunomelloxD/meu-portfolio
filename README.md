@@ -142,9 +142,11 @@ Definida em [.github/workflows/ci-cd.yml](.github/workflows/ci-cd.yml). Disparad
 
 ```
             ┌──→  lint  ──┐
-push/PR ────┤             ├──→  build  ──→  deploy (somente master push)
+push/PR ────┤             ├──→  build
             └──→  test  ──┘
 ```
+
+O deploy não está no workflow: o Railway publica sozinho a partir do GitHub (veja abaixo).
 
 ### Jobs
 
@@ -153,25 +155,21 @@ push/PR ────┤             ├──→  build  ──→  deploy (some
 | `lint` | push + PR | `npm ci` + `npm run lint` |
 | `test` | push + PR | `npm ci` + `npm run test:coverage` + upload do report como artifact (7 dias) |
 | `build` | só se `lint` e `test` passarem | `npm ci` + `npm run build` |
-| `deploy` | só na branch `master` após `build` OK | `railway up --service $RAILWAY_SERVICE` |
 
 ### Características
 
 - **Concurrency control:** runs anteriores na mesma ref são canceladas automaticamente
 - **Cache de npm:** `actions/setup-node@v5` reaproveita o `~/.npm` entre runs
 - **Coverage como artifact:** o relatório HTML pode ser baixado da aba **Actions**
-- **Environment do GitHub:** o job de deploy está vinculado ao environment `production`, permitindo configurar aprovações manuais e rastreabilidade no histórico de deploys
-- **Sem deploy em PR:** apenas `push` na `master` dispara o deploy
 
-### Configuração necessária no GitHub
+### Deploy automático pelo Railway
 
-Em **Settings → Secrets and variables → Actions**:
+O serviço `meu-portfolio` do Railway está ligado ao repositório, na branch `master`, com:
 
-**Secret:**
-- `RAILWAY_TOKEN` — Project Token gerado no dashboard do Railway (Settings → Tokens dentro do projeto, **não** o Account Token)
+- **Auto deploys when pushed to GitHub:** todo push na `master` gera um deploy;
+- **Wait for CI:** o Railway só publica depois que **todos** os workflows do GitHub terminam com sucesso. Lint, teste ou build vermelho bloqueia o deploy.
 
-**Variable:**
-- `RAILWAY_SERVICE` — Nome do serviço no Railway (ex: `meu-portfolio`)
+Não há token nem secret do Railway no GitHub. Se o deploy automático for desligado, um job com `railway up` volta a ser necessário.
 
 ---
 
