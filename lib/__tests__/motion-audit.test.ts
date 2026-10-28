@@ -75,4 +75,9 @@ describe("motion audit", () => {
     const custom = /data-custom-cursor|has-custom-cursor|data-cursor\b|cursor:\s*none/
     expect(files.filter((file) => custom.test(readFileSync(file, "utf8")))).toEqual([])
   })
+
+  it("has no statement band nor the code that only it used (SIG-128)", () => {
+    const band = /StatementBand|\bHIGHLIGHT\b|marqueeStep|MARQUEE_/
+    expect(files.filter((file) => band.test(readFileSync(file, "utf8")))).toEqual([])
+  })
 })

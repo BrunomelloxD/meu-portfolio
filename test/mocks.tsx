@@ -116,8 +116,6 @@ vi.mock("motion/react", () => {
     options,
   });
   const useTransform = vi.fn(transform);
-  const useVelocity = vi.fn((source: unknown) => ({ __mv: "velocity", source }));
-  const useAnimationFrame = vi.fn();
   const useInView = vi.fn(() => false);
   const useMotionValueEvent = vi.fn();
   const animate = vi.fn(() => ({ stop: vi.fn() }));
@@ -150,8 +148,6 @@ vi.mock("motion/react", () => {
     stagger,
     useMotionValue,
     useTransform,
-    useVelocity,
-    useAnimationFrame,
     useInView,
     useMotionValueEvent,
     animate,
