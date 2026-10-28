@@ -1,12 +1,13 @@
 "use client"
 
 import { useRef, useState, type KeyboardEvent } from "react"
-import { motion } from "motion/react"
+import { motion, useReducedMotion } from "motion/react"
 import { Button } from "@/components/ui/button"
 import { ProjectSlide } from "@/components/projects/project-slide"
+import { TiltCard } from "@/components/projects/tilt-card"
 import { projects } from "@/lib/content"
 import { spring, tween } from "@/lib/motion"
-import { useIsDesktop } from "@/hooks/useMediaQuery"
+import { useIsDesktop, usePointerFine } from "@/hooks/useMediaQuery"
 
 const isPhone = () => typeof window !== "undefined" && window.matchMedia("(max-width: 1023px)").matches
 
@@ -16,6 +17,10 @@ const STEP = 812
 export function ProjectCarousel() {
   const [index, setIndex] = useState(0)
   const desktop = useIsDesktop()
+  const fine = usePointerFine()
+  const reduced = !!useReducedMotion()
+  // Gestures on the cards need room, a mouse and motion (SIG-61, SIG-66).
+  const gestures = desktop && fine && !reduced
   const trackRef = useRef<HTMLDivElement>(null)
   const total = projects.length
 
@@ -79,7 +84,9 @@ export function ProjectCarousel() {
                 transition={tween("base", "inOut")}
                 className="w-[88%] shrink-0 snap-center lg:h-[380px] lg:w-[780px]"
               >
-                <ProjectSlide project={project} />
+                <TiltCard enabled={gestures && active}>
+                  <ProjectSlide project={project} />
+                </TiltCard>
               </motion.div>
             )
           })}

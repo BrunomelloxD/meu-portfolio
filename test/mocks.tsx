@@ -48,7 +48,8 @@ vi.mock("motion/react", () => {
         const domStyle: Record<string, unknown> = {};
         const motionStyle: Record<string, unknown> = {};
         for (const [key, value] of Object.entries(style)) {
-          if (isMotionValue(value) || key === "originX" || key === "originY") motionStyle[key] = value;
+          if (isMotionValue(value) || key === "originX" || key === "originY" || key === "transformPerspective")
+            motionStyle[key] = value;
           else domStyle[key] = value;
         }
         rest.style = domStyle;
