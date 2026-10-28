@@ -2,7 +2,6 @@ import type React from "react"
 import "@/app/globals.css"
 import { JetBrains_Mono, Source_Sans_3 } from "next/font/google"
 import { AccessLogger } from "@/components/AccessLogger"
-import { CustomCursor } from "@/components/custom-cursor"
 import { MotionProvider } from "@/components/motion-provider"
 
 const sourceSans = Source_Sans_3({ subsets: ["latin"], style: ["normal", "italic"], variable: "--font-sans" })
@@ -29,7 +28,6 @@ export default function RootLayout({
         <AccessLogger />
         <MotionProvider>
           {children}
-          <CustomCursor />
         </MotionProvider>
       </body>
     </html>

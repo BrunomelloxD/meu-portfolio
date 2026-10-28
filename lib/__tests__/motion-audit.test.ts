@@ -70,4 +70,9 @@ describe("motion audit", () => {
   it("has no infinite animation loops (MOV-44)", () => {
     expect(files.filter((file) => /repeat:\s*Infinity/.test(readFileSync(file, "utf8")))).toEqual([])
   })
+
+  it("keeps the system cursor: no custom cursor element, class, hook attribute or cursor: none (SIG-127)", () => {
+    const custom = /data-custom-cursor|has-custom-cursor|data-cursor\b|cursor:\s*none/
+    expect(files.filter((file) => custom.test(readFileSync(file, "utf8")))).toEqual([])
+  })
 })
