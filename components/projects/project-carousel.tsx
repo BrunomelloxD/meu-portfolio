@@ -29,11 +29,14 @@ export function ProjectCarousel() {
   const trackRef = useRef<HTMLDivElement>(null)
   const dragged = useRef(false)
   const [snap, setSnap] = useState(false)
+  // Only a slide that becomes active after mount opens like a shutter (SIG-67, SIG-68).
+  const [moved, setMoved] = useState(false)
   const total = projects.length
 
   const go = (next: number) => {
     const target = (next + total) % total
     setSnap(false)
+    setMoved(true)
     setIndex(target)
     // Below lg the track is a native scroll-snap list; keep it in sync with the buttons.
     if (isPhone()) {
@@ -52,6 +55,7 @@ export function ProjectCarousel() {
     dragged.current = Math.abs(info.offset.x) > CLICK_SLOP
     // A drag stops at the ends instead of wrapping around like the buttons.
     setSnap(true)
+    setMoved(true)
     setIndex(Math.min(total - 1, Math.max(0, dragTarget(index, info.offset.x, info.velocity.x))))
   }
 
@@ -67,7 +71,10 @@ export function ProjectCarousel() {
     if (!track || !isPhone()) return
     const slide = track.children[0] as HTMLElement | undefined
     if (!slide) return
-    setIndex(Math.min(total - 1, Math.round(track.scrollLeft / (slide.offsetWidth + 16))))
+    const next = Math.min(total - 1, Math.round(track.scrollLeft / (slide.offsetWidth + 16)))
+    if (next === index) return
+    setMoved(true)
+    setIndex(next)
   }
 
   return (
@@ -119,7 +126,7 @@ export function ProjectCarousel() {
                 className="w-[88%] shrink-0 snap-center lg:h-[380px] lg:w-[780px]"
               >
                 <TiltCard enabled={gestures && active}>
-                  <ProjectSlide project={project} />
+                  <ProjectSlide project={project} shutter={moved && active} />
                 </TiltCard>
               </motion.div>
             )

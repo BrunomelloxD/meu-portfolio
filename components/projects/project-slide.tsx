@@ -1,38 +1,74 @@
 "use client"
 
-import { useState } from "react"
+import { useState, type ReactNode } from "react"
 import Image from "next/image"
+import { motion, useReducedMotion } from "motion/react"
 import { Badge } from "@/components/ui/badge"
 import { CtaButton } from "@/components/cta-button"
 import type { Project } from "@/lib/content"
+import { tween } from "@/lib/motion"
 
 interface ProjectSlideProps {
   project: Project
+  /** The slide just became the active one: open its picture like a shutter (E13). */
+  shutter?: boolean
 }
 
-export function ProjectSlide({ project }: ProjectSlideProps) {
+/** Clip opens top to bottom while the picture settles from 1.12; reduced motion only fades it in. */
+function Shutter({ children }: { children: ReactNode }) {
+  const reduced = !!useReducedMotion()
+  if (reduced) {
+    return (
+      <motion.div
+        data-shutter
+        className="absolute inset-0"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={tween("base")}
+      >
+        {children}
+      </motion.div>
+    )
+  }
+  return (
+    <motion.div
+      data-shutter
+      className="absolute inset-0"
+      initial={{ clipPath: "inset(0% 0% 100% 0%)" }}
+      animate={{ clipPath: "inset(0% 0% 0% 0%)" }}
+      transition={tween("slow", "inOut")}
+    >
+      <motion.div className="absolute inset-0" initial={{ scale: 1.12 }} animate={{ scale: 1 }} transition={tween("hero", "soft")}>
+        {children}
+      </motion.div>
+    </motion.div>
+  )
+}
+
+export function ProjectSlide({ project, shutter = false }: ProjectSlideProps) {
   const [imageFailed, setImageFailed] = useState(false)
+  const picture = imageFailed ? (
+    <div
+      data-testid="image-fallback"
+      className="flex h-full items-center justify-center bg-surface-2 p-6 font-mono text-xl font-bold text-ink-soft"
+    >
+      {project.title}
+    </div>
+  ) : (
+    <Image
+      src={project.image}
+      alt={`Tela do projeto ${project.title}`}
+      fill
+      sizes="(min-width: 768px) 340px, 88vw"
+      className="object-cover object-left-top"
+      onError={() => setImageFailed(true)}
+    />
+  )
 
   return (
     <article className="flex h-full flex-col overflow-hidden rounded-card border border-line bg-surface md:flex-row">
       <div className="relative h-[190px] shrink-0 md:h-auto md:w-[340px]">
-        {imageFailed ? (
-          <div
-            data-testid="image-fallback"
-            className="flex h-full items-center justify-center bg-surface-2 p-6 font-mono text-xl font-bold text-ink-soft"
-          >
-            {project.title}
-          </div>
-        ) : (
-          <Image
-            src={project.image}
-            alt={`Tela do projeto ${project.title}`}
-            fill
-            sizes="(min-width: 768px) 340px, 88vw"
-            className="object-cover object-left-top"
-            onError={() => setImageFailed(true)}
-          />
-        )}
+        {shutter ? <Shutter>{picture}</Shutter> : picture}
       </div>
 
       <div className="flex flex-1 flex-col gap-4 p-5 md:p-8">

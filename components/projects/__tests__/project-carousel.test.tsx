@@ -285,3 +285,59 @@ describe("drag on desktop (SIG-63..SIG-66)", () => {
     expect(trackX()).toBe(-812);
   });
 });
+
+describe("shutter on the newly active slide (SIG-67..SIG-69)", () => {
+  const shutterOf = (slide: Element) => slide.querySelector("[data-shutter]");
+  const active = () => slides().find((s) => s.getAttribute("aria-hidden") !== "true")!;
+
+  it("opens the clip top to bottom over dur.slow inOut, and settles the picture from 1.12 over dur.hero soft (SIG-67)", async () => {
+    setViewport(1440);
+    const user = userEvent.setup();
+    render(<ProjectCarousel />);
+    await user.click(screen.getByRole("button", { name: "Próximo projeto" }));
+    const shutter = shutterOf(active())!;
+    expect(motionOf(shutter)).toEqual({
+      initial: { clipPath: "inset(0% 0% 100% 0%)" },
+      animate: { clipPath: "inset(0% 0% 0% 0%)" },
+      transition: { duration: 0.7, ease: [0.76, 0, 0.24, 1] },
+    });
+    expect(motionOf(shutter.firstElementChild!)).toEqual({
+      initial: { scale: 1.12 },
+      animate: { scale: 1 },
+      transition: { duration: 0.9, ease: [0.33, 1, 0.68, 1] },
+    });
+    expect(within(shutter as HTMLElement).getByRole("img")).toBeInTheDocument();
+    // Only the active slide carries it.
+    expect(slides().filter((s) => shutterOf(s))).toHaveLength(1);
+  });
+
+  it("renders the slide that is active on mount without clip or scale (SIG-68)", () => {
+    setViewport(1440);
+    render(<ProjectCarousel />);
+    expect(slides().filter((s) => shutterOf(s))).toHaveLength(0);
+  });
+
+  it("opens the slide reached by native scroll on phones", () => {
+    setViewport(390);
+    render(<ProjectCarousel />);
+    const track = screen.getByTestId("track");
+    Object.defineProperty(track.children[0], "offsetWidth", { configurable: true, value: 343 });
+    Object.defineProperty(track, "scrollLeft", { configurable: true, value: 359 });
+    fireEvent.scroll(track);
+    expect(shutterOf(active())).not.toBeNull();
+  });
+
+  it("only fades the picture in over dur.base under reduced motion (SIG-69)", async () => {
+    setViewport(1440);
+    const { useReducedMotion } = await import("motion/react");
+    vi.mocked(useReducedMotion).mockReturnValue(true);
+    const user = userEvent.setup();
+    render(<ProjectCarousel />);
+    await user.click(screen.getByRole("button", { name: "Próximo projeto" }));
+    expect(motionOf(shutterOf(active())!)).toEqual({
+      initial: { opacity: 0 },
+      animate: { opacity: 1 },
+      transition: { duration: 0.32, ease: [0.32, 0.72, 0, 1] },
+    });
+  });
+});
