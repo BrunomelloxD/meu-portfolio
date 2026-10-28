@@ -74,17 +74,19 @@
       scroll-behavior: auto;
     }
   }
+  /* Click-and-drag selects nothing on the page (SEL-02)... */
   body {
     @apply bg-background text-foreground;
+    user-select: none;
+  }
+  /* ...except the email, the phone and the form fields. :where keeps it below the Email chip's select-none (SEL-03). */
+  :where(a[href^="mailto:"], a[href^="tel:"], input, textarea, [contenteditable]) {
+    user-select: text;
   }
   /* Selected text in the theme, not the browser grey (SEL-01). */
   ::selection {
     background-color: var(--accent);
     color: var(--bg);
-  }
-  /* Controls and display titles are not text to copy (SEL-02); content, email and phone stay selectable (SEL-03). */
-  :where(button, [role="button"], nav, h1, h2, a:not([href^="mailto:"], [href^="tel:"])) {
-    user-select: none;
   }
 }
 

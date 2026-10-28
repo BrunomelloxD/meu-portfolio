@@ -16,15 +16,14 @@ describe("text selection (SEL-01..SEL-03)", () => {
     expect(css).toMatch(/::selection \{ background-color: var\(--accent\); color: var\(--bg\); \}/)
   })
 
-  it("turns selection off only for controls and display titles (SEL-02)", () => {
-    expect(unselectable).toEqual([
-      ':where(button, [role="button"], nav, h1, h2, a:not([href^="mailto:"], [href^="tel:"]))',
-    ])
+  it("turns selection off for the whole page (SEL-02)", () => {
+    expect(unselectable).toEqual(["body"])
   })
 
-  it("leaves content, the email and phone links and the form fields selectable (SEL-03)", () => {
-    for (const selector of unselectable) {
-      expect(selector).not.toMatch(/\b(?:html|body|main|section|p|li|dd|input|textarea)\b|\*/)
-    }
+  it("gives it back only to the email and phone links and the form fields, at zero specificity (SEL-03)", () => {
+    const selectable = [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)]
+      .filter(([, , body]) => /(?:^|;)\s*user-select:\s*text/.test(body))
+      .map(([, selector]) => selector.trim())
+    expect(selectable).toEqual([':where(a[href^="mailto:"], a[href^="tel:"], input, textarea, [contenteditable])'])
   })
 })
