@@ -18,13 +18,20 @@ export const ease = {
   soft: [0.33, 1, 0.68, 1],
 } as const
 
-// Every spring is critically or over-damped (damping ratio >= 1): nothing overshoots.
+// UI feedback springs are critically or over-damped (damping ratio >= 1). The gesture springs below
+// (AD-003) are under-damped on purpose: magnetic pull, tilt, cursor and the carousel snap overshoot.
 export const spring = {
   press: { type: "spring", stiffness: 500, damping: 45, mass: 1 },
   glide: { type: "spring", stiffness: 380, damping: 40, mass: 1 },
   settle: { type: "spring", stiffness: 220, damping: 32, mass: 1 },
   /** For useSpring (no `type`). */
   scroll: { stiffness: 100, damping: 30, mass: 1, restDelta: 0.001 },
+  magnetic: { type: "spring", stiffness: 260, damping: 14, mass: 1 },
+  tilt: { type: "spring", stiffness: 180, damping: 18, mass: 1 },
+  cursor: { type: "spring", stiffness: 500, damping: 28, mass: 1 },
+  snap: { type: "spring", stiffness: 300, damping: 24, mass: 1 },
+  /** For useSpring on the scroll velocity (StatementBand marquee). */
+  velocity: { stiffness: 400, damping: 50 },
 } as const
 
 export type DurationToken = keyof typeof dur

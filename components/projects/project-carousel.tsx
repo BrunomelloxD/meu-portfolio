@@ -1,30 +1,17 @@
 "use client"
 
-import { useEffect, useRef, useState, type KeyboardEvent } from "react"
+import { useRef, useState, type KeyboardEvent } from "react"
 import { motion } from "motion/react"
 import { Button } from "@/components/ui/button"
 import { ProjectSlide } from "@/components/projects/project-slide"
 import { projects } from "@/lib/content"
 import { spring, tween } from "@/lib/motion"
+import { useIsDesktop } from "@/hooks/useMediaQuery"
 
 const isPhone = () => typeof window !== "undefined" && window.matchMedia("(max-width: 1023px)").matches
 
-const DESKTOP_QUERY = "(min-width: 1024px)"
 // Desktop: 780px slides + 32px gap.
 const STEP = 812
-
-/** True at >= 1024px. False on the server and on the first client render, then follows the media query. */
-function useIsDesktop() {
-  const [desktop, setDesktop] = useState(false)
-  useEffect(() => {
-    const query = window.matchMedia(DESKTOP_QUERY)
-    const update = () => setDesktop(query.matches)
-    update()
-    query.addEventListener("change", update)
-    return () => query.removeEventListener("change", update)
-  }, [])
-  return desktop
-}
 
 export function ProjectCarousel() {
   const [index, setIndex] = useState(0)

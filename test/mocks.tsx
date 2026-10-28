@@ -70,7 +70,39 @@ vi.mock("motion/react", () => {
     React.createElement(React.Fragment, null, children),
   );
 
+  // A working motion value: tests can read `.get()` and drive `.set()`; `current` shows up in data-motion.
+  const motionValue = (initial: unknown) => {
+    const listeners = new Set<(v: unknown) => void>();
+    const mv = {
+      __mv: "value",
+      current: initial,
+      get: () => mv.current,
+      set: (v: unknown) => {
+        mv.current = v;
+        listeners.forEach((l) => l(v));
+      },
+      on: (_event: string, l: (v: unknown) => void) => {
+        listeners.add(l);
+        return () => listeners.delete(l);
+      },
+    };
+    return mv;
+  };
+
   const useReducedMotion = vi.fn(() => false);
+  const useMotionValue = vi.fn((initial: unknown) => React.useState(() => motionValue(initial))[0]);
+  const useTransform = vi.fn((source: unknown, input?: unknown, output?: unknown, options?: unknown) => ({
+    __mv: "transform",
+    source,
+    input,
+    output,
+    options,
+  }));
+  const useVelocity = vi.fn((source: unknown) => ({ __mv: "velocity", source }));
+  const useAnimationFrame = vi.fn();
+  const useInView = vi.fn(() => false);
+  const useMotionValueEvent = vi.fn();
+  const animate = vi.fn(() => ({ stop: vi.fn() }));
   const useScroll = vi.fn(() => ({ scrollYProgress: { __mv: "scrollYProgress" } }));
   const useSpring = vi.fn((source: unknown, options?: unknown) => ({ __mv: "spring", source, options }));
   const usePresence = vi.fn(() => [true, vi.fn()]);
@@ -81,9 +113,27 @@ vi.mock("motion/react", () => {
     useScroll.mockImplementation(() => ({ scrollYProgress: { __mv: "scrollYProgress" } }));
     useSpring.mockImplementation((source: unknown, options?: unknown) => ({ __mv: "spring", source, options }));
     usePresence.mockImplementation(() => [true, vi.fn()]);
+    useInView.mockImplementation(() => false);
+    animate.mockImplementation(() => ({ stop: vi.fn() }));
   });
 
-  return { motion, AnimatePresence, MotionConfig, useReducedMotion, useScroll, useSpring, usePresence, stagger };
+  return {
+    motion,
+    AnimatePresence,
+    MotionConfig,
+    useReducedMotion,
+    useScroll,
+    useSpring,
+    usePresence,
+    stagger,
+    useMotionValue,
+    useTransform,
+    useVelocity,
+    useAnimationFrame,
+    useInView,
+    useMotionValueEvent,
+    animate,
+  };
 });
 
 vi.mock("next/image", () => ({

@@ -27,6 +27,12 @@ describe("motion audit", () => {
     expect(pkg.dependencies).not.toHaveProperty("framer-motion")
   })
 
+  it("never animates layout properties in Motion targets (SIG-04)", () => {
+    const target = /\b(?:animate|initial|exit|whileHover|whileTap|whileFocus|whileInView)=\{\{[^}]*?\b(?:width|height|top|left|right|bottom|margin\w*|padding\w*)\s*:/s
+    const sources = files.filter((file) => /\.tsx?$/.test(file) && !file.includes("__tests__") && !file.endsWith("mocks.tsx"))
+    expect(sources.filter((file) => target.test(readFileSync(file, "utf8")))).toEqual([])
+  })
+
   it("has no infinite animation loops (MOV-44)", () => {
     expect(files.filter((file) => /repeat:\s*Infinity/.test(readFileSync(file, "utf8")))).toEqual([])
   })
