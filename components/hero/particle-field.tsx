@@ -114,7 +114,15 @@ export default function ParticleField({ spread, fieldOpacity }: ParticleFieldPro
     }
 
     const tick = () => {
-      stepParticles(particles, width, height, pointerRef.current)
+      // The points are drawn spread from the centre: take the pointer back to their unspread space,
+      // so the point pushed is the one under the cursor.
+      const pointer = pointerRef.current
+      const s = spread?.get() ?? 1
+      const local = pointer && {
+        x: width / 2 + (pointer.x - width / 2) / s,
+        y: height / 2 + (pointer.y - height / 2) / s,
+      }
+      stepParticles(particles, width, height, local)
       draw()
       frame = requestAnimationFrame(tick)
     }

@@ -11,6 +11,8 @@ function fakeContext() {
     clears: 0,
     fillStyle: "",
     strokeStyle: "",
+    lines: [] as { a: [number, number]; b: [number, number]; alpha: number }[],
+    path: [] as [number, number][],
     globalAlpha: 1,
     lineWidth: 1,
     setTransform: vi.fn(),
@@ -18,11 +20,12 @@ function fakeContext() {
       ctx.clears++
       ctx.fills = []
       ctx.arcs = []
+      ctx.lines = []
     }),
     beginPath: vi.fn(),
-    moveTo: vi.fn(),
-    lineTo: vi.fn(),
-    stroke: vi.fn(),
+    moveTo: vi.fn((x: number, y: number) => (ctx.path = [[x, y]])),
+    lineTo: vi.fn((x: number, y: number) => ctx.path.push([x, y])),
+    stroke: vi.fn(() => ctx.lines.push({ a: ctx.path[0], b: ctx.path[1], alpha: ctx.globalAlpha })),
     arc: vi.fn((x: number, y: number) => ctx.arcs.push({ x, y })),
     fill: vi.fn(() => ctx.fills.push(ctx.fillStyle)),
   }
@@ -297,3 +300,55 @@ describe("ParticleField — scroll values (SIG-33)", () => {
     expect(ctx.arcs[0].x).toBeCloseTo(720 + (1080 + Math.cos(Math.PI * 1.5) * (0.08 + 0.75 * 0.17) - 720) * 2, 1)
   })
 })
+
+describe("ParticleField — links (SIG-14)", () => {
+  /** Pairs of drawn points closer than `max`, by brute force over the arcs of the frame. */
+  const pairsUnder = (max: number) => {
+    let n = 0
+    for (let i = 0; i < ctx.arcs.length; i++)
+      for (let j = i + 1; j < ctx.arcs.length; j++)
+        if (Math.hypot(ctx.arcs[i].x - ctx.arcs[j].x, ctx.arcs[i].y - ctx.arcs[j].y) < max) n++
+    return n
+  }
+
+  it("strokes one line per pair closer than 110px from 768px, with alpha 0.18 × (1 − d / 110)", () => {
+    render(<ParticleField />)
+    startIdle()
+    flushFrame()
+    expect(ctx.lines.length).toBeGreaterThan(0)
+    expect(ctx.lines).toHaveLength(pairsUnder(110))
+    for (const { a, b, alpha } of ctx.lines) {
+      const d = Math.hypot(a[0] - b[0], a[1] - b[1])
+      expect(d).toBeLessThan(110)
+      expect(alpha).toBeCloseTo(0.18 * (1 - d / 110), 6)
+    }
+  })
+
+  it("links only pairs closer than 80px below 768px", () => {
+    Object.defineProperty(window, "innerWidth", { configurable: true, value: 390 })
+    rect = { width: 390, height: 800 }
+    render(<ParticleField />)
+    startIdle()
+    flushFrame()
+    expect(ctx.lines).toHaveLength(pairsUnder(80))
+    expect(pairsUnder(110)).toBeGreaterThan(pairsUnder(80))
+  })
+})
+
+describe("ParticleField — pointer on a spread field (SIG-15, SIG-33)", () => {
+  it("pushes the point drawn under the cursor, not the one at the cursor's unspread position", () => {
+    pointerFine = true
+    vi.spyOn(Math, "random").mockReturnValue(0.75) // every point starts at (1080, 675), drawn at 720 + 360 × 2 = 1440
+    render(<ParticleField spread={mv(2)} />)
+    startIdle()
+    flushFrame()
+    const before = ctx.arcs[0]
+    act(() => window.dispatchEvent(Object.assign(new Event("pointermove"), { clientX: before.x - 20, clientY: before.y })))
+    flushFrame()
+    // The pointer sits 20px left of the drawn point → 10px in unspread space: a push of 1.2 × (1 − 10/140)
+    // to the right, drawn twice as long, on top of the drift.
+    const drift = Math.cos(Math.PI * 1.5) * (0.08 + 0.75 * 0.17)
+    expect(ctx.arcs[0].x - before.x).toBeCloseTo(2 * (drift + 1.2 * (1 - 10 / 140)), 1)
+  })
+})
+
