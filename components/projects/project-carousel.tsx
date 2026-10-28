@@ -23,18 +23,16 @@ export function ProjectCarousel() {
   const reduced = !!useReducedMotion()
   // The hover on the active card needs room, a mouse and motion (SIG-122, SIG-126).
   const gestures = desktop && fine && !reduced
-  // The track is draggable on desktop (SIG-63, SIG-65), not under reduced motion (SIG-66).
+  // The track is draggable on desktop (SIG-121, SIG-65), not under reduced motion (SIG-126).
   const draggable = desktop && !reduced
   const trackRef = useRef<HTMLDivElement>(null)
   const dragged = useRef(false)
-  const [snap, setSnap] = useState(false)
   // Only a slide that becomes active after mount opens like a shutter (SIG-67, SIG-68).
   const [moved, setMoved] = useState(false)
   const total = projects.length
 
   const go = (next: number) => {
     const target = (next + total) % total
-    setSnap(false)
     setMoved(true)
     setIndex(target)
     // Below lg the track is a native scroll-snap list; keep it in sync with the buttons.
@@ -48,12 +46,11 @@ export function ProjectCarousel() {
     if (event.key === "ArrowLeft") go(index - 1)
   }
 
-  // SPEC_DEVIATION: dragMomentum is off; the snap spring inherits the release velocity instead.
+  // SPEC_DEVIATION: dragMomentum is off; the settle spring inherits the release velocity instead.
   // Reason: Motion's own inertia would fight the animate target that the new index sets.
   const onDragEnd = (_: unknown, info: PanInfo) => {
     dragged.current = Math.abs(info.offset.x) > CLICK_SLOP
     // A drag stops at the ends instead of wrapping around like the buttons.
-    setSnap(true)
     setMoved(true)
     setIndex(Math.min(total - 1, Math.max(0, dragTarget(index, info.offset.x, info.velocity.x))))
   }
@@ -103,7 +100,7 @@ export function ProjectCarousel() {
           // Desktop: a spring moves the track one step per slide; the first slide is centred by the left padding.
           // Below lg the track is a native scroll-snap list, so Motion leaves its transform alone.
           animate={desktop ? { x: -index * STEP } : undefined}
-          transition={snap ? spring.snap : spring.settle}
+          transition={spring.settle}
           style={desktop ? undefined : { transform: "none" }}
           className={[
             "flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 [scrollbar-width:none]",

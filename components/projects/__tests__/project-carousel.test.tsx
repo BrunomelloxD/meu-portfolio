@@ -267,7 +267,7 @@ describe("hover on the active project (SIG-122, SIG-126)", () => {
   });
 });
 
-describe("drag on desktop (SIG-63..SIG-66)", () => {
+describe("drag on desktop (SIG-121, SIG-64, SIG-65, SIG-126)", () => {
   type DragProps = {
     drag?: string;
     dragElastic?: number;
@@ -292,7 +292,7 @@ describe("drag on desktop (SIG-63..SIG-66)", () => {
     expect(props.dragConstraints).toEqual({ left: -(slides().length - 1) * 812, right: 0 });
   });
 
-  it("advances after −121px or a −501px/s flick, goes back after +121px, stays otherwise (SIG-63)", async () => {
+  it("advances after −121px or a −501px/s flick, goes back after +121px, stays otherwise (SIG-121)", async () => {
     setViewport(1440);
     render(<ProjectCarousel />);
     await release(-121);
@@ -305,14 +305,16 @@ describe("drag on desktop (SIG-63..SIG-66)", () => {
     expect(trackX()).toBe(-812);
   });
 
-  it("snaps with the snap spring after a drag and with settle after a button", async () => {
+  it("settles with the settle spring after a drag, the same as after a button (SIG-121)", async () => {
     setViewport(1440);
     const user = userEvent.setup();
     render(<ProjectCarousel />);
+    const settle = { type: "spring", stiffness: 220, damping: 32, mass: 1 };
     await release(-200);
-    expect(motionOf(screen.getByTestId("track")).transition).toEqual({ type: "spring", stiffness: 300, damping: 24, mass: 1 });
+    expect(trackX()).toBe(-812);
+    expect(motionOf(screen.getByTestId("track")).transition).toEqual(settle);
     await user.click(screen.getByRole("button", { name: "Próximo projeto" }));
-    expect(motionOf(screen.getByTestId("track")).transition).toEqual({ type: "spring", stiffness: 220, damping: 32, mass: 1 });
+    expect(motionOf(screen.getByTestId("track")).transition).toEqual(settle);
   });
 
   it("stops at the ends instead of wrapping", async () => {
@@ -343,7 +345,7 @@ describe("drag on desktop (SIG-63..SIG-66)", () => {
     expect((await propsOf(screen.getByTestId("track"))).drag).toBeUndefined();
   });
 
-  it("has no drag under reduced motion, and the buttons still move (SIG-66)", async () => {
+  it("has no drag under reduced motion, and the buttons still move (SIG-126)", async () => {
     setViewport(1440);
     const { useReducedMotion } = await import("motion/react");
     vi.mocked(useReducedMotion).mockReturnValue(true);

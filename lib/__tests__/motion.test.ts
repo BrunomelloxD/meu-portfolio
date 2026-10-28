@@ -38,26 +38,27 @@ describe("CSS parity (MOV-02)", () => {
   })
 })
 
-describe("gesture springs (SIG-01)", () => {
-  it("defines magnetic, snap and velocity, and no cursor or tilt spring (SIG-122, SIG-127)", () => {
+describe("gesture springs (SIG-120)", () => {
+  it("defines magnetic and velocity, and no tilt, cursor or snap spring", () => {
     expect(spring.magnetic).toEqual({ type: "spring", stiffness: 260, damping: 14, mass: 1 })
-    expect(spring.snap).toEqual({ type: "spring", stiffness: 300, damping: 24, mass: 1 })
     expect(spring.velocity).toEqual({ stiffness: 400, damping: 50 })
-    expect(spring).not.toHaveProperty("cursor")
-    expect(spring).not.toHaveProperty("tilt")
+    for (const gone of ["tilt", "cursor", "snap"]) expect(spring).not.toHaveProperty(gone)
   })
 })
 
-// SIG-02 replaces MOV-05: UI feedback never overshoots, gestures do.
-describe("damping ratio by role (SIG-02)", () => {
+// SIG-120 replaces SIG-02 (and MOV-05): UI feedback never overshoots; magnetic is the only gesture that does.
+describe("damping ratio by role (SIG-120)", () => {
   const ratio = (s: { stiffness: number; damping: number; mass: number }) => s.damping / (2 * Math.sqrt(s.stiffness * s.mass))
 
   it.each(["press", "glide", "settle", "scroll"] as const)("%s has a damping ratio >= 1", (name) => {
     expect(ratio(spring[name])).toBeGreaterThanOrEqual(1)
   })
 
-  it.each(["magnetic", "snap"] as const)("%s has a damping ratio < 1", (name) => {
-    expect(ratio(spring[name])).toBeLessThan(1)
+  it("magnetic is the only spring with a damping ratio < 1", () => {
+    const under = Object.entries(spring)
+      .filter(([, s]) => "mass" in s && ratio(s as { stiffness: number; damping: number; mass: number }) < 1)
+      .map(([name]) => name)
+    expect(under).toEqual(["magnetic"])
   })
 })
 

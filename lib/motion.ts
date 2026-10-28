@@ -18,8 +18,8 @@ export const ease = {
   soft: [0.33, 1, 0.68, 1],
 } as const
 
-// UI feedback springs are critically or over-damped (damping ratio >= 1). The gesture springs below
-// (AD-003) are under-damped on purpose: magnetic pull and the carousel snap overshoot.
+// UI feedback springs are critically or over-damped (damping ratio >= 1). Only the magnetic pull (AD-003)
+// is under-damped on purpose; the carousel drag settles with `settle` (AD-004).
 export const spring = {
   press: { type: "spring", stiffness: 500, damping: 45, mass: 1 },
   glide: { type: "spring", stiffness: 380, damping: 40, mass: 1 },
@@ -27,7 +27,6 @@ export const spring = {
   /** For useSpring (no `type`). */
   scroll: { stiffness: 100, damping: 30, mass: 1, restDelta: 0.001 },
   magnetic: { type: "spring", stiffness: 260, damping: 14, mass: 1 },
-  snap: { type: "spring", stiffness: 300, damping: 24, mass: 1 },
   /** For useSpring on the scroll velocity (StatementBand marquee). */
   velocity: { stiffness: 400, damping: 50 },
 } as const
