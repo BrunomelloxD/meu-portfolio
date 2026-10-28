@@ -51,7 +51,7 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
   const contentStyle = pinned ? { opacity: contentOpacity } : undefined
 
   return (
-    <section ref={ref} id={SECTION_IDS.HOME} className="relative lg:motion-safe:h-[170vh]">
+    <section ref={ref} id={SECTION_IDS.HOME} className="relative lg:motion-safe:-mb-[25vh] lg:motion-safe:h-[170vh]">
       <div className="relative px-4 pt-14 md:px-16 lg:pt-[120px] lg:motion-safe:sticky lg:motion-safe:top-24 lg:motion-safe:h-[calc(100dvh-96px)]">
         {reduced ? <ParticleField /> : <ParticleField spread={spread} fieldOpacity={fieldOpacity} />}
 
