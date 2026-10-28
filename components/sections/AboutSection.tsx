@@ -1,3 +1,4 @@
+import { Counter } from "@/components/counter"
 import { SectionLabel } from "@/components/section-label"
 import { SkillStack } from "@/components/skills/skill-stack"
 import { Reveal, RevealItem } from "@/components/reveal"
@@ -27,7 +28,7 @@ export function AboutSection() {
                 <div key={stat.label} className="flex flex-col-reverse gap-1">
                   <dt className="text-sm text-ink-soft">{stat.label}</dt>
                   <dd className="font-mono text-[34px] font-bold leading-10 tracking-[-0.03em] text-ink lg:text-5xl lg:leading-[54px]">
-                    {stat.value}
+                    <Counter value={stat.value} />
                   </dd>
                 </div>
               ))}

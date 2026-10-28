@@ -42,8 +42,10 @@ describe("<AboutSection />", () => {
 
   it("shows only the verifiable stats 3+, 20+ and 10+ (ABOUT-04)", () => {
     render(<AboutSection />);
-    const values = screen.getAllByRole("definition").map((dd) => dd.textContent);
-    expect(values).toEqual(["3+", "20+", "10+"]);
+    // Each value is read from its sr-only copy and painted in the aria-hidden one (SIG-101).
+    const dds = screen.getAllByRole("definition");
+    expect(dds.map((dd) => dd.querySelector(".sr-only")?.textContent)).toEqual(["3+", "20+", "10+"]);
+    expect(dds.map((dd) => dd.querySelector('[aria-hidden="true"]')?.textContent)).toEqual(["3+", "20+", "10+"]);
     expect(screen.getByText("Anos de experiência")).toBeInTheDocument();
     expect(screen.queryByText("100%")).not.toBeInTheDocument();
   });
