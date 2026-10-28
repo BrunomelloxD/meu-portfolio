@@ -182,11 +182,23 @@ describe("<HeroSection />", () => {
     });
   });
 
+  describe("field behind the content (SIG-23)", () => {
+    it("renders the field first in the pinned box and the content after it in positioned boxes, so it paints underneath", () => {
+      const { container } = render(<HeroSection onNavigate={() => {}} />);
+      const box = container.querySelector("section")!.firstElementChild!;
+      expect(box.firstElementChild).toBe(screen.getByTestId("particle-field"));
+      const rest = Array.from(box.children).slice(1);
+      expect(rest.length).toBeGreaterThan(0);
+      for (const el of rest) expect(el).toHaveClass("relative");
+      expect(rest[0]).toContainElement(screen.getByRole("heading", { level: 1 }));
+    });
+  });
+
   describe("pin (SIG-30)", () => {
     it("is 170vh tall from lg up, with the content sticky under the 96px nav for 100dvh", () => {
       const { container } = render(<HeroSection onNavigate={() => {}} />);
       const section = container.querySelector("section")!;
-      expect(section).toHaveClass("lg:motion-safe:h-[170vh]");
+      expect(section).toHaveClass("lg:motion-safe:h-[170vh]", "lg:motion-safe:-mb-[25vh]");
       const sticky = section.firstElementChild!;
       expect(sticky).toHaveClass("lg:motion-safe:sticky", "lg:motion-safe:top-24", "lg:motion-safe:h-[calc(100dvh-96px)]");
       expect(sticky).toContainElement(screen.getByRole("heading", { level: 1 }));
@@ -293,6 +305,17 @@ describe("<HeroSection />", () => {
       vi.spyOn(container.querySelector("section")!, "getBoundingClientRect").mockReturnValue({ top: -204 } as DOMRect);
       screen.getByRole("button", { name: "Ver projetos" }).focus();
       expect(scrollBy).toHaveBeenCalledWith({ top: -300 });
+      vi.unstubAllGlobals();
+    });
+
+    it("also scrolls when the hero top has only slid under the 96px nav", () => {
+      setDesktop(true);
+      const scrollBy = vi.fn();
+      vi.stubGlobal("scrollBy", scrollBy);
+      const { container } = render(<HeroSection onNavigate={() => {}} />);
+      vi.spyOn(container.querySelector("section")!, "getBoundingClientRect").mockReturnValue({ top: 50 } as DOMRect);
+      screen.getByRole("button", { name: "Ver projetos" }).focus();
+      expect(scrollBy).toHaveBeenCalledWith({ top: -46 });
       vi.unstubAllGlobals();
     });
 

@@ -89,9 +89,12 @@ describe("running (SIG-72)", () => {
 
 describe("lean (SIG-73)", () => {
   it("skews ±8° over ±2000px/s of spring-smoothed scroll velocity, clamped", () => {
+    const scrollY = { __mv: "scrollY" };
+    vi.mocked(useScroll).mockImplementation(((options?: object) =>
+      options ? { scrollYProgress: { __mv: "scrollYProgress" } } : { scrollY, scrollYProgress: { __mv: "page" } }) as unknown as typeof useScroll);
     render(<StatementBand />);
-    const velocityCall = vi.mocked(useVelocity).mock.calls[0];
-    expect(velocityCall).toBeDefined();
+    // The page's scroll velocity, not some other value.
+    expect(vi.mocked(useVelocity).mock.calls[0][0]).toBe(scrollY);
     const smoothed = vi.mocked(useSpring).mock.calls.find(([source]) => (source as unknown as { __mv: string }).__mv === "velocity");
     expect(smoothed![1]).toEqual(spring.velocity);
     const calls = vi.mocked(useTransform).mock.calls as unknown as unknown[][];

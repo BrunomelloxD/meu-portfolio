@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 
 vi.mock("@emailjs/browser", () => ({ __esModule: true, default: { send: vi.fn() }, send: vi.fn() }));
 
@@ -36,4 +36,21 @@ describe("Home page", () => {
       expect(container.textContent).not.toContain(word);
     }
   });
+
+  it("decodes the title of Projetos, Sobre, Experiência, Depoimentos and Contato, never the h1 (SIG-48)", () => {
+    const { container } = render(<Home />);
+    for (const [id, name] of [
+      ["projetos", "Projetos"],
+      ["sobre", "Sobre"],
+      ["experiencia", "Experiência"],
+      ["depoimentos", "Depoimentos"],
+      ["contato", "Contato"],
+    ]) {
+      const section = container.querySelector(`main section#${id}`)!;
+      const heading = within(section as HTMLElement).getByRole("heading", { level: 2, name });
+      expect(heading.querySelector("[data-scramble] .sr-only")).toHaveTextContent(name);
+    }
+    expect(screen.getByRole("heading", { level: 1 }).querySelector("[data-scramble]")).toBeNull();
+  });
 });
+

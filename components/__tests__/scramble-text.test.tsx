@@ -120,3 +120,17 @@ describe("where it applies (SIG-48)", () => {
     expect(screen.getByRole("heading", { level: 1 }).querySelector("[data-scramble]")).toBeNull()
   })
 })
+
+describe("ScrambleText — hidden tab (edge case)", () => {
+  it("shows the final text on the first frame after a long pause, never stuck mid-scramble", () => {
+    const { container, rerender } = render(<ScrambleText text="Contato" />)
+    vi.mocked(useInView).mockReturnValue(true)
+    rerender(<ScrambleText text="Contato" />)
+    runFrame(1000)
+    runFrame(1100)
+    expect(painted(container).textContent).not.toBe("Contato")
+    runFrame(1000 + 60_000) // the tab was hidden for a minute: rAF did not run meanwhile
+    expect(painted(container).textContent).toBe("Contato")
+    expect(frames).toHaveLength(0)
+  })
+})
