@@ -13,6 +13,9 @@ import { spring } from "@/lib/motion"
 // Client only, and it waits for the browser to be idle: the h1 (LCP) never waits for the canvas.
 const ParticleField = dynamic(() => import("@/components/hero/particle-field"), { ssr: false })
 
+// The sticky nav is 96px tall from md; the pinned hero sits right under it.
+const NAV_HEIGHT = 96
+
 // Order of the fade-up items, read by .animate-fade-up in globals.css.
 const order = (i: number) => ({ "--i": i }) as CSSProperties
 
@@ -50,9 +53,18 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
   // The fade-up items keep their CSS entrance; the scroll fade sits on a wrapper so the two never fight.
   const contentStyle = pinned ? { opacity: contentOpacity } : undefined
 
+  // Keyboard focus never lands on content the pin has faded out: back to the top of the hero first (SIG-37).
+  const onFocus = () => {
+    const top = ref.current?.getBoundingClientRect().top ?? NAV_HEIGHT
+    if (pinned && top < NAV_HEIGHT) window.scrollBy({ top: top - NAV_HEIGHT })
+  }
+
   return (
     <section ref={ref} id={SECTION_IDS.HOME} className="relative lg:motion-safe:-mb-[25vh] lg:motion-safe:h-[170vh]">
-      <div className="relative px-4 pt-14 md:px-16 lg:pt-[120px] lg:motion-safe:sticky lg:motion-safe:top-24 lg:motion-safe:h-[calc(100dvh-96px)]">
+      <div
+        onFocus={onFocus}
+        className="relative px-4 pt-14 md:px-16 lg:pt-[120px] lg:motion-safe:sticky lg:motion-safe:top-24 lg:motion-safe:h-[calc(100dvh-96px)]"
+      >
         {reduced ? <ParticleField /> : <ParticleField spread={spread} fieldOpacity={fieldOpacity} />}
 
         {/* --hero-fs drives the display size and, from xl up, the placement of the sentence and the CTA. */}

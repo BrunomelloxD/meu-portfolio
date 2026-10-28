@@ -1,11 +1,19 @@
+"use client"
+
 import { ScrambleText } from "@/components/scramble-text"
 import { SocialChip } from "@/components/social-chip"
 import { PERSONAL_INFO, SECTION_IDS, SOCIAL_LINKS } from "@/lib/constants"
 
 export function Footer() {
+  // In the curtain the footer waits under <main>: focusing one of its links scrolls to the end so it shows (SIG-114).
+  const reveal = () => {
+    const end = document.documentElement.scrollHeight - window.innerHeight
+    if (window.scrollY < end) window.scrollTo({ top: end })
+  }
+
   return (
     // Curtain (E11): from lg the footer waits under <main>, which scrolls away to reveal it. Pure CSS, off for reduced motion.
-    <footer className="relative z-0 px-4 pb-8 pt-[120px] md:px-16 lg:pb-12 lg:pt-[200px] lg:motion-safe:sticky lg:motion-safe:bottom-0">
+    <footer onFocus={reveal} className="relative z-0 px-4 pb-8 pt-[120px] md:px-16 lg:pb-12 lg:pt-[200px] lg:motion-safe:sticky lg:motion-safe:bottom-0">
       <p className="font-mono text-[13.3vw] font-bold leading-none tracking-[-0.04em] text-ink sm:text-[52px] lg:text-[clamp(96px,10.5vw,152px)] lg:leading-[0.92]">
         <ScrambleText text={PERSONAL_INFO.name} />
       </p>

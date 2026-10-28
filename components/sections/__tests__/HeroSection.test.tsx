@@ -283,4 +283,33 @@ describe("<HeroSection />", () => {
       expect(html).not.toMatch(/transform:/);
     });
   });
+
+  describe("focus while pinned (SIG-37)", () => {
+    it("scrolls back to the top of the hero when its content gets focus mid-pin", () => {
+      setDesktop(true);
+      const scrollBy = vi.fn();
+      vi.stubGlobal("scrollBy", scrollBy);
+      const { container } = render(<HeroSection onNavigate={() => {}} />);
+      vi.spyOn(container.querySelector("section")!, "getBoundingClientRect").mockReturnValue({ top: -204 } as DOMRect);
+      screen.getByRole("button", { name: "Ver projetos" }).focus();
+      expect(scrollBy).toHaveBeenCalledWith({ top: -300 });
+      vi.unstubAllGlobals();
+    });
+
+    it("does not scroll when the hero is at the top or not pinned", () => {
+      const scrollBy = vi.fn();
+      vi.stubGlobal("scrollBy", scrollBy);
+      setDesktop(true);
+      const first = render(<HeroSection onNavigate={() => {}} />);
+      vi.spyOn(first.container.querySelector("section")!, "getBoundingClientRect").mockReturnValue({ top: 96 } as DOMRect);
+      screen.getByRole("button", { name: "Ver projetos" }).focus();
+      first.unmount();
+      setDesktop(false);
+      const second = render(<HeroSection onNavigate={() => {}} />);
+      vi.spyOn(second.container.querySelector("section")!, "getBoundingClientRect").mockReturnValue({ top: -204 } as DOMRect);
+      screen.getByRole("button", { name: "Ver projetos" }).focus();
+      expect(scrollBy).not.toHaveBeenCalled();
+      vi.unstubAllGlobals();
+    });
+  });
 });

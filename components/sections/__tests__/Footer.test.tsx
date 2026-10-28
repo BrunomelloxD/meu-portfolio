@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { Footer } from "../Footer";
 import { SOCIAL_LINKS, SECTION_IDS } from "@/lib/constants";
@@ -70,6 +70,24 @@ describe("<Footer />", () => {
         expect(link).not.toHaveAttribute("tabindex", "-1");
         expect(link.closest("[aria-hidden='true'], [inert]")).toBeNull();
       }
+    });
+  });
+
+  describe("focus in the curtain (SIG-114)", () => {
+    it("scrolls to the end when focus enters the footer, and stays put when already there", () => {
+      const scrollTo = vi.fn();
+      vi.stubGlobal("scrollTo", scrollTo);
+      Object.defineProperty(document.documentElement, "scrollHeight", { configurable: true, value: 9000 });
+      Object.defineProperty(window, "innerHeight", { configurable: true, value: 900 });
+      Object.defineProperty(window, "scrollY", { configurable: true, value: 7000 });
+      render(<Footer />);
+      screen.getByRole("link", { name: "Voltar ao topo" }).focus();
+      expect(scrollTo).toHaveBeenCalledWith({ top: 8100 });
+      scrollTo.mockClear();
+      Object.defineProperty(window, "scrollY", { configurable: true, value: 8100 });
+      screen.getByRole("link", { name: "GitHub" }).focus();
+      expect(scrollTo).not.toHaveBeenCalled();
+      vi.unstubAllGlobals();
     });
   });
 });
