@@ -46,6 +46,8 @@ export function StatementBand() {
   const reduced = !!useReducedMotion()
   const inView = useInView(ref)
   const [held, setHeld] = useState(false)
+  // It runs for more than 5s, so it needs a stop control too (WCAG 2.2.2, SIG-77).
+  const [stopped, setStopped] = useState(false)
 
   const x = useMotionValue(0)
   const { scrollY } = useScroll()
@@ -68,7 +70,7 @@ export function StatementBand() {
   }, [reduced])
 
   useAnimationFrame((_, delta) => {
-    if (reduced || !inView || held) return
+    if (reduced || !inView || held || stopped) return
     x.set(marqueeStep(x.get(), delta, velocity.get(), copyWidth.current))
   })
 
@@ -97,9 +99,19 @@ export function StatementBand() {
             </motion.div>
           </>
         )}
-        <p className="px-4 text-base text-ink-soft md:px-16 lg:max-w-[720px] lg:text-[17px] lg:leading-[27px]">
-          {HIGHLIGHT.subtitle}
-        </p>
+        <div className="flex flex-col gap-3 px-4 sm:flex-row sm:items-center sm:justify-between md:px-16">
+          <p className="text-base text-ink-soft lg:max-w-[720px] lg:text-[17px] lg:leading-[27px]">{HIGHLIGHT.subtitle}</p>
+          {!reduced && (
+            <button
+              type="button"
+              aria-pressed={stopped}
+              onClick={() => setStopped((v) => !v)}
+              className="inline-flex min-h-[44px] items-center self-start rounded-full border border-line-strong px-[18px] font-mono text-[13px] text-ink-soft transition-[color,border-color] duration-200 ease-out-strong hover:border-ink hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface sm:self-auto"
+            >
+              {stopped ? "Retomar faixa" : "Pausar faixa"}
+            </button>
+          )}
+        </div>
       </motion.section>
     </div>
   )

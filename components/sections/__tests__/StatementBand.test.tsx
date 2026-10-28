@@ -146,3 +146,25 @@ describe("entrance clip (SIG-76)", () => {
     expect(clip.output).toEqual(["inset(0% 50% 0% 50%)", "inset(0% 0% 0% 0%)"]);
   });
 });
+
+describe("stop control (SIG-77)", () => {
+  it("stops and restarts the track with an aria-pressed button that has a 44px target and a visible focus ring", () => {
+    render(<StatementBand />);
+    const button = screen.getByRole("button", { name: "Pausar faixa" });
+    expect(button).toHaveAttribute("aria-pressed", "false");
+    expect(button).toHaveClass("min-h-[44px]", "focus-visible:ring-2", "focus-visible:ring-accent");
+    fireEvent.click(button);
+    expect(screen.getByRole("button", { name: "Retomar faixa" })).toHaveAttribute("aria-pressed", "true");
+    frame(1000);
+    expect(trackX()).toBe(0);
+    fireEvent.click(screen.getByRole("button", { name: "Retomar faixa" }));
+    frame(1000);
+    expect(trackX()).toBeCloseTo(-40);
+  });
+
+  it("is not shown when nothing moves (reduced motion)", () => {
+    vi.mocked(useReducedMotion).mockReturnValue(true);
+    render(<StatementBand />);
+    expect(screen.queryByRole("button")).toBeNull();
+  });
+});
