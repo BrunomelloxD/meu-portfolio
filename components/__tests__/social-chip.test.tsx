@@ -79,6 +79,22 @@ describe("<SocialChip /> email copy (CONT-06..CONT-08)", () => {
     expect(screen.getByText("↗")).toBeInTheDocument();
   });
 
+  it("overlays 'Copiado' on the label in the same grid cell, so the width stays (CONT-07)", async () => {
+    render(<SocialChip href="mailto:brunomello.ti@gmail.com" label="Email" />);
+    const label = screen.getByText("Email");
+    const overlay = screen.getByText("Copiado");
+    expect(label.parentElement).toBe(overlay.parentElement);
+    expect(label.parentElement).toHaveClass("grid");
+    for (const el of [label, overlay]) expect(el).toHaveClass("col-start-1", "row-start-1");
+    expect(label).not.toHaveClass("opacity-0");
+    expect(overlay).toHaveClass("opacity-0");
+
+    fireEvent.click(screen.getByRole("link", { name: "Email" }));
+    await act(async () => {});
+    expect(label).toHaveClass("opacity-0");
+    expect(overlay).not.toHaveClass("opacity-0");
+  });
+
   it("says nothing when the copy fails or there is no clipboard (CONT-08)", async () => {
     writeText.mockRejectedValue(new Error("denied"));
     const { unmount } = render(<SocialChip href="mailto:brunomello.ti@gmail.com" label="Email" />);

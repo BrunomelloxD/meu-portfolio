@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { renderToString } from "react-dom/server";
 import { useReducedMotion, useScroll, useSpring, useTransform } from "motion/react";
 import userEvent from "@testing-library/user-event";
@@ -334,5 +334,14 @@ describe("<HeroSection />", () => {
       expect(scrollBy).not.toHaveBeenCalled();
       vi.unstubAllGlobals();
     });
+  });
+
+  it("copies the address when its Email chip is clicked, and keeps the mailto (Hero, CONT-06)", () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText } });
+    render(<HeroSection onNavigate={() => {}} />);
+    expect(fireEvent.click(screen.getByRole("link", { name: "Email" }))).toBe(true);
+    expect(writeText).toHaveBeenCalledWith(SOCIAL_LINKS.email);
+    Object.defineProperty(navigator, "clipboard", { configurable: true, value: undefined });
   });
 });

@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { Footer } from "../Footer";
 import { SOCIAL_LINKS, SECTION_IDS } from "@/lib/constants";
 
@@ -90,5 +90,14 @@ describe("<Footer />", () => {
       expect(scrollTo).not.toHaveBeenCalled();
       vi.unstubAllGlobals();
     });
+  });
+
+  it("copies the address when its Email chip is clicked, and keeps the mailto (Footer, CONT-06)", () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText } });
+    render(<Footer />);
+    expect(fireEvent.click(screen.getByRole("link", { name: "Email" }))).toBe(true);
+    expect(writeText).toHaveBeenCalledWith(SOCIAL_LINKS.email);
+    Object.defineProperty(navigator, "clipboard", { configurable: true, value: undefined });
   });
 });

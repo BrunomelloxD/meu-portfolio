@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { usePresence } from "motion/react";
 import { MobileMenu } from "../MobileMenu";
@@ -77,5 +77,14 @@ describe("<MobileMenu />", () => {
     vi.mocked(usePresence).mockReturnValue([false, vi.fn()]);
     render(<MobileMenu links={links} activeSection="" onNavigate={() => {}} onClose={() => {}} />);
     expect(screen.getByRole("dialog", { hidden: true })).toHaveAttribute("inert");
+  });
+
+  it("copies the address when its Email chip is clicked, and keeps the mailto (menu mobile, CONT-06)", () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText } });
+    render(<MobileMenu links={links} activeSection="" onNavigate={() => {}} onClose={() => {}} />);
+    expect(fireEvent.click(screen.getByRole("link", { name: "Email" }))).toBe(true);
+    expect(writeText).toHaveBeenCalledWith("brunomello.ti@gmail.com");
+    Object.defineProperty(navigator, "clipboard", { configurable: true, value: undefined });
   });
 });
