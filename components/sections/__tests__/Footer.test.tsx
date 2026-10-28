@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { Footer } from "../Footer";
@@ -23,12 +25,51 @@ describe("<Footer />", () => {
 
   it("closes with the name at display size and a 'Voltar ao topo' link to the start", () => {
     render(<Footer />);
-    expect(screen.getByText("Bruno Mello")).toHaveClass("font-mono", "font-bold");
+    // The name sits in a ScrambleText (sr-only + painted copy), inside the display paragraph.
+    const name = screen.getByText((_, el) => el?.tagName === "P" && el.querySelector("[data-scramble]") !== null);
+    expect(name).toHaveClass("font-mono", "font-bold");
+    expect(name.querySelector(".sr-only")).toHaveTextContent("Bruno Mello");
     expect(screen.getByRole("link", { name: "Voltar ao topo" })).toHaveAttribute("href", `#${SECTION_IDS.HOME}`);
   });
 
   it("no longer renders the RPG micro-label", () => {
     render(<Footer />);
     expect(screen.queryByText("Sítio da Graça")).not.toBeInTheDocument();
+  });
+
+  describe("curtain (SIG-110..SIG-113)", () => {
+    const page = readFileSync(resolve(process.cwd(), "app/page.tsx"), "utf8");
+
+    it("waits under <main> from lg: sticky at the bottom, below an opaque main with a higher z-index (SIG-110)", () => {
+      const { container } = render(<Footer />);
+      const footer = container.querySelector("footer")!;
+      expect(footer).toHaveClass("lg:motion-safe:sticky", "lg:motion-safe:bottom-0", "relative", "z-0");
+      const main = page.match(/<main id="conteudo" className="([^"]+)"/)![1].split(" ");
+      expect(main).toEqual(expect.arrayContaining(["relative", "z-10", "bg-bg"]));
+      // The footer comes right after <main>, so it is what <main> uncovers.
+      expect(page.indexOf("<Footer />")).toBeGreaterThan(page.indexOf("</main>"));
+    });
+
+    it("decodes the name with ScrambleText (SIG-111)", () => {
+      const { container } = render(<Footer />);
+      expect(container.querySelector("footer p [data-scramble] .sr-only")).toHaveTextContent("Bruno Mello");
+    });
+
+    it("stays in normal flow below lg and under reduced motion: every sticky class is lg + motion-safe (SIG-112)", () => {
+      const { container } = render(<Footer />);
+      const classes = [...container.querySelector("footer")!.classList].filter((c) => /sticky|bottom-0/.test(c));
+      expect(classes).toHaveLength(2);
+      for (const c of classes) expect(c.startsWith("lg:motion-safe:")).toBe(true);
+    });
+
+    it("keeps every link focusable (SIG-113)", () => {
+      render(<Footer />);
+      const links = screen.getAllByRole("link");
+      expect(links.map((l) => l.textContent)).toEqual(expect.arrayContaining(["GitHub↗", "LinkedIn↗", "Email↗", "Voltar ao topo↑"]));
+      for (const link of links) {
+        expect(link).not.toHaveAttribute("tabindex", "-1");
+        expect(link.closest("[aria-hidden='true'], [inert]")).toBeNull();
+      }
+    });
   });
 });

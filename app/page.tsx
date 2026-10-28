@@ -26,7 +26,7 @@ export default function Home() {
     <div className="relative min-h-[100dvh] overflow-x-clip bg-bg text-ink">
       <TopNav activeSection={activeSection} onNavigate={scrollToSection} />
 
-      <main id="conteudo" className="relative">
+      <main id="conteudo" className="relative z-10 bg-bg">
         <DrawnCircles />
         <HeroSection onNavigate={scrollToSection} />
 
