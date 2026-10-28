@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
 
 vi.mock("@emailjs/browser", () => ({ __esModule: true, default: { send: vi.fn() }, send: vi.fn() }));
 
@@ -39,6 +39,22 @@ describe("<ContactSection />", () => {
     const email = screen.getByRole("link", { name: "brunomello.ti@gmail.com" });
     expect(email).toHaveAttribute("href", "mailto:brunomello.ti@gmail.com");
     expect(email).toHaveClass("font-mono", "font-bold");
+  });
+
+  it("copies the address on click, keeps the mailto and announces it (CONT-06, CONT-07)", async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText } });
+    const { container } = render(<ContactSection />);
+    const email = screen.getByRole("link", { name: "brunomello.ti@gmail.com" });
+    const status = container.querySelector('[data-email-status]') as HTMLElement;
+    expect(status).toHaveAttribute("role", "status");
+    expect(status).toHaveTextContent("");
+
+    expect(fireEvent.click(email)).toBe(true);
+    expect(writeText).toHaveBeenCalledWith("brunomello.ti@gmail.com");
+    await act(async () => {});
+    expect(within(status).getByText("Email copiado")).toBeInTheDocument();
+    Object.defineProperty(navigator, "clipboard", { configurable: true, value: undefined });
   });
 
   it("shows phone as a tel link and the location (CONT-02)", () => {

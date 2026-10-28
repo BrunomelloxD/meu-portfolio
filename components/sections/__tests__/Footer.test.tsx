@@ -65,7 +65,8 @@ describe("<Footer />", () => {
     it("keeps every link focusable (SIG-113)", () => {
       render(<Footer />);
       const links = screen.getAllByRole("link");
-      expect(links.map((l) => l.textContent)).toEqual(expect.arrayContaining(["GitHub↗", "LinkedIn↗", "Email↗", "Voltar ao topo↑"]));
+      // By accessible name: the email chip also holds its aria-hidden "Copiado" overlay (CONT-07).
+      for (const name of [/^GitHub/, /^LinkedIn/, /^Email/, /^Voltar ao topo/]) expect(links).toContain(screen.getByRole("link", { name }));
       for (const link of links) {
         expect(link).not.toHaveAttribute("tabindex", "-1");
         expect(link.closest("[aria-hidden='true'], [inert]")).toBeNull();

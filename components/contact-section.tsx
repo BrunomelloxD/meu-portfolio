@@ -6,10 +6,12 @@ import { ContactForm } from "@/components/contact/contact-form"
 import { Reveal, RevealItem } from "@/components/reveal"
 import { SectionLabel } from "@/components/section-label"
 import { SocialChip } from "@/components/social-chip"
+import { useCopyText } from "@/hooks/useCopyText"
 import { PERSONAL_INFO, SECTION_IDS, SOCIAL_LINKS } from "@/lib/constants"
 
 export default function ContactSection() {
   const [user, domain] = SOCIAL_LINKS.email.split("@")
+  const { copied, copy } = useCopyText()
   const ref = useRef<HTMLElement>(null)
   const reduced = !!useReducedMotion()
   // The last chapter rises out of a rounded cut as it enters (E10).
@@ -46,6 +48,8 @@ export default function ContactSection() {
       <Reveal className="mt-8 lg:mt-14">
         <a
           href={`mailto:${SOCIAL_LINKS.email}`}
+          // Copy the address too, for visitors without a mail app; the mailto still opens (CONT-06).
+          onClick={() => copy(SOCIAL_LINKS.email)}
           className="group inline-flex flex-wrap items-center gap-x-5 font-mono text-[40px] font-bold leading-[44px] tracking-[-0.04em] text-ink transition-colors duration-200 ease-out-strong hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent lg:text-[clamp(56px,6.6vw,96px)] lg:leading-[0.96]"
         >
           <span>
@@ -56,6 +60,10 @@ export default function ContactSection() {
             ↗
           </span>
         </a>
+        {/* Height kept so the message never pushes the content below (CONT-07). */}
+        <p role="status" data-email-status className="mt-3 min-h-5 font-mono text-[13px] text-accent">
+          {copied ? "Email copiado" : ""}
+        </p>
       </Reveal>
 
       <Reveal className="mt-8 flex flex-col gap-8 lg:mt-14 lg:flex-row lg:gap-16">
