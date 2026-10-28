@@ -77,6 +77,15 @@
   body {
     @apply bg-background text-foreground;
   }
+  /* Selected text in the theme, not the browser grey (SEL-01). */
+  ::selection {
+    background-color: var(--accent);
+    color: var(--bg);
+  }
+  /* Controls and display titles are not text to copy (SEL-02); content, email and phone stay selectable (SEL-03). */
+  :where(button, [role="button"], nav, h1, h2, a:not([href^="mailto:"], [href^="tel:"])) {
+    user-select: none;
+  }
 }
 
 /* Hero entrance in CSS so the server HTML is visible without JavaScript (spec edge case). */

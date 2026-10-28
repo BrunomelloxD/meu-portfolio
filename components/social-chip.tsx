@@ -35,7 +35,7 @@ export function SocialChip({ href, label, className }: SocialChipProps) {
       whileTap={{ scale: 0.97 }}
       transition={spring.press}
       className={cn(
-        "inline-flex min-h-[44px] items-center gap-2 rounded-full border border-line-strong px-[18px] text-sm font-semibold text-ink",
+        "inline-flex min-h-[44px] select-none items-center gap-2 rounded-full border border-line-strong px-[18px] text-sm font-semibold text-ink",
         "transition-[color,background-color,border-color] duration-200 ease-out-strong hover:border-ink hover:bg-surface-2",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
         className,

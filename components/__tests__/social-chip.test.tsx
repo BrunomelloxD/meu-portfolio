@@ -110,6 +110,11 @@ describe("<SocialChip /> email copy (CONT-06..CONT-08)", () => {
     expect(status()).toHaveTextContent("");
   });
 
+  it("is not text to select, though a mailto link is (SEL-02)", () => {
+    render(<SocialChip href="mailto:brunomello.ti@gmail.com" label="Email" />);
+    expect(screen.getByRole("link", { name: "Email" })).toHaveClass("select-none");
+  });
+
   it("leaves other links alone: no copy, no status region", () => {
     render(<SocialChip href="https://github.com/BrunomelloxD" label="GitHub" />);
     fireEvent.click(screen.getByRole("link", { name: "GitHub" }));
