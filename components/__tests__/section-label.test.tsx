@@ -10,8 +10,11 @@ describe("<SectionLabel />", () => {
 
   it("shows the inspiration pattern …/Label… with the dots hidden from assistive tech", () => {
     const { container } = render(<SectionLabel>Sobre</SectionLabel>);
-    expect(container.textContent).toBe("…/Sobre…");
-    const hidden = container.querySelectorAll('[aria-hidden="true"]');
+    // What is painted: everything but the sr-only copy the scramble keeps for screen readers (SIG-42).
+    const visible = container.querySelector("h2")!.cloneNode(true) as HTMLElement;
+    visible.querySelectorAll(".sr-only").forEach((n) => n.remove());
+    expect(visible.textContent).toBe("…/Sobre…");
+    const hidden = container.querySelectorAll('h2 > [aria-hidden="true"]');
     expect(Array.from(hidden).map((n) => n.textContent)).toEqual(["…/", "…"]);
   });
 

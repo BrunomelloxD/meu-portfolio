@@ -1,4 +1,5 @@
 import { Reveal, RevealItem } from "@/components/reveal"
+import { ScrambleText } from "@/components/scramble-text"
 import { WorkRow } from "@/components/work/work-row"
 import { SECTION_IDS } from "@/lib/constants"
 import { experiences } from "@/lib/content"
@@ -12,7 +13,7 @@ export function WorkTable() {
             id="experiencia-title"
             className="px-4 text-right font-mono text-[52px] font-bold leading-[52px] tracking-[-0.04em] text-ink md:px-16 lg:text-8xl lg:leading-[92px]"
           >
-            Experiência
+            <ScrambleText text="Experiência" />
           </h2>
         </RevealItem>
       </Reveal>
