@@ -357,58 +357,79 @@ describe("drag on desktop (SIG-121, SIG-64, SIG-65, SIG-126)", () => {
   });
 });
 
-describe("shutter on the newly active slide (SIG-67..SIG-69)", () => {
-  const shutterOf = (slide: Element) => slide.querySelector("[data-shutter]");
+describe("entrance of the newly active slide (SIG-123, SIG-124, SIG-126)", () => {
+  const pictureOf = (slide: Element) => slide.querySelector('[data-enter="picture"]');
+  const textOf = (slide: Element) => slide.querySelector('[data-enter="text"]');
   const active = () => slides().find((s) => s.getAttribute("aria-hidden") !== "true")!;
+  const base = { duration: 0.32, ease: [0.32, 0.72, 0, 1] };
 
-  it("opens the clip top to bottom over dur.slow inOut, and settles the picture from 1.12 over dur.hero soft (SIG-67)", async () => {
+  it("fades the picture in and the text in from 12px, both over dur.base out, without clip or scale (SIG-123)", async () => {
     setViewport(1440);
     const user = userEvent.setup();
     render(<ProjectCarousel />);
     await user.click(screen.getByRole("button", { name: "Próximo projeto" }));
-    const shutter = shutterOf(active())!;
-    expect(motionOf(shutter)).toEqual({
-      initial: { clipPath: "inset(0% 0% 100% 0%)" },
-      animate: { clipPath: "inset(0% 0% 0% 0%)" },
-      transition: { duration: 0.7, ease: [0.76, 0, 0.24, 1] },
-    });
-    expect(motionOf(shutter.firstElementChild!)).toEqual({
-      initial: { scale: 1.12 },
-      animate: { scale: 1 },
-      transition: { duration: 0.9, ease: [0.33, 1, 0.68, 1] },
-    });
-    expect(within(shutter as HTMLElement).getByRole("img")).toBeInTheDocument();
+
+    const picture = pictureOf(active())!;
+    expect(motionOf(picture)).toEqual({ initial: { opacity: 0 }, animate: { opacity: 1 }, transition: base });
+    expect(within(picture as HTMLElement).getByRole("img")).toBeInTheDocument();
+
+    const text = textOf(active())!;
+    expect(motionOf(text)).toEqual({ initial: { opacity: 0, x: 12 }, animate: { opacity: 1, x: 0 }, transition: base });
+    expect(within(text as HTMLElement).getByRole("heading")).toBeInTheDocument();
+
+    expect(document.querySelector("[data-shutter]")).toBeNull();
+    expect(document.body.innerHTML).not.toMatch(/clipPath|"scale":1\.12/);
     // Only the active slide carries it.
-    expect(slides().filter((s) => shutterOf(s))).toHaveLength(1);
+    expect(slides().filter((s) => pictureOf(s) || textOf(s))).toEqual([active()]);
   });
 
-  it("renders the slide that is active on mount without clip or scale (SIG-68)", () => {
+  it("replays the entrance on the next slide", async () => {
+    setViewport(1440);
+    const user = userEvent.setup();
+    render(<ProjectCarousel />);
+    const next = screen.getByRole("button", { name: "Próximo projeto" });
+    await user.click(next);
+    const first = textOf(active());
+    await user.click(next);
+    expect(textOf(active())).not.toBe(first);
+    expect(motionOf(textOf(active())!).initial).toEqual({ opacity: 0, x: 12 });
+  });
+
+  it("does not replay the entrance after a drag that lands on the same slide (edge case)", async () => {
+    setViewport(1440);
+    const { __motionPropsOf } = (await import("motion/react")) as unknown as {
+      __motionPropsOf: (el: Element) => { onDragEnd: (e: unknown, i: { offset: { x: number }; velocity: { x: number } }) => void };
+    };
+    render(<ProjectCarousel />);
+    act(() => __motionPropsOf(screen.getByTestId("track")).onDragEnd({}, { offset: { x: -60 }, velocity: { x: 0 } }));
+    expect(slides().filter((s) => pictureOf(s) || textOf(s))).toHaveLength(0);
+  });
+
+  it("renders the slide that is active on mount without an entrance (SIG-124)", () => {
     setViewport(1440);
     render(<ProjectCarousel />);
-    expect(slides().filter((s) => shutterOf(s))).toHaveLength(0);
+    expect(slides().filter((s) => pictureOf(s) || textOf(s))).toHaveLength(0);
   });
 
-  it("opens the slide reached by native scroll on phones", () => {
+  it("plays the entrance on the slide reached by native scroll on phones", () => {
     setViewport(390);
     render(<ProjectCarousel />);
     const track = screen.getByTestId("track");
     Object.defineProperty(track.children[0], "offsetWidth", { configurable: true, value: 343 });
     Object.defineProperty(track, "scrollLeft", { configurable: true, value: 359 });
     fireEvent.scroll(track);
-    expect(shutterOf(active())).not.toBeNull();
+    expect(pictureOf(active())).not.toBeNull();
+    expect(textOf(active())).not.toBeNull();
   });
 
-  it("only fades the picture in over dur.base under reduced motion (SIG-69)", async () => {
+  it("only fades, without the x offset, under reduced motion (SIG-126)", async () => {
     setViewport(1440);
     const { useReducedMotion } = await import("motion/react");
     vi.mocked(useReducedMotion).mockReturnValue(true);
     const user = userEvent.setup();
     render(<ProjectCarousel />);
     await user.click(screen.getByRole("button", { name: "Próximo projeto" }));
-    expect(motionOf(shutterOf(active())!)).toEqual({
-      initial: { opacity: 0 },
-      animate: { opacity: 1 },
-      transition: { duration: 0.32, ease: [0.32, 0.72, 0, 1] },
-    });
+    expect(motionOf(pictureOf(active())!)).toEqual({ initial: { opacity: 0 }, animate: { opacity: 1 }, transition: base });
+    expect(motionOf(textOf(active())!)).toEqual({ initial: { opacity: 0 }, animate: { opacity: 1 }, transition: base });
   });
 });

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, type ReactNode } from "react"
+import { useState } from "react"
 import Image from "next/image"
 import { motion, useReducedMotion } from "motion/react"
 import { Badge } from "@/components/ui/badge"
@@ -10,47 +10,20 @@ import { tween } from "@/lib/motion"
 
 interface ProjectSlideProps {
   project: Project
-  /** The slide just became the active one: open its picture like a shutter (E13). */
-  shutter?: boolean
+  /** The slide just became the active one: fade its picture in and slide its text 12px in (SIG-123). */
+  entering?: boolean
   /** Active slide, desktop, fine pointer, no reduced motion: hovering zooms the picture and lifts the CTA (SIG-122). */
   hover?: boolean
 }
 
 const zoom = { hover: { scale: 1.03 } }
 const lift = { hover: { y: -6 } }
+// Reduced motion keeps only the fade (SIG-126).
+const fadeIn = { initial: { opacity: 0 }, animate: { opacity: 1 }, transition: tween("base") }
+const slideIn = { initial: { opacity: 0, x: 12 }, animate: { opacity: 1, x: 0 }, transition: tween("base") }
 
-/** Clip opens top to bottom while the picture settles from 1.12; reduced motion only fades it in. */
-function Shutter({ children }: { children: ReactNode }) {
+export function ProjectSlide({ project, entering = false, hover = false }: ProjectSlideProps) {
   const reduced = !!useReducedMotion()
-  if (reduced) {
-    return (
-      <motion.div
-        data-shutter
-        className="absolute inset-0"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={tween("base")}
-      >
-        {children}
-      </motion.div>
-    )
-  }
-  return (
-    <motion.div
-      data-shutter
-      className="absolute inset-0"
-      initial={{ clipPath: "inset(0% 0% 100% 0%)" }}
-      animate={{ clipPath: "inset(0% 0% 0% 0%)" }}
-      transition={tween("slow", "inOut")}
-    >
-      <motion.div className="absolute inset-0" initial={{ scale: 1.12 }} animate={{ scale: 1 }} transition={tween("hero", "soft")}>
-        {children}
-      </motion.div>
-    </motion.div>
-  )
-}
-
-export function ProjectSlide({ project, shutter = false, hover = false }: ProjectSlideProps) {
   const [imageFailed, setImageFailed] = useState(false)
   const picture = imageFailed ? (
     <div
@@ -77,11 +50,23 @@ export function ProjectSlide({ project, shutter = false, hover = false }: Projec
     >
       <div className="relative h-[190px] shrink-0 overflow-hidden md:h-auto md:w-[340px]">
         <motion.div data-picture className="absolute inset-0" variants={zoom} transition={tween("base")}>
-          {shutter ? <Shutter>{picture}</Shutter> : picture}
+          {entering ? (
+            <motion.div data-enter="picture" className="absolute inset-0" {...fadeIn}>
+              {picture}
+            </motion.div>
+          ) : (
+            picture
+          )}
         </motion.div>
       </div>
 
-      <div className="flex flex-1 flex-col gap-4 p-5 md:p-8">
+      {/* The key remounts the column when the slide enters, so `initial` plays again (it only runs on mount). */}
+      <motion.div
+        key={entering ? "entering" : "rest"}
+        data-enter={entering ? "text" : undefined}
+        className="flex flex-1 flex-col gap-4 p-5 md:p-8"
+        {...(entering ? (reduced ? fadeIn : slideIn) : {})}
+      >
         <h3 className="font-mono text-xl font-bold leading-[26px] tracking-[-0.02em] text-ink md:text-2xl md:leading-[30px]">
           {project.title}
         </h3>
@@ -114,7 +99,7 @@ export function ProjectSlide({ project, shutter = false, hover = false }: Projec
             </div>
           )}
         </motion.div>
-      </div>
+      </motion.div>
     </motion.article>
   )
 }

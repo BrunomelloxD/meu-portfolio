@@ -27,7 +27,7 @@ export function ProjectCarousel() {
   const draggable = desktop && !reduced
   const trackRef = useRef<HTMLDivElement>(null)
   const dragged = useRef(false)
-  // Only a slide that becomes active after mount opens like a shutter (SIG-67, SIG-68).
+  // Only a slide that becomes active after mount plays the entrance (SIG-123, SIG-124).
   const [moved, setMoved] = useState(false)
   const total = projects.length
 
@@ -51,8 +51,11 @@ export function ProjectCarousel() {
   const onDragEnd = (_: unknown, info: PanInfo) => {
     dragged.current = Math.abs(info.offset.x) > CLICK_SLOP
     // A drag stops at the ends instead of wrapping around like the buttons.
+    const next = Math.min(total - 1, Math.max(0, dragTarget(index, info.offset.x, info.velocity.x)))
+    // A drag that springs back to the same slide is not a change: no entrance.
+    if (next === index) return
     setMoved(true)
-    setIndex(Math.min(total - 1, Math.max(0, dragTarget(index, info.offset.x, info.velocity.x))))
+    setIndex(next)
   }
 
   const onClickCapture = (event: MouseEvent) => {
@@ -121,7 +124,7 @@ export function ProjectCarousel() {
                 transition={tween("base", "inOut")}
                 className="w-[88%] shrink-0 snap-center lg:h-[380px] lg:w-[780px]"
               >
-                <ProjectSlide project={project} shutter={moved && active} hover={gestures && active} />
+                <ProjectSlide project={project} entering={moved && active} hover={gestures && active} />
               </motion.div>
             )
           })}
