@@ -1,6 +1,9 @@
 "use client"
 
-import { motion } from "motion/react"
+import { useRef } from "react"
+import { motion, useReducedMotion } from "motion/react"
+import { usePointerFine } from "@/hooks/useMediaQuery"
+import { useMagnet } from "@/hooks/useMagnet"
 import { spring } from "@/lib/motion"
 import { cn } from "@/lib/utils"
 
@@ -12,11 +15,18 @@ interface SocialChipProps {
 
 export function SocialChip({ href, label, className }: SocialChipProps) {
   const external = href.startsWith("http")
+  const ref = useRef<HTMLAnchorElement>(null)
+  const fine = usePointerFine()
+  const reduced = !!useReducedMotion()
+  const magnetic = fine && !reduced
+  // Mouse: a 6px magnetic pull (SIG-51) instead of the hover lift; touch keeps the lift.
+  const pull = useMagnet(ref, 6, magnetic)
   return (
     <motion.a
+      ref={ref}
       href={href}
       {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-      whileHover={{ y: -2 }}
+      {...(magnetic ? { style: { x: pull.x, y: pull.y } } : { whileHover: { y: -2 } })}
       whileTap={{ scale: 0.97 }}
       transition={spring.press}
       className={cn(

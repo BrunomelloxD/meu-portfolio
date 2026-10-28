@@ -201,7 +201,8 @@ describe("<HeroSection />", () => {
       const options = vi.mocked(useScroll).mock.lastCall![0] as { target: { current: Element }; offset: string[] };
       expect(options.offset).toEqual(["start start", "end end"]);
       expect(options.target.current.tagName).toBe("SECTION");
-      expect(vi.mocked(useSpring).mock.lastCall).toEqual([{ __mv: "scrollYProgress" }, spring.scroll]);
+      const scrollSpring = vi.mocked(useSpring).mock.calls.find(([source]) => (source as { __mv: string }).__mv === "scrollYProgress");
+      expect(scrollSpring).toEqual([{ __mv: "scrollYProgress" }, spring.scroll]);
     });
 
     it("scales the title 1 → 0.84 and moves it 0 → −6vh (SIG-31)", () => {
