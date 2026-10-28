@@ -317,6 +317,32 @@ describe("drag on desktop (SIG-121, SIG-64, SIG-65, SIG-126)", () => {
     expect(motionOf(screen.getByTestId("track")).transition).toEqual(settle);
   });
 
+  it("springs the track back to the slide after a drag that stays on it, with settle and the release velocity (SIG-121)", async () => {
+    setViewport(1440);
+    const motion = await import("motion/react");
+    render(<ProjectCarousel />);
+    await release(-121); // now on the second slide, x = -812
+    vi.mocked(motion.animate).mockClear();
+    await release(-60, -300);
+    expect(trackX()).toBe(-812);
+    const { style } = (await propsOf(screen.getByTestId("track"))) as { style: { x: unknown } };
+    expect(vi.mocked(motion.animate)).toHaveBeenCalledTimes(1);
+    const [value, target, options] = vi.mocked(motion.animate).mock.calls[0] as unknown as [unknown, number, object];
+    expect(value).toBe(style.x); // the track's own x, the value the drag moved
+    expect(target).toBe(-812);
+    expect(options).toEqual({ type: "spring", stiffness: 220, damping: 32, mass: 1, velocity: -300 });
+  });
+
+  it("leaves a drag that changes slide to the animate target (no extra animation)", async () => {
+    setViewport(1440);
+    const motion = await import("motion/react");
+    render(<ProjectCarousel />);
+    vi.mocked(motion.animate).mockClear();
+    await release(-200);
+    expect(trackX()).toBe(-812);
+    expect(vi.mocked(motion.animate)).not.toHaveBeenCalled();
+  });
+
   it("stops at the ends instead of wrapping", async () => {
     setViewport(1440);
     render(<ProjectCarousel />);

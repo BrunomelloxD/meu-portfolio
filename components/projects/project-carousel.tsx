@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef, useState, type KeyboardEvent, type MouseEvent } from "react"
-import { motion, useReducedMotion, type PanInfo } from "motion/react"
+import { animate, motion, useMotionValue, useReducedMotion, type PanInfo } from "motion/react"
 import { Button } from "@/components/ui/button"
 import { ProjectSlide } from "@/components/projects/project-slide"
 import { projects } from "@/lib/content"
@@ -26,6 +26,7 @@ export function ProjectCarousel() {
   // The track is draggable on desktop (SIG-121, SIG-65), not under reduced motion (SIG-126).
   const draggable = desktop && !reduced
   const trackRef = useRef<HTMLDivElement>(null)
+  const trackX = useMotionValue(0)
   const dragged = useRef(false)
   // Only a slide that becomes active after mount plays the entrance (SIG-123, SIG-124).
   const [moved, setMoved] = useState(false)
@@ -52,8 +53,11 @@ export function ProjectCarousel() {
     dragged.current = Math.abs(info.offset.x) > CLICK_SLOP
     // A drag stops at the ends instead of wrapping around like the buttons.
     const next = Math.min(total - 1, Math.max(0, dragTarget(index, info.offset.x, info.velocity.x)))
-    // A drag that springs back to the same slide is not a change: no entrance.
-    if (next === index) return
+    // Same slide: `animate` does not change, so spring the track back by hand. It is not a move: no entrance.
+    if (next === index) {
+      animate(trackX, -index * STEP, { ...spring.settle, velocity: info.velocity.x })
+      return
+    }
     setMoved(true)
     setIndex(next)
   }
@@ -104,7 +108,7 @@ export function ProjectCarousel() {
           // Below lg the track is a native scroll-snap list, so Motion leaves its transform alone.
           animate={desktop ? { x: -index * STEP } : undefined}
           transition={spring.settle}
-          style={desktop ? undefined : { transform: "none" }}
+          style={desktop ? { x: trackX } : { transform: "none" }}
           className={[
             "flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 [scrollbar-width:none]",
             "lg:snap-none lg:gap-8 lg:overflow-visible lg:px-0 lg:pl-[calc(50%-390px)]",
