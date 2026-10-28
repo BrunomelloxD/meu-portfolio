@@ -119,6 +119,7 @@ export function ProjectCarousel() {
                 role="group"
                 aria-roledescription="slide"
                 aria-label={`Projeto ${i + 1} de ${total}`}
+                data-cursor={active ? "ver" : undefined}
                 aria-hidden={active ? undefined : "true"}
                 inert={active ? undefined : true}
                 animate={{ opacity: desktop && !active ? 0.35 : 1 }}

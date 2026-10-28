@@ -116,3 +116,13 @@
     }
   }
 }
+
+/* Custom cursor (E4, SIG-84): the system cursor hides while the dot is mounted, except in text fields. */
+html.has-custom-cursor,
+html.has-custom-cursor * {
+  cursor: none;
+}
+
+html.has-custom-cursor :is(input, textarea, select, [contenteditable]) {
+  cursor: revert;
+}
