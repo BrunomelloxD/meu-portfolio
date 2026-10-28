@@ -1,3 +1,7 @@
+"use client"
+
+import { useRef } from "react"
+import { motion, useReducedMotion, useScroll, useTransform } from "motion/react"
 import { ContactForm } from "@/components/contact/contact-form"
 import { Reveal, RevealItem } from "@/components/reveal"
 import { SectionLabel } from "@/components/section-label"
@@ -6,9 +10,23 @@ import { PERSONAL_INFO, SECTION_IDS, SOCIAL_LINKS } from "@/lib/constants"
 
 export default function ContactSection() {
   const [user, domain] = SOCIAL_LINKS.email.split("@")
+  const ref = useRef<HTMLElement>(null)
+  const reduced = !!useReducedMotion()
+  // The last chapter rises out of a rounded cut as it enters (E10).
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "start 0.6"] })
+  const clipPath = useTransform(scrollYProgress, [0, 1], [
+    "inset(12% 0% 0% 0% round 40px)",
+    "inset(0% 0% 0% 0% round 40px)",
+  ])
 
   return (
-    <section id={SECTION_IDS.CONTACT} aria-labelledby="contato-title" className="scroll-mt-24 px-4 pt-24 md:px-16 lg:pt-44">
+    <motion.section
+      ref={ref}
+      id={SECTION_IDS.CONTACT}
+      aria-labelledby="contato-title"
+      style={reduced ? undefined : { clipPath }}
+      className="scroll-mt-24 px-4 pt-24 md:px-16 lg:pt-44"
+    >
       <Reveal className="flex flex-col gap-5 lg:flex-row">
         <RevealItem className="lg:w-[520px] lg:shrink-0 lg:pt-2.5">
           <SectionLabel id="contato-title">Contato</SectionLabel>
@@ -66,6 +84,6 @@ export default function ContactSection() {
           <ContactForm />
         </div>
       </Reveal>
-    </section>
+    </motion.section>
   )
 }

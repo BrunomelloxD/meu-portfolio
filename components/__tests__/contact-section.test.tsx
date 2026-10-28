@@ -70,3 +70,29 @@ describe("<ContactSection />", () => {
     });
   });
 });
+
+describe("chapter clip (SIG-78, SIG-79)", () => {
+  it("rises from inset(12% … round 40px) to inset(0 … round 40px) as it enters", async () => {
+    const { useScroll } = await import("motion/react");
+    const { container } = render(<ContactSection />);
+    const section = container.querySelector(`#${SECTION_IDS.CONTACT}`)!;
+    const options = vi.mocked(useScroll).mock.calls.map(([o]) => o).find((o) => o && "target" in o) as {
+      target: { current: Element };
+      offset: string[];
+    };
+    expect(options.offset).toEqual(["start end", "start 0.6"]);
+    expect(options.target.current).toBe(section);
+    const clip = motionOf(section).style.clipPath;
+    expect(clip.input).toEqual([0, 1]);
+    expect(clip.output).toEqual(["inset(12% 0% 0% 0% round 40px)", "inset(0% 0% 0% 0% round 40px)"]);
+  });
+
+  it("has no inline clip-path under reduced motion", async () => {
+    const { useReducedMotion } = await import("motion/react");
+    vi.mocked(useReducedMotion).mockReturnValue(true);
+    const { container } = render(<ContactSection />);
+    const section = container.querySelector(`#${SECTION_IDS.CONTACT}`) as HTMLElement;
+    expect(section.style.clipPath).toBe("");
+    expect(motionOf(section)).not.toHaveProperty("style");
+  });
+});
