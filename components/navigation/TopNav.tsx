@@ -5,8 +5,12 @@ import { AnimatePresence, motion } from "motion/react"
 import { Button } from "@/components/ui/button"
 import { MobileMenu } from "@/components/navigation/MobileMenu"
 import { ReadingProgress } from "@/components/navigation/reading-progress"
+import { ScrambleFrame } from "@/components/scramble-text"
+import { usePointerFine } from "@/hooks/useMediaQuery"
+import { useScramble } from "@/hooks/useScramble"
 import { NAVIGATION_ITEMS, SECTION_IDS } from "@/lib/constants"
 import { spring } from "@/lib/motion"
+import { hoverResolve } from "@/lib/text-motion"
 
 interface TopNavProps {
   activeSection: string
@@ -15,6 +19,52 @@ interface TopNavProps {
 
 const HEADER_LINKS = [SECTION_IDS.ABOUT, SECTION_IDS.EXPERIENCE, SECTION_IDS.PROJECTS, SECTION_IDS.SKILLS, SECTION_IDS.CONTACT]
 const navLinks = HEADER_LINKS.map((id) => NAVIGATION_ITEMS.find((item) => item.id === id)!)
+
+/** Nav label that replays a 300ms scramble when a mouse hovers its link (SIG-44). */
+function useHoverScramble(label: string) {
+  const fine = usePointerFine()
+  const { frame, settled, play } = useScramble(label, hoverResolve)
+  return {
+    onPointerEnter: fine ? play : undefined,
+    // The proportional face would reflow the row while glyphs swap: an invisible copy of the label holds its width.
+    content: (
+      <span className="inline-grid">
+        <span aria-hidden="true" className="invisible col-start-1 row-start-1">
+          {label}
+        </span>
+        <span className="col-start-1 row-start-1 whitespace-nowrap">
+          <ScrambleFrame text={label} frame={frame} settled={settled} />
+        </span>
+      </span>
+    ),
+  }
+}
+
+function NavLink({ id, label, active, onNavigate }: { id: string; label: string; active: boolean; onNavigate: (id: string) => void }) {
+  const scramble = useHoverScramble(label)
+  return (
+    <a
+      href={`#${id}`}
+      aria-current={active ? "true" : undefined}
+      onPointerEnter={scramble.onPointerEnter}
+      onClick={(event) => {
+        event.preventDefault()
+        onNavigate(id)
+      }}
+      className="relative flex flex-col items-center rounded-[10px] px-2.5 pb-4 pt-2 text-[15px] text-ink-soft transition-colors duration-200 ease-out-strong hover:text-ink aria-[current=true]:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+    >
+      {scramble.content}
+      {active && (
+        <motion.span
+          layoutId="nav-indicator"
+          transition={{ layout: spring.glide }}
+          aria-hidden="true"
+          className="absolute inset-x-0 bottom-2 mx-auto h-0.5 w-4 rounded-full bg-accent"
+        />
+      )}
+    </a>
+  )
+}
 
 export function TopNav({ activeSection, onNavigate }: TopNavProps) {
   const [isOpen, setIsOpen] = useState(false)
@@ -55,25 +105,7 @@ export function TopNav({ activeSection, onNavigate }: TopNavProps) {
               const active = activeSection === item.id
               return (
                 <li key={item.id}>
-                  <a
-                    href={`#${item.id}`}
-                    aria-current={active ? "true" : undefined}
-                    onClick={(event) => {
-                      event.preventDefault()
-                      navigate(item.id)
-                    }}
-                    className="relative flex flex-col items-center rounded-[10px] px-2.5 pb-4 pt-2 text-[15px] text-ink-soft transition-colors duration-200 ease-out-strong hover:text-ink aria-[current=true]:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-                  >
-                    {item.label}
-                    {active && (
-                      <motion.span
-                        layoutId="nav-indicator"
-                        transition={{ layout: spring.glide }}
-                        aria-hidden="true"
-                        className="absolute inset-x-0 bottom-2 mx-auto h-0.5 w-4 rounded-full bg-accent"
-                      />
-                    )}
-                  </a>
+                  <NavLink id={item.id} label={item.label} active={active} onNavigate={navigate} />
                 </li>
               )
             })}

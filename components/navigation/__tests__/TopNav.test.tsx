@@ -1,6 +1,6 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { isValidElement } from "react";
-import { render, screen, within } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { AnimatePresence } from "motion/react";
 import { TopNav } from "../TopNav";
@@ -17,8 +17,11 @@ const indicators = () =>
 describe("<TopNav />", () => {
   it("lists exactly Sobre, Experiência, Projetos, Habilidades, Contato (NAV-01)", () => {
     render(<TopNav activeSection={SECTION_IDS.HOME} onNavigate={() => {}} />);
-    const labels = within(desktopNav()).getAllByRole("link").map((l) => l.textContent);
-    expect(labels).toEqual(["Sobre", "Experiência", "Projetos", "Habilidades", "Contato"]);
+    // Accessible names: the label text also holds the scramble's sr-only and width-holding copies (SIG-44).
+    const links = within(desktopNav()).getAllByRole("link");
+    const labels = ["Sobre", "Experiência", "Projetos", "Habilidades", "Contato"];
+    expect(links).toHaveLength(labels.length);
+    links.forEach((link, i) => expect(link).toHaveAccessibleName(labels[i]));
   });
 
   it("marks the active section link with aria-current (NAV-02)", () => {
@@ -204,5 +207,81 @@ describe("<TopNav />", () => {
 
     expect(onNavigate).toHaveBeenCalledWith(SECTION_IDS.EXPERIENCE);
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+});
+
+describe("nav hover scramble (SIG-44)", () => {
+  let frames: FrameRequestCallback[] = [];
+  const runFrame = (now: number) => {
+    const queue = frames;
+    frames = [];
+    act(() => queue.forEach((cb) => cb(now)));
+  };
+  const painted = (name: string) =>
+    within(desktopNav()).getByRole("link", { name }).querySelector(".row-start-1:not(.invisible) > [aria-hidden]")!;
+
+  beforeEach(() => {
+    frames = [];
+    vi.stubGlobal("requestAnimationFrame", vi.fn((cb: FrameRequestCallback) => frames.push(cb)));
+    vi.stubGlobal("cancelAnimationFrame", vi.fn());
+  });
+  afterEach(() => {
+    cleanup();
+    vi.unstubAllGlobals();
+  });
+
+  const fine = (matches: boolean) =>
+    vi.mocked(window.matchMedia).mockImplementation(
+      (query: string) =>
+        ({
+          matches: query === "(hover: hover) and (pointer: fine)" ? matches : false,
+          media: query,
+          addEventListener: vi.fn(),
+          removeEventListener: vi.fn(),
+        }) as unknown as MediaQueryList,
+    );
+
+  it("replays the label over 300ms, character i of n settling at i × 300 / n", () => {
+    fine(true);
+    render(<TopNav activeSection={SECTION_IDS.HOME} onNavigate={() => {}} />);
+    fireEvent.pointerEnter(within(desktopNav()).getByRole("link", { name: "Contato" }));
+    runFrame(0);
+    // "Contato": 7 characters, i settles at i × 300 / 7 ms → at t = 0 only the first.
+    expect(painted("Contato").textContent!.slice(0, 1)).toBe("C");
+    expect(painted("Contato").querySelector(".text-ink-faint")!.textContent).toHaveLength(6);
+    runFrame(150); // i ≤ 3 settled (3 × 300 / 7 ≈ 128.6)
+    expect(painted("Contato").textContent!.slice(0, 4)).toBe("Cont");
+    runFrame(300);
+    expect(painted("Contato").textContent).toBe("Contato");
+    expect(frames).toHaveLength(0);
+  });
+
+  it("does not restart while a replay is running", () => {
+    fine(true);
+    render(<TopNav activeSection={SECTION_IDS.HOME} onNavigate={() => {}} />);
+    const link = within(desktopNav()).getByRole("link", { name: "Sobre" });
+    fireEvent.pointerEnter(link);
+    runFrame(0);
+    runFrame(100);
+    const before = vi.mocked(requestAnimationFrame).mock.calls.length;
+    fireEvent.pointerEnter(link);
+    expect(vi.mocked(requestAnimationFrame).mock.calls.length).toBe(before);
+    expect(frames).toHaveLength(1);
+    runFrame(300);
+    expect(painted("Sobre").textContent).toBe("Sobre");
+  });
+
+  it("does nothing without a fine pointer", () => {
+    fine(false);
+    render(<TopNav activeSection={SECTION_IDS.HOME} onNavigate={() => {}} />);
+    fireEvent.pointerEnter(within(desktopNav()).getByRole("link", { name: "Sobre" }));
+    expect(requestAnimationFrame).not.toHaveBeenCalled();
+  });
+
+  it("keeps the label's width with an invisible copy, so the row never reflows", () => {
+    render(<TopNav activeSection={SECTION_IDS.HOME} onNavigate={() => {}} />);
+    const holder = within(desktopNav()).getByRole("link", { name: "Sobre" }).querySelector(".invisible")!;
+    expect(holder).toHaveTextContent("Sobre");
+    expect(holder).toHaveAttribute("aria-hidden", "true");
   });
 });
