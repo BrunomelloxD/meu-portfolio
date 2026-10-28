@@ -63,7 +63,9 @@ describe("the dot (SIG-81)", () => {
     const root = container.querySelector("[data-custom-cursor]")!
     expect(root).toHaveAttribute("aria-hidden", "true")
     expect(root).toHaveClass("pointer-events-none", "fixed")
-    expect(dot(container)).toHaveClass("h-2.5", "w-2.5", "rounded-full", "mix-blend-difference")
+    expect(dot(container)).toHaveClass("h-2.5", "w-2.5", "rounded-full", "bg-ink")
+    // Blended on the fixed root, so it inverts the page under it.
+    expect(root).toHaveClass("mix-blend-difference")
     const style = motionOf(root).style
     expect(style.x).toMatchObject({ __mv: "spring", options: spring.cursor })
     expect(style.y).toMatchObject({ __mv: "spring", options: spring.cursor })
@@ -94,7 +96,7 @@ describe("projects (SIG-83)", () => {
     hover('<div data-cursor="ver"><p data-target>Typeracer</p></div>')
     expect(motionOf(dot(container)).animate.scale).toBe(8.8)
     expect(dot(container)).toHaveClass("bg-accent")
-    expect(dot(container)).not.toHaveClass("mix-blend-difference")
+    expect(container.querySelector("[data-custom-cursor]")).not.toHaveClass("mix-blend-difference")
     expect(label(container)).toHaveTextContent("ver")
     expect(label(container)).toHaveClass("font-mono", "text-[13px]")
     expect(motionOf(label(container)).animate).toEqual({ opacity: 1 })

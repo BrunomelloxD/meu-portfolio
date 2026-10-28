@@ -48,13 +48,16 @@ function Cursor() {
 
   const shown = inside && mode !== "field"
   return (
-    <motion.div aria-hidden="true" data-custom-cursor className="pointer-events-none fixed left-0 top-0 z-[60]" style={{ x, y }}>
+    // The blend sits on the fixed root: a blended child of a z-indexed element only sees that element, not the page.
+    <motion.div
+      aria-hidden="true"
+      data-custom-cursor
+      className={cn("pointer-events-none fixed left-0 top-0 z-[60]", mode !== "ver" && "mix-blend-difference")}
+      style={{ x, y }}
+    >
       <motion.div
         data-dot
-        className={cn(
-          "absolute -left-[5px] -top-[5px] h-2.5 w-2.5 rounded-full",
-          mode === "ver" ? "bg-accent" : "bg-ink mix-blend-difference",
-        )}
+        className={cn("absolute -left-[5px] -top-[5px] h-2.5 w-2.5 rounded-full", mode === "ver" ? "bg-accent" : "bg-ink")}
         animate={{ scale: SCALE[mode], opacity: shown ? 1 : 0 }}
         transition={spring.cursor}
       />
