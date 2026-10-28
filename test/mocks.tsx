@@ -1,50 +1,89 @@
 import React from "react";
-import { vi } from "vitest";
+import { afterEach, vi } from "vitest";
 
-vi.mock("framer-motion", () => {
-  const cache = new Map<string, React.ComponentType<React.HTMLAttributes<HTMLElement>>>();
+/**
+ * motion/react mock. Motion props never reach the DOM; they are serialised into `data-motion`
+ * (JSON) so tests can assert the spec values. `stagger()` and the MotionValue hooks return tagged
+ * objects for the same reason. AnimatePresence and MotionConfig are vi.fn components: read their
+ * props from `vi.mocked(AnimatePresence).mock.calls`.
+ */
+vi.mock("motion/react", () => {
+  const MOTION_KEYS = [
+    "initial",
+    "animate",
+    "exit",
+    "transition",
+    "whileHover",
+    "whileTap",
+    "whileFocus",
+    "whileInView",
+    "viewport",
+    "variants",
+    "layout",
+    "layoutId",
+    "custom",
+  ];
+
+  const isMotionValue = (value: unknown) =>
+    typeof value === "object" && value !== null && "__mv" in (value as Record<string, unknown>);
+
+  const serialise = (value: unknown) =>
+    JSON.stringify(value, (_, v) => (typeof v === "function" ? "[fn]" : v));
+
+  const cache = new Map<string, React.ComponentType<Record<string, unknown>>>();
 
   const passthrough = (tag: string) => {
     if (cache.has(tag)) return cache.get(tag)!;
-    const Comp = React.forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement>>(
-      function MotionTag(props, ref) {
-        const rest = { ...(props as Record<string, unknown>) };
-        [
-          "initial",
-          "animate",
-          "exit",
-          "transition",
-          "whileHover",
-          "whileTap",
-          "whileInView",
-          "viewport",
-          "variants",
-          "layout",
-          "layoutId",
-        ].forEach((key) => delete rest[key]);
-        return React.createElement(tag, { ...(rest as object), ref });
-      },
-    );
-    cache.set(tag, Comp as React.ComponentType<React.HTMLAttributes<HTMLElement>>);
+    const Comp = React.forwardRef<HTMLElement, Record<string, unknown>>(function MotionTag(props, ref) {
+      const rest: Record<string, unknown> = { ...props };
+      const motionProps: Record<string, unknown> = {};
+      for (const key of MOTION_KEYS) {
+        if (key in rest) {
+          motionProps[key] = rest[key];
+          delete rest[key];
+        }
+      }
+      const style = rest.style as Record<string, unknown> | undefined;
+      if (style) {
+        const domStyle: Record<string, unknown> = {};
+        const motionStyle: Record<string, unknown> = {};
+        for (const [key, value] of Object.entries(style)) {
+          if (isMotionValue(value) || key === "originX" || key === "originY") motionStyle[key] = value;
+          else domStyle[key] = value;
+        }
+        rest.style = domStyle;
+        if (Object.keys(motionStyle).length) motionProps.style = motionStyle;
+      }
+      if (Object.keys(motionProps).length) rest["data-motion"] = serialise(motionProps);
+      return React.createElement(tag, { ...rest, ref });
+    });
+    cache.set(tag, Comp as unknown as React.ComponentType<Record<string, unknown>>);
     return Comp;
   };
 
-  const motion = new Proxy(
-    {},
-    {
-      get: (_, key: string) => passthrough(key),
-    },
+  const motion = new Proxy({}, { get: (_, key: string) => passthrough(key) });
+
+  const AnimatePresence = vi.fn(({ children }: { children?: React.ReactNode }) =>
+    React.createElement(React.Fragment, null, children),
+  );
+  const MotionConfig = vi.fn(({ children }: { children?: React.ReactNode }) =>
+    React.createElement(React.Fragment, null, children),
   );
 
-  const AnimatePresence = ({ children }: { children: React.ReactNode }) =>
-    React.createElement(React.Fragment, null, children);
+  const useReducedMotion = vi.fn(() => false);
+  const useScroll = vi.fn(() => ({ scrollYProgress: { __mv: "scrollYProgress" } }));
+  const useSpring = vi.fn((source: unknown, options?: unknown) => ({ __mv: "spring", source, options }));
+  const usePresence = vi.fn(() => [true, vi.fn()]);
+  const stagger = (value: number, options?: unknown) => ({ __stagger: [value, options ?? null] });
 
-  const MotionConfig = ({ children }: { children: React.ReactNode }) =>
-    React.createElement(React.Fragment, null, children);
+  afterEach(() => {
+    useReducedMotion.mockImplementation(() => false);
+    useScroll.mockImplementation(() => ({ scrollYProgress: { __mv: "scrollYProgress" } }));
+    useSpring.mockImplementation((source: unknown, options?: unknown) => ({ __mv: "spring", source, options }));
+    usePresence.mockImplementation(() => [true, vi.fn()]);
+  });
 
-  const useReducedMotion = () => false;
-
-  return { motion, AnimatePresence, MotionConfig, useReducedMotion };
+  return { motion, AnimatePresence, MotionConfig, useReducedMotion, useScroll, useSpring, usePresence, stagger };
 });
 
 vi.mock("next/image", () => ({

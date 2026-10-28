@@ -2,6 +2,7 @@ import type React from "react"
 import "@/app/globals.css"
 import { JetBrains_Mono, Source_Sans_3 } from "next/font/google"
 import { AccessLogger } from "@/components/AccessLogger"
+import { MotionProvider } from "@/components/motion-provider"
 
 const sourceSans = Source_Sans_3({ subsets: ["latin"], style: ["normal", "italic"], variable: "--font-sans" })
 const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "500", "700"], variable: "--font-mono" })
@@ -25,7 +26,7 @@ export default function RootLayout({
     <html lang="pt-BR">
       <body className={`${sourceSans.variable} ${jetbrainsMono.variable} font-sans`}>
         <AccessLogger />
-        {children}
+        <MotionProvider>{children}</MotionProvider>
       </body>
     </html>
   )

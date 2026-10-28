@@ -2,8 +2,10 @@
 
 import { useRef, useState, type ChangeEvent, type FormEvent } from "react"
 import emailjs from "@emailjs/browser"
+import { AnimatePresence, motion } from "motion/react"
 import { CtaButton } from "@/components/cta-button"
 import { SOCIAL_LINKS } from "@/lib/constants"
+import { fadeUp, tween } from "@/lib/motion"
 
 type Field = "name" | "email" | "subject" | "message"
 type Status = { success: boolean; message: string } | null
@@ -111,11 +113,13 @@ export function ContactForm() {
             className={`${fieldClass} h-[52px]`}
           />
         )}
-        {errors[name] && (
-          <p id={errorId} className="text-sm text-danger">
-            {errors[name]}
-          </p>
-        )}
+        <AnimatePresence>
+          {errors[name] && (
+            <motion.p key="erro" id={errorId} {...fadeUp(-4, "base")} className="text-sm text-danger">
+              {errors[name]}
+            </motion.p>
+          )}
+        </AnimatePresence>
       </div>
     )
   }
@@ -133,12 +137,32 @@ export function ContactForm() {
       {field("subject", "Assunto", { placeholder: "Assunto da mensagem" })}
       {field("message", "Mensagem", { placeholder: "Sua mensagem…" })}
 
-      <div role="status" aria-live="polite" className="empty:hidden">
-        {status && <p className={status.success ? "text-success" : "text-danger"}>{status.message}</p>}
+      <div role="status" aria-live="polite">
+        <AnimatePresence>
+          {status && (
+            <motion.p
+              key={status.message}
+              {...fadeUp(4, "base", "soft")}
+              className={status.success ? "text-success" : "text-danger"}
+            >
+              {status.message}
+            </motion.p>
+          )}
+        </AnimatePresence>
       </div>
 
       <CtaButton type="submit" disabled={isSubmitting} className="self-start">
-        {isSubmitting ? "Enviando…" : "Enviar mensagem"}
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.span
+            key={isSubmitting ? "sending" : "idle"}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={tween("instant")}
+          >
+            {isSubmitting ? "Enviando…" : "Enviar mensagem"}
+          </motion.span>
+        </AnimatePresence>
       </CtaButton>
     </form>
   )

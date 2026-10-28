@@ -27,7 +27,7 @@ Disponível em produção: **[brunomellodev.com.br](https://www.brunomellodev.co
 | Framework | Next.js 16 (App Router, Turbopack) |
 | Linguagem | TypeScript 5 |
 | UI | Tailwind CSS 3 + shadcn/ui (Radix Primitives) |
-| Animações | Framer Motion |
+| Animações | Motion (`motion/react`), tokens em `lib/motion.ts`, respeita `prefers-reduced-motion` |
 | Email | EmailJS |
 | Testes | Vitest + Testing Library + jsdom |
 | Cobertura | @vitest/coverage-v8 |
@@ -56,7 +56,7 @@ Disponível em produção: **[brunomellodev.com.br](https://www.brunomellodev.co
 │   ├── services/           # access-log.service
 │   ├── constants.ts        # Dados estáticos do portfólio
 │   └── utils.ts            # cn() helper
-├── test/mocks.tsx          # Mocks globais (framer-motion, next/image)
+├── test/mocks.tsx          # Mocks globais (motion/react, next/image)
 ├── vitest.config.ts        # Configuração do Vitest e thresholds de coverage
 ├── vitest.setup.ts         # Setup global dos testes
 ├── railway.toml            # Configuração do build no Railway
@@ -130,7 +130,7 @@ Os thresholds são aplicados no `vitest.config.ts`. Se o coverage cair abaixo, a
 
 Carregados em [vitest.setup.ts](vitest.setup.ts):
 
-- `framer-motion` — componentes que ignoram props de animação (sem re-mount entre interações)
+- `motion/react` — componentes que tiram as props de animação do DOM e as expõem em `data-motion` (JSON) para os testes
 - `next/image` — `<img>` simples
 - `window.matchMedia` e `HTMLElement.scrollIntoView`
 

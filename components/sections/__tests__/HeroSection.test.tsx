@@ -1,8 +1,26 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { HeroSection } from "../HeroSection";
 import { SECTION_IDS, SOCIAL_LINKS } from "@/lib/constants";
+
+const css = readFileSync(resolve(process.cwd(), "app/globals.css"), "utf8");
+const heroSource = readFileSync(resolve(process.cwd(), "components/sections/HeroSection.tsx"), "utf8");
+
+/** Body of the first `selector { ... }` block found after `from` (handles nested braces). */
+function block(source: string, selector: string, from = 0): string {
+  const start = source.indexOf(selector, from);
+  if (start === -1) throw new Error(`${selector} not found`);
+  const open = source.indexOf("{", start);
+  let depth = 0;
+  for (let i = open; i < source.length; i++) {
+    if (source[i] === "{") depth++;
+    if (source[i] === "}" && --depth === 0) return source.slice(open + 1, i);
+  }
+  throw new Error(`${selector} is not closed`);
+}
 
 describe("<HeroSection />", () => {
   it("renders the role as the h1, with the name for screen readers (HERO-01)", () => {
@@ -59,5 +77,54 @@ describe("<HeroSection />", () => {
   it("no longer renders the Erdtree background image", () => {
     const { container } = render(<HeroSection onNavigate={() => {}} />);
     expect(container.querySelector('img[src="/images/hero-erdtree.jpg"]')).toBeNull();
+  });
+
+  describe("entrance (MOV-06..MOV-09)", () => {
+    it("does not use Motion: the entrance is CSS only (MOV-06)", () => {
+      expect(heroSource).not.toMatch(/motion\/react|framer-motion/);
+    });
+
+    it("rises the h1 lines with transform only, 0ms then 110ms (MOV-07)", () => {
+      render(<HeroSection onNavigate={() => {}} />);
+      const lines = ["Engenheiro", "Full Stack"].map((text) => screen.getByText(text));
+      expect(lines.map((line) => line.style.animationDelay)).toEqual(["0ms", "110ms"]);
+      for (const line of lines) {
+        expect(line).toHaveClass("animate-mask-up");
+        expect(line.style.opacity).toBe("");
+      }
+      const keyframes = block(css, "@keyframes mask-up");
+      expect(keyframes).toMatch(/transform:\s*translateY\(100%\)/);
+      expect(keyframes).toMatch(/transform:\s*translateY\(0\)/);
+      expect(keyframes).not.toMatch(/opacity/);
+    });
+
+    it("orders subtitle, CTA and chips with --i 0, 1 and 2 (MOV-08)", () => {
+      render(<HeroSection onNavigate={() => {}} />);
+      const subtitle = screen.getByText((_, el) => el?.tagName === "P" && !!el.textContent?.startsWith("Crio experiências"));
+      const cta = screen.getByRole("button", { name: "Ver projetos" }).closest(".animate-fade-up") as HTMLElement;
+      const chips = screen.getByRole("link", { name: "GitHub" }).closest(".animate-fade-up") as HTMLElement;
+
+      const items = [subtitle, cta, chips];
+      for (const item of items) expect(item).toHaveClass("animate-fade-up");
+      expect(new Set(items).size).toBe(3);
+      expect(items.map((item) => item.style.getPropertyValue("--i"))).toEqual(["0", "1", "2"]);
+      for (const name of ["LinkedIn", "Email"]) expect(chips).toContainElement(screen.getByRole("link", { name }));
+    });
+
+    it("delays fade-up by 350ms plus 80ms per --i, so 350/430/510ms (MOV-08)", () => {
+      const rule = block(css, ".animate-fade-up {");
+      expect(rule).toMatch(/animation-delay:\s*calc\(350ms \+ var\(--i, 0\) \* 80ms\)/);
+      // The shorthand must not carry its own delay, or it would compete with animation-delay.
+      expect(rule).not.toMatch(/animation:[^;]*\d+ms/);
+    });
+
+    it("turns both entrance animations off under prefers-reduced-motion (MOV-09)", () => {
+      const reduced = block(css, "@media (prefers-reduced-motion: reduce)", css.indexOf("@keyframes mask-up"));
+      const rule = reduced.match(/([^{}]+)\{([^}]*)\}/);
+      expect(rule).not.toBeNull();
+      const selectors = rule![1].split(",").map((sel) => sel.trim());
+      expect(selectors).toEqual(expect.arrayContaining([".animate-mask-up", ".animate-fade-up"]));
+      expect(rule![2]).toMatch(/animation:\s*none/);
+    });
   });
 });

@@ -1,14 +1,34 @@
 "use client"
 
-import { useRef, useState, type CSSProperties, type KeyboardEvent } from "react"
+import { useEffect, useRef, useState, type KeyboardEvent } from "react"
+import { motion } from "motion/react"
 import { Button } from "@/components/ui/button"
 import { ProjectSlide } from "@/components/projects/project-slide"
 import { projects } from "@/lib/content"
+import { spring, tween } from "@/lib/motion"
 
 const isPhone = () => typeof window !== "undefined" && window.matchMedia("(max-width: 1023px)").matches
 
+const DESKTOP_QUERY = "(min-width: 1024px)"
+// Desktop: 780px slides + 32px gap.
+const STEP = 812
+
+/** True at >= 1024px. False on the server and on the first client render, then follows the media query. */
+function useIsDesktop() {
+  const [desktop, setDesktop] = useState(false)
+  useEffect(() => {
+    const query = window.matchMedia(DESKTOP_QUERY)
+    const update = () => setDesktop(query.matches)
+    update()
+    query.addEventListener("change", update)
+    return () => query.removeEventListener("change", update)
+  }, [])
+  return desktop
+}
+
 export function ProjectCarousel() {
   const [index, setIndex] = useState(0)
+  const desktop = useIsDesktop()
   const trackRef = useRef<HTMLDivElement>(null)
   const total = projects.length
 
@@ -44,40 +64,39 @@ export function ProjectCarousel() {
       className="relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent"
     >
       <div className="overflow-hidden">
-        <div
+        <motion.div
           ref={trackRef}
           data-testid="track"
           onScroll={onScroll}
-          style={{ "--i": index } as CSSProperties}
-          // Desktop: 780px slides + 32px gap = 812px per step, first slide centred by the left padding.
+          // Desktop: a spring moves the track one step per slide; the first slide is centred by the left padding.
+          // Below lg the track is a native scroll-snap list, so Motion leaves its transform alone.
+          animate={desktop ? { x: -index * STEP } : undefined}
+          transition={spring.settle}
+          style={desktop ? undefined : { transform: "none" }}
           className={[
             "flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 [scrollbar-width:none]",
             "lg:snap-none lg:gap-8 lg:overflow-visible lg:px-0 lg:pl-[calc(50%-390px)]",
-            "transition-transform duration-[400ms] ease-out-strong",
-            "lg:[transform:translateX(calc(var(--i)*-812px))]",
           ].join(" ")}
         >
           {projects.map((project, i) => {
             const active = i === index
             return (
-              <div
+              <motion.div
                 key={project.title}
                 role="group"
                 aria-roledescription="slide"
                 aria-label={`Projeto ${i + 1} de ${total}`}
                 aria-hidden={active ? undefined : "true"}
                 inert={active ? undefined : true}
-                className={[
-                  "w-[88%] shrink-0 snap-center lg:h-[380px] lg:w-[780px]",
-                  "transition-opacity duration-[400ms] ease-out-strong",
-                  active ? "opacity-100" : "lg:opacity-[0.35]",
-                ].join(" ")}
+                animate={{ opacity: desktop && !active ? 0.35 : 1 }}
+                transition={tween("base", "inOut")}
+                className="w-[88%] shrink-0 snap-center lg:h-[380px] lg:w-[780px]"
               >
                 <ProjectSlide project={project} />
-              </div>
+              </motion.div>
             )
           })}
-        </div>
+        </motion.div>
       </div>
 
       <div className="mt-6 flex items-center justify-between px-4 md:px-16">

@@ -1,10 +1,30 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 
 vi.mock("@emailjs/browser", () => ({ __esModule: true, default: { send: vi.fn() }, send: vi.fn() }));
 
 import ContactSection from "../contact-section";
 import { SECTION_IDS } from "@/lib/constants";
+
+/** Reveal blocks only arm (and expose their item variants) below the fold, with IntersectionObserver. */
+function armReveals() {
+  vi.stubGlobal(
+    "IntersectionObserver",
+    vi.fn(function () {
+      return { observe: vi.fn(), disconnect: vi.fn(), unobserve: vi.fn(), takeRecords: vi.fn() };
+    }),
+  );
+  vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockReturnValue({ top: 2000, bottom: 2100 } as DOMRect);
+}
+
+const motionOf = (el: Element) => JSON.parse(el.getAttribute("data-motion") ?? "{}");
+const revealBlockOf = (el: Element) => el.closest('[data-motion*="whileInView"]')!;
+/** RevealItems of a block, in DOM order: they carry the item variants (opacity 0 -> 1) but no whileInView. */
+const revealItemsIn = (block: Element) =>
+  [...block.querySelectorAll("[data-motion]")].filter((el) => {
+    const props = motionOf(el);
+    return props.variants?.show?.opacity === 1 && props.variants?.hidden?.opacity === 0 && !props.whileInView;
+  });
 
 describe("<ContactSection />", () => {
   it("is the 'contato' section labelled by its h2", () => {
@@ -30,5 +50,23 @@ describe("<ContactSection />", () => {
   it("includes the contact form", () => {
     render(<ContactSection />);
     expect(screen.getByRole("button", { name: "Enviar mensagem" })).toHaveAttribute("type", "submit");
+  });
+
+  describe("reveal (MOV-11)", () => {
+    afterEach(() => {
+      vi.unstubAllGlobals();
+      vi.restoreAllMocks();
+    });
+
+    it("reveals the label, then the two opening lines, in reading order", () => {
+      armReveals();
+      render(<ContactSection />);
+      const label = screen.getByRole("heading", { level: 2, name: "Contato" });
+      const items = revealItemsIn(revealBlockOf(label));
+      expect(items).toHaveLength(3);
+      expect(items[0]).toContainElement(label);
+      expect(items[1]).toHaveTextContent("Vamos construir algo juntos?");
+      expect(items[2]).toHaveTextContent("Disponível para trabalho remoto ou presencial, e para reuniões presenciais.");
+    });
   });
 });

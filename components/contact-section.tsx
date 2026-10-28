@@ -1,5 +1,5 @@
 import { ContactForm } from "@/components/contact/contact-form"
-import { Reveal } from "@/components/reveal"
+import { Reveal, RevealItem } from "@/components/reveal"
 import { SectionLabel } from "@/components/section-label"
 import { SocialChip } from "@/components/social-chip"
 import { PERSONAL_INFO, SECTION_IDS, SOCIAL_LINKS } from "@/lib/constants"
@@ -10,14 +10,18 @@ export default function ContactSection() {
   return (
     <section id={SECTION_IDS.CONTACT} aria-labelledby="contato-title" className="scroll-mt-24 px-4 pt-24 md:px-16 lg:pt-44">
       <Reveal className="flex flex-col gap-5 lg:flex-row">
-        <div className="lg:w-[520px] lg:shrink-0 lg:pt-2.5">
+        <RevealItem className="lg:w-[520px] lg:shrink-0 lg:pt-2.5">
           <SectionLabel id="contato-title">Contato</SectionLabel>
-        </div>
+        </RevealItem>
         <div className="flex flex-col gap-3">
-          <p className="text-[22px] leading-[30px] text-ink lg:text-[28px] lg:leading-[38px]">Vamos construir algo juntos?</p>
-          <p className="text-base text-ink-soft lg:text-[17px]">
-            Disponível para trabalho remoto ou presencial, e para reuniões presenciais.
-          </p>
+          <RevealItem>
+            <p className="text-[22px] leading-[30px] text-ink lg:text-[28px] lg:leading-[38px]">Vamos construir algo juntos?</p>
+          </RevealItem>
+          <RevealItem>
+            <p className="text-base text-ink-soft lg:text-[17px]">
+              Disponível para trabalho remoto ou presencial, e para reuniões presenciais.
+            </p>
+          </RevealItem>
         </div>
       </Reveal>
 

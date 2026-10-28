@@ -1,7 +1,9 @@
 "use client"
 
 import { useId, useState } from "react"
+import { AnimatePresence, motion } from "motion/react"
 import { Badge } from "@/components/ui/badge"
+import { fadeUp } from "@/lib/motion"
 import type { Experience } from "@/lib/content"
 
 interface WorkRowProps {
@@ -50,22 +52,32 @@ export function WorkRow({ experience }: WorkRowProps) {
         </span>
       </button>
 
-      {expanded && (
-        <div id={panelId} role="region" aria-label={`${experience.company}, ${experience.role}`} className="px-4 pb-6 lg:pl-[calc(4rem+220px+300px+48px)] lg:pr-16 lg:pb-10">
-          <ul className="flex list-disc flex-col gap-2 pl-5 text-base leading-[26px] text-inverse-ink marker:text-inverse-soft">
-            {experience.highlights.map((highlight) => (
-              <li key={highlight.slice(0, 32)}>{highlight}</li>
-            ))}
-          </ul>
-          <ul className="mt-5 flex flex-wrap gap-2">
-            {experience.technologies.map((tech) => (
-              <li key={tech}>
-                <Badge variant="inverse">{tech}</Badge>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      {/* Opacity + y only: height is never animated, the row snaps to its new size (MOV-29). */}
+      <AnimatePresence initial={false}>
+        {expanded && (
+          <motion.div
+            key="painel"
+            {...fadeUp(8, "base")}
+            id={panelId}
+            role="region"
+            aria-label={`${experience.company}, ${experience.role}`}
+            className="px-4 pb-6 lg:pl-[calc(4rem+220px+300px+48px)] lg:pr-16 lg:pb-10"
+          >
+            <ul className="flex list-disc flex-col gap-2 pl-5 text-base leading-[26px] text-inverse-ink marker:text-inverse-soft">
+              {experience.highlights.map((highlight) => (
+                <li key={highlight.slice(0, 32)}>{highlight}</li>
+              ))}
+            </ul>
+            <ul className="mt-5 flex flex-wrap gap-2">
+              {experience.technologies.map((tech) => (
+                <li key={tech}>
+                  <Badge variant="inverse">{tech}</Badge>
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </li>
   )
 }

@@ -1,4 +1,4 @@
-import { Reveal } from "@/components/reveal"
+import { Reveal, RevealItem } from "@/components/reveal"
 import { WorkRow } from "@/components/work/work-row"
 import { SECTION_IDS } from "@/lib/constants"
 import { experiences } from "@/lib/content"
@@ -7,12 +7,14 @@ export function WorkTable() {
   return (
     <section id={SECTION_IDS.EXPERIENCE} aria-labelledby="experiencia-title" className="scroll-mt-24 pt-24 lg:pt-44">
       <Reveal>
-        <h2
-          id="experiencia-title"
-          className="px-4 text-right font-mono text-[52px] font-bold leading-[52px] tracking-[-0.04em] text-ink md:px-16 lg:text-8xl lg:leading-[92px]"
-        >
-          Experiência
-        </h2>
+        <RevealItem>
+          <h2
+            id="experiencia-title"
+            className="px-4 text-right font-mono text-[52px] font-bold leading-[52px] tracking-[-0.04em] text-ink md:px-16 lg:text-8xl lg:leading-[92px]"
+          >
+            Experiência
+          </h2>
+        </RevealItem>
       </Reveal>
 
       <ul className="mt-7 border-t border-line lg:mt-10">

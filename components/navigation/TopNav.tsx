@@ -1,9 +1,12 @@
 "use client"
 
 import { useCallback, useRef, useState } from "react"
+import { AnimatePresence, motion } from "motion/react"
 import { Button } from "@/components/ui/button"
 import { MobileMenu } from "@/components/navigation/MobileMenu"
+import { ReadingProgress } from "@/components/navigation/reading-progress"
 import { NAVIGATION_ITEMS, SECTION_IDS } from "@/lib/constants"
+import { spring } from "@/lib/motion"
 
 interface TopNavProps {
   activeSection: string
@@ -48,22 +51,32 @@ export function TopNav({ activeSection, onNavigate }: TopNavProps) {
 
         <nav aria-label="Principal" className="hidden md:block">
           <ul className="flex items-center gap-4">
-            {navLinks.map((item) => (
-              <li key={item.id}>
-                <a
-                  href={`#${item.id}`}
-                  aria-current={activeSection === item.id ? "true" : undefined}
-                  onClick={(event) => {
-                    event.preventDefault()
-                    navigate(item.id)
-                  }}
-                  className="group flex flex-col items-center gap-1.5 rounded-[10px] px-2.5 py-2 text-[15px] text-ink-soft transition-colors duration-200 ease-out-strong hover:text-ink aria-[current=true]:font-semibold aria-[current=true]:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-                >
-                  {item.label}
-                  <span aria-hidden="true" className="h-0.5 w-4 rounded-full bg-accent opacity-0 group-aria-[current=true]:opacity-100" />
-                </a>
-              </li>
-            ))}
+            {navLinks.map((item) => {
+              const active = activeSection === item.id
+              return (
+                <li key={item.id}>
+                  <a
+                    href={`#${item.id}`}
+                    aria-current={active ? "true" : undefined}
+                    onClick={(event) => {
+                      event.preventDefault()
+                      navigate(item.id)
+                    }}
+                    className="relative flex flex-col items-center rounded-[10px] px-2.5 pb-4 pt-2 text-[15px] text-ink-soft transition-colors duration-200 ease-out-strong hover:text-ink aria-[current=true]:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                  >
+                    {item.label}
+                    {active && (
+                      <motion.span
+                        layoutId="nav-indicator"
+                        transition={{ layout: spring.glide }}
+                        aria-hidden="true"
+                        className="absolute inset-x-0 bottom-2 mx-auto h-0.5 w-4 rounded-full bg-accent"
+                      />
+                    )}
+                  </a>
+                </li>
+              )
+            })}
           </ul>
         </nav>
 
@@ -83,7 +96,11 @@ export function TopNav({ activeSection, onNavigate }: TopNavProps) {
         </Button>
       </div>
 
-      {isOpen && <MobileMenu links={navLinks} activeSection={activeSection} onNavigate={navigate} onClose={closeMenu} />}
+      <ReadingProgress />
+
+      <AnimatePresence>
+        {isOpen && <MobileMenu links={navLinks} activeSection={activeSection} onNavigate={navigate} onClose={closeMenu} />}
+      </AnimatePresence>
     </header>
   )
 }

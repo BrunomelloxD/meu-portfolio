@@ -1,7 +1,27 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 import { AboutSection } from "../AboutSection";
 import { EDUCATION, SECTION_IDS } from "@/lib/constants";
+
+/** Reveal blocks only arm (and expose their item variants) below the fold, with IntersectionObserver. */
+function armReveals() {
+  vi.stubGlobal(
+    "IntersectionObserver",
+    vi.fn(function () {
+      return { observe: vi.fn(), disconnect: vi.fn(), unobserve: vi.fn(), takeRecords: vi.fn() };
+    }),
+  );
+  vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockReturnValue({ top: 2000, bottom: 2100 } as DOMRect);
+}
+
+const motionOf = (el: Element) => JSON.parse(el.getAttribute("data-motion") ?? "{}");
+const revealBlockOf = (el: Element) => el.closest('[data-motion*="whileInView"]')!;
+/** RevealItems of a block, in DOM order: they carry the item variants (opacity 0 -> 1) but no whileInView. */
+const revealItemsIn = (block: Element) =>
+  [...block.querySelectorAll("[data-motion]")].filter((el) => {
+    const props = motionOf(el);
+    return props.variants?.show?.opacity === 1 && props.variants?.hidden?.opacity === 0 && !props.whileInView;
+  });
 
 describe("<AboutSection />", () => {
   it("is the 'sobre' section, labelled by its h2", () => {
@@ -42,5 +62,24 @@ describe("<AboutSection />", () => {
     render(<AboutSection />);
     expect(screen.getByRole("img", { name: "Retrato de Bruno Mello" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { level: 3, name: "Backend" })).toBeInTheDocument();
+  });
+
+  describe("reveal (MOV-11)", () => {
+    afterEach(() => {
+      vi.unstubAllGlobals();
+      vi.restoreAllMocks();
+    });
+
+    it("reveals label, statement and stats as three items, in reading order", () => {
+      armReveals();
+      render(<AboutSection />);
+      const label = screen.getByRole("heading", { level: 2, name: "Sobre" });
+      const items = revealItemsIn(revealBlockOf(label));
+      expect(items).toHaveLength(3);
+      expect(items[0]).toContainElement(label);
+      expect(items[1]).toHaveTextContent(/^Olá! Sou o Bruno/);
+      expect(items[2]).toContainElement(screen.getByText("Anos de experiência"));
+      expect(items[2].querySelector("dl")).not.toBeNull();
+    });
   });
 });

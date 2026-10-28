@@ -104,8 +104,10 @@
   .animate-mask-up {
     animation: mask-up var(--dur-mask) var(--ease-out-strong) both;
   }
+  /* Items stagger by --i: subtitle 0, CTA 1, chips 2 (350/430/510ms). */
   .animate-fade-up {
-    animation: fade-up var(--dur-reveal) var(--ease-out-strong) 350ms both;
+    animation: fade-up var(--dur-reveal) var(--ease-out-strong) both;
+    animation-delay: calc(350ms + var(--i, 0) * 80ms);
   }
   @media (prefers-reduced-motion: reduce) {
     .animate-mask-up,
