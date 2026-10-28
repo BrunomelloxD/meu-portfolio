@@ -11,6 +11,7 @@ import { WorkTable } from "@/components/work/work-table"
 import { Testimonials } from "@/components/testimonials/testimonials"
 import { SectionLabel } from "@/components/section-label"
 import { Reveal } from "@/components/reveal"
+import { DrawnCircles } from "@/components/decor/drawn-circles"
 import { useActiveSection } from "@/hooks/useActiveSection"
 import { useScrollTo } from "@/hooks/useScrollTo"
 import { NAVIGATION_ITEMS, SECTION_IDS } from "@/lib/constants"
@@ -23,19 +24,10 @@ export default function Home() {
 
   return (
     <div className="relative min-h-[100dvh] overflow-x-clip bg-bg text-ink">
-      {/* Thin outline circles from the inspiration: decorative, behind everything. */}
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute -top-[150px] left-[200px] h-[360px] w-[360px] rounded-full border border-line md:-top-[250px] md:left-auto md:right-[-190px] md:h-[620px] md:w-[620px]"
-      />
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute right-[-380px] top-[1560px] hidden h-[760px] w-[760px] rounded-full border border-line lg:block"
-      />
-
       <TopNav activeSection={activeSection} onNavigate={scrollToSection} />
 
       <main id="conteudo" className="relative">
+        <DrawnCircles />
         <HeroSection onNavigate={scrollToSection} />
 
         <section id={SECTION_IDS.PROJECTS} className="scroll-mt-24 pt-[88px] lg:pt-[120px]">

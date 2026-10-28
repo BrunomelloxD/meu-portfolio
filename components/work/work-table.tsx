@@ -1,11 +1,16 @@
+"use client"
+
+import { motion, useReducedMotion } from "motion/react"
 import { Counter } from "@/components/counter"
 import { Reveal, RevealItem } from "@/components/reveal"
 import { ScrambleText } from "@/components/scramble-text"
 import { WorkRow } from "@/components/work/work-row"
 import { SECTION_IDS } from "@/lib/constants"
 import { experiences } from "@/lib/content"
+import { tween } from "@/lib/motion"
 
 export function WorkTable() {
+  const reduced = !!useReducedMotion()
   return (
     <section id={SECTION_IDS.EXPERIENCE} aria-labelledby="experiencia-title" className="scroll-mt-24 pt-24 lg:pt-44">
       <Reveal>
@@ -19,7 +24,16 @@ export function WorkTable() {
         </RevealItem>
       </Reveal>
 
-      <ul className="mt-7 border-t border-line lg:mt-10">
+      {/* The table's top rule draws itself from the right as it enters (E8). */}
+      <motion.div
+        aria-hidden="true"
+        data-rule
+        className="mt-7 h-px origin-right bg-line lg:mt-10"
+        {...(reduced
+          ? {}
+          : { initial: { scaleX: 0 }, whileInView: { scaleX: 1 }, viewport: { once: true }, transition: tween("slow") })}
+      />
+      <ul>
         {experiences.map((experience) => (
           <WorkRow key={`${experience.company}-${experience.period}`} experience={experience} />
         ))}
