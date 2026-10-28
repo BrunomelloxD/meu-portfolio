@@ -197,3 +197,91 @@ describe("<ProjectCarousel />", () => {
     });
   });
 });
+
+describe("drag on desktop (SIG-63..SIG-66)", () => {
+  type DragProps = {
+    drag?: string;
+    dragElastic?: number;
+    dragMomentum?: boolean;
+    dragConstraints?: { left: number; right: number };
+    onDragEnd?: (event: unknown, info: { offset: { x: number }; velocity: { x: number } }) => void;
+  };
+  const propsOf = async (el: Element) =>
+    ((await import("motion/react")) as unknown as { __motionPropsOf: (el: Element) => DragProps }).__motionPropsOf(el);
+  const release = async (offsetX: number, velocityX = 0) => {
+    const { onDragEnd } = await propsOf(screen.getByTestId("track"));
+    act(() => onDragEnd!({}, { offset: { x: offsetX }, velocity: { x: velocityX } }));
+  };
+  const trackX = () => motionOf(screen.getByTestId("track")).animate.x;
+
+  it("drags the track on x with elastic 0.12, held between the first and last slide", async () => {
+    setViewport(1440);
+    render(<ProjectCarousel />);
+    const props = await propsOf(screen.getByTestId("track"));
+    expect(props.drag).toBe("x");
+    expect(props.dragElastic).toBe(0.12);
+    expect(props.dragConstraints).toEqual({ left: -(slides().length - 1) * 812, right: 0 });
+  });
+
+  it("advances after −121px or a −501px/s flick, goes back after +121px, stays otherwise (SIG-63)", async () => {
+    setViewport(1440);
+    render(<ProjectCarousel />);
+    await release(-121);
+    expect(trackX()).toBe(-812);
+    await release(-10, -501);
+    expect(trackX()).toBe(-1624);
+    await release(121);
+    expect(trackX()).toBe(-812);
+    await release(-120, -500);
+    expect(trackX()).toBe(-812);
+  });
+
+  it("snaps with the snap spring after a drag and with settle after a button", async () => {
+    setViewport(1440);
+    const user = userEvent.setup();
+    render(<ProjectCarousel />);
+    await release(-200);
+    expect(motionOf(screen.getByTestId("track")).transition).toEqual({ type: "spring", stiffness: 300, damping: 24, mass: 1 });
+    await user.click(screen.getByRole("button", { name: "Próximo projeto" }));
+    expect(motionOf(screen.getByTestId("track")).transition).toEqual({ type: "spring", stiffness: 220, damping: 32, mass: 1 });
+  });
+
+  it("stops at the ends instead of wrapping", async () => {
+    setViewport(1440);
+    render(<ProjectCarousel />);
+    await release(300);
+    expect(trackX()).toBe(0); // still the first slide (wrapping would land on the last)
+    expect(activeTitle()).toBe(within(slides()[0]).getByRole("heading").textContent);
+  });
+
+  it("swallows the click that ends a drag longer than 6px, not a shorter one (SIG-64)", async () => {
+    setViewport(1440);
+    render(<ProjectCarousel />);
+    const link = within(slides()[0]).getAllByRole("link")[0];
+    const onClick = vi.fn((e: Event) => e.preventDefault());
+    link.addEventListener("click", onClick);
+    await release(-7);
+    fireEvent.click(link);
+    expect(onClick).not.toHaveBeenCalled();
+    await release(-6);
+    fireEvent.click(within(slides()[0]).getAllByRole("link")[0]);
+    expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+  it("has no drag below 1024px (SIG-65)", async () => {
+    setViewport(390);
+    render(<ProjectCarousel />);
+    expect((await propsOf(screen.getByTestId("track"))).drag).toBeUndefined();
+  });
+
+  it("has no drag under reduced motion, and the buttons still move (SIG-66)", async () => {
+    setViewport(1440);
+    const { useReducedMotion } = await import("motion/react");
+    vi.mocked(useReducedMotion).mockReturnValue(true);
+    const user = userEvent.setup();
+    render(<ProjectCarousel />);
+    expect((await propsOf(screen.getByTestId("track"))).drag).toBeUndefined();
+    await user.click(screen.getByRole("button", { name: "Próximo projeto" }));
+    expect(trackX()).toBe(-812);
+  });
+});

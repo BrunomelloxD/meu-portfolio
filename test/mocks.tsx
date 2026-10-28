@@ -22,7 +22,18 @@ vi.mock("motion/react", () => {
     "layout",
     "layoutId",
     "custom",
+    "drag",
+    "dragConstraints",
+    "dragElastic",
+    "dragMomentum",
+    "dragTransition",
+    "onDragStart",
+    "onDrag",
+    "onDragEnd",
   ];
+
+  // Live motion props by DOM node, functions included: read them with `__motionPropsOf(el)`.
+  const registry = new WeakMap<Element, Record<string, unknown>>();
 
   const isMotionValue = (value: unknown) =>
     typeof value === "object" && value !== null && "__mv" in (value as Record<string, unknown>);
@@ -56,7 +67,12 @@ vi.mock("motion/react", () => {
         if (Object.keys(motionStyle).length) motionProps.style = motionStyle;
       }
       if (Object.keys(motionProps).length) rest["data-motion"] = serialise(motionProps);
-      return React.createElement(tag, { ...rest, ref });
+      const setRef = (node: HTMLElement | null) => {
+        if (node) registry.set(node, motionProps);
+        if (typeof ref === "function") ref(node);
+        else if (ref) ref.current = node;
+      };
+      return React.createElement(tag, { ...rest, ref: setRef });
     });
     cache.set(tag, Comp as unknown as React.ComponentType<Record<string, unknown>>);
     return Comp;
@@ -120,7 +136,10 @@ vi.mock("motion/react", () => {
     animate.mockImplementation(() => ({ stop: vi.fn() }));
   });
 
+  const __motionPropsOf = (el: Element) => registry.get(el) ?? {};
+
   return {
+    __motionPropsOf,
     motion,
     AnimatePresence,
     MotionConfig,

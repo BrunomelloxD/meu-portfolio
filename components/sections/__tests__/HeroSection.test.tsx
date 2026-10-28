@@ -201,7 +201,7 @@ describe("<HeroSection />", () => {
       const options = vi.mocked(useScroll).mock.lastCall![0] as { target: { current: Element }; offset: string[] };
       expect(options.offset).toEqual(["start start", "end end"]);
       expect(options.target.current.tagName).toBe("SECTION");
-      const scrollSpring = vi.mocked(useSpring).mock.calls.find(([source]) => (source as { __mv: string }).__mv === "scrollYProgress");
+      const scrollSpring = vi.mocked(useSpring).mock.calls.find(([source]) => (source as unknown as { __mv: string }).__mv === "scrollYProgress");
       expect(scrollSpring).toEqual([{ __mv: "scrollYProgress" }, spring.scroll]);
     });
 

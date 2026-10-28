@@ -1,11 +1,12 @@
 "use client"
 
-import { useRef, useState, type KeyboardEvent } from "react"
-import { motion, useReducedMotion } from "motion/react"
+import { useRef, useState, type KeyboardEvent, type MouseEvent } from "react"
+import { motion, useReducedMotion, type PanInfo } from "motion/react"
 import { Button } from "@/components/ui/button"
 import { ProjectSlide } from "@/components/projects/project-slide"
 import { TiltCard } from "@/components/projects/tilt-card"
 import { projects } from "@/lib/content"
+import { dragTarget } from "@/lib/kinetics"
 import { spring, tween } from "@/lib/motion"
 import { useIsDesktop, usePointerFine } from "@/hooks/useMediaQuery"
 
@@ -13,6 +14,8 @@ const isPhone = () => typeof window !== "undefined" && window.matchMedia("(max-w
 
 // Desktop: 780px slides + 32px gap.
 const STEP = 812
+// A drag longer than this was a drag, not a click on a link inside the slide (SIG-64).
+const CLICK_SLOP = 6
 
 export function ProjectCarousel() {
   const [index, setIndex] = useState(0)
@@ -21,11 +24,16 @@ export function ProjectCarousel() {
   const reduced = !!useReducedMotion()
   // Gestures on the cards need room, a mouse and motion (SIG-61, SIG-66).
   const gestures = desktop && fine && !reduced
+  // The track is draggable on desktop (SIG-63, SIG-65), not under reduced motion (SIG-66).
+  const draggable = desktop && !reduced
   const trackRef = useRef<HTMLDivElement>(null)
+  const dragged = useRef(false)
+  const [snap, setSnap] = useState(false)
   const total = projects.length
 
   const go = (next: number) => {
     const target = (next + total) % total
+    setSnap(false)
     setIndex(target)
     // Below lg the track is a native scroll-snap list; keep it in sync with the buttons.
     if (isPhone()) {
@@ -36,6 +44,22 @@ export function ProjectCarousel() {
   const onKeyDown = (event: KeyboardEvent) => {
     if (event.key === "ArrowRight") go(index + 1)
     if (event.key === "ArrowLeft") go(index - 1)
+  }
+
+  // SPEC_DEVIATION: dragMomentum is off; the snap spring inherits the release velocity instead.
+  // Reason: Motion's own inertia would fight the animate target that the new index sets.
+  const onDragEnd = (_: unknown, info: PanInfo) => {
+    dragged.current = Math.abs(info.offset.x) > CLICK_SLOP
+    // A drag stops at the ends instead of wrapping around like the buttons.
+    setSnap(true)
+    setIndex(Math.min(total - 1, Math.max(0, dragTarget(index, info.offset.x, info.velocity.x))))
+  }
+
+  const onClickCapture = (event: MouseEvent) => {
+    if (!dragged.current) return
+    dragged.current = false
+    event.preventDefault()
+    event.stopPropagation()
   }
 
   const onScroll = () => {
@@ -60,10 +84,20 @@ export function ProjectCarousel() {
           ref={trackRef}
           data-testid="track"
           onScroll={onScroll}
+          onClickCapture={onClickCapture}
+          {...(draggable
+            ? {
+                drag: "x" as const,
+                dragConstraints: { left: -(total - 1) * STEP, right: 0 },
+                dragElastic: 0.12,
+                dragMomentum: false,
+                onDragEnd,
+              }
+            : {})}
           // Desktop: a spring moves the track one step per slide; the first slide is centred by the left padding.
           // Below lg the track is a native scroll-snap list, so Motion leaves its transform alone.
           animate={desktop ? { x: -index * STEP } : undefined}
-          transition={spring.settle}
+          transition={snap ? spring.snap : spring.settle}
           style={desktop ? undefined : { transform: "none" }}
           className={[
             "flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 [scrollbar-width:none]",
