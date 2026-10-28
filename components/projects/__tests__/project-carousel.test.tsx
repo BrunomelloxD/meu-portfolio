@@ -1,7 +1,8 @@
-import { describe, it, expect, vi, afterEach } from "vitest";
+import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
 import { render, screen, within, act, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ProjectCarousel } from "../project-carousel";
+import { SCRAMBLE_GLYPHS } from "@/lib/text-motion";
 
 const motionOf = (el: Element) => JSON.parse(el.getAttribute("data-motion")!);
 
@@ -25,8 +26,15 @@ const setViewport = (width: number) => {
 };
 
 const slides = () => screen.getAllByRole("group", { hidden: true });
+/** Text as assistive tech reads it: aria-hidden subtrees (the painted scramble) are skipped. */
+const spokenText = (node: Node): string =>
+  node.nodeType === Node.TEXT_NODE
+    ? node.textContent!
+    : (node as Element).getAttribute?.("aria-hidden") === "true"
+      ? ""
+      : [...node.childNodes].map(spokenText).join("");
 const activeTitle = () =>
-  within(slides().find((s) => s.getAttribute("aria-hidden") !== "true")!).getByRole("heading").textContent;
+  spokenText(within(slides().find((s) => s.getAttribute("aria-hidden") !== "true")!).getByRole("heading"));
 
 describe("<ProjectCarousel />", () => {
   afterEach(() => {
@@ -457,5 +465,62 @@ describe("entrance of the newly active slide (SIG-123, SIG-124, SIG-126)", () =>
     await user.click(screen.getByRole("button", { name: "Próximo projeto" }));
     expect(motionOf(pictureOf(active())!)).toEqual({ initial: { opacity: 0 }, animate: { opacity: 1 }, transition: base });
     expect(motionOf(textOf(active())!)).toEqual({ initial: { opacity: 0 }, animate: { opacity: 1 }, transition: base });
+  });
+});
+
+describe("title scramble on the newly active slide (SIG-125, SIG-126)", () => {
+  let frames: FrameRequestCallback[];
+  const runFrame = (now: number) => {
+    const queue = frames;
+    frames = [];
+    act(() => queue.forEach((cb) => cb(now)));
+  };
+  const heading = () => within(slides().find((s) => s.getAttribute("aria-hidden") !== "true")!).getByRole("heading");
+  const painted = () => heading().querySelector("[aria-hidden]");
+  const next = () => fireEvent.keyDown(screen.getByRole("region", { name: "Projetos" }), { key: "ArrowRight" });
+
+  beforeEach(() => {
+    frames = [];
+    vi.stubGlobal("requestAnimationFrame", vi.fn((cb: FrameRequestCallback) => frames.push(cb)));
+    vi.stubGlobal("cancelAnimationFrame", vi.fn());
+  });
+  afterEach(() => vi.unstubAllGlobals());
+
+  it("decodes the title once, with titleResolve, and keeps the final title as the heading name (SIG-125)", () => {
+    setViewport(1440);
+    render(<ProjectCarousel />);
+    next();
+
+    runFrame(1000); // t = 0: every character is a glyph
+    const first = painted()!.textContent!;
+    expect(first).toHaveLength("TypeRacer".length);
+    for (const ch of first) expect(SCRAMBLE_GLYPHS).toContain(ch);
+    expect(activeTitle()).toBe("TypeRacer");
+    expect(screen.getByRole("heading", { name: "TypeRacer" })).toBe(heading());
+
+    runFrame(1000 + 280 + 35); // two characters settled (280ms lead, 35ms each)
+    expect(painted()!.textContent!.slice(0, 2)).toBe("Ty");
+
+    runFrame(1000 + 280 + 8 * 35); // last character settles: plain text again
+    expect(painted()).toBeNull();
+    expect(heading().textContent).toBe("TypeRacer");
+    expect(frames).toHaveLength(0);
+  });
+
+  it("does not scramble the title of the slide that is active on mount", () => {
+    setViewport(1440);
+    render(<ProjectCarousel />);
+    expect(requestAnimationFrame).not.toHaveBeenCalled();
+    expect(painted()).toBeNull();
+  });
+
+  it("does not scramble under reduced motion (SIG-126)", async () => {
+    setViewport(1440);
+    const { useReducedMotion } = await import("motion/react");
+    vi.mocked(useReducedMotion).mockReturnValue(true);
+    render(<ProjectCarousel />);
+    next();
+    expect(requestAnimationFrame).not.toHaveBeenCalled();
+    expect(heading().textContent).toBe("TypeRacer");
   });
 });

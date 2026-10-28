@@ -1,10 +1,12 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Image from "next/image"
 import { motion, useReducedMotion } from "motion/react"
 import { Badge } from "@/components/ui/badge"
 import { CtaButton } from "@/components/cta-button"
+import { ScrambleFrame } from "@/components/scramble-text"
+import { useScramble } from "@/hooks/useScramble"
 import type { Project } from "@/lib/content"
 import { tween } from "@/lib/motion"
 
@@ -21,6 +23,15 @@ const lift = { hover: { y: -6 } }
 // Reduced motion keeps only the fade (SIG-126).
 const fadeIn = { initial: { opacity: 0 }, animate: { opacity: 1 }, transition: tween("base") }
 const slideIn = { initial: { opacity: 0, x: 12 }, animate: { opacity: 1, x: 0 }, transition: tween("base") }
+
+/** The title decodes once when `play` is set on mount (SIG-125); idle, it is plain text. */
+function SlideTitle({ text, play }: { text: string; play: boolean }) {
+  const { frame, settled, play: start } = useScramble(text)
+  useEffect(() => {
+    if (play) start()
+  }, [play, start])
+  return settled < text.length ? <ScrambleFrame text={text} frame={frame} settled={settled} /> : text
+}
 
 export function ProjectSlide({ project, entering = false, hover = false }: ProjectSlideProps) {
   const reduced = !!useReducedMotion()
@@ -68,7 +79,7 @@ export function ProjectSlide({ project, entering = false, hover = false }: Proje
         {...(entering ? (reduced ? fadeIn : slideIn) : {})}
       >
         <h3 className="font-mono text-xl font-bold leading-[26px] tracking-[-0.02em] text-ink md:text-2xl md:leading-[30px]">
-          {project.title}
+          <SlideTitle text={project.title} play={entering} />
         </h3>
         <p className="text-[15px] leading-[23px] text-ink-soft">{project.description}</p>
         <ul className="flex flex-wrap gap-2">
