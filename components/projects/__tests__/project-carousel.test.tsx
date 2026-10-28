@@ -198,6 +198,75 @@ describe("<ProjectCarousel />", () => {
   });
 });
 
+describe("hover on the active project (SIG-122, SIG-126)", () => {
+  const article = (slide: Element) => slide.querySelector("article")!;
+  const base = { duration: 0.32, ease: [0.32, 0.72, 0, 1] };
+
+  /** A desktop-wide viewport whose pointer is fine or coarse. */
+  const setPointer = (fine: boolean) =>
+    vi.mocked(window.matchMedia).mockImplementation(
+      (query: string) =>
+        ({
+          matches: query === "(hover: hover) and (pointer: fine)" ? fine : /min-width:\s*1024px/.test(query),
+          media: query,
+          addEventListener: vi.fn(),
+          removeEventListener: vi.fn(),
+        }) as unknown as MediaQueryList,
+    );
+
+  it("zooms the picture to 1.03 inside its frame and lifts the CTA block 6px, over dur.base out (SIG-122)", () => {
+    setPointer(true);
+    render(<ProjectCarousel />);
+    const active = article(slides()[0]);
+    expect(motionOf(active).whileHover).toBe("hover");
+
+    const picture = active.querySelector("[data-picture]")!;
+    expect(picture.parentElement).toHaveClass("overflow-hidden");
+    expect(motionOf(picture)).toMatchObject({ variants: { hover: { scale: 1.03 } }, transition: base });
+    expect(within(picture as HTMLElement).getByRole("img")).toBeInTheDocument();
+
+    const cta = active.querySelector("[data-cta]")!;
+    expect(motionOf(cta)).toMatchObject({ variants: { hover: { y: -6 } }, transition: base });
+    // The CTA keeps its own magnetic pull: the slide's "hover" label must not reach its variants.
+    expect(motionOf(within(cta as HTMLElement).getByRole("link", { name: /Ver projeto/ })).inherit).toBe(false);
+  });
+
+  it("gives inactive slides no hover", () => {
+    setPointer(true);
+    render(<ProjectCarousel />);
+    for (const slide of slides().slice(1)) expect(motionOf(article(slide))?.whileHover).toBeUndefined();
+  });
+
+  it("has no hover with a coarse pointer, below 1024px or under reduced motion (SIG-122, SIG-126)", async () => {
+    const hoverOfActive = () => motionOf(article(slides()[0]))?.whileHover;
+    setPointer(false);
+    const { unmount } = render(<ProjectCarousel />);
+    expect(hoverOfActive()).toBeUndefined();
+    unmount();
+
+    setViewport(390);
+    const phone = render(<ProjectCarousel />);
+    expect(hoverOfActive()).toBeUndefined();
+    phone.unmount();
+
+    setPointer(true);
+    const { useReducedMotion } = await import("motion/react");
+    vi.mocked(useReducedMotion).mockReturnValue(true);
+    render(<ProjectCarousel />);
+    expect(hoverOfActive()).toBeUndefined();
+  });
+
+  it("no longer tilts the card nor draws a spotlight", () => {
+    setPointer(true);
+    render(<ProjectCarousel />);
+    expect(document.querySelector("[data-spotlight]")).toBeNull();
+    for (const el of document.querySelectorAll("[data-motion]")) {
+      expect(motionOf(el).style ?? {}).not.toHaveProperty("rotateX");
+      expect(motionOf(el).style ?? {}).not.toHaveProperty("transformPerspective");
+    }
+  });
+});
+
 describe("drag on desktop (SIG-63..SIG-66)", () => {
   type DragProps = {
     drag?: string;

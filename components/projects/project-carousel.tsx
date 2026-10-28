@@ -4,7 +4,6 @@ import { useRef, useState, type KeyboardEvent, type MouseEvent } from "react"
 import { motion, useReducedMotion, type PanInfo } from "motion/react"
 import { Button } from "@/components/ui/button"
 import { ProjectSlide } from "@/components/projects/project-slide"
-import { TiltCard } from "@/components/projects/tilt-card"
 import { projects } from "@/lib/content"
 import { dragTarget } from "@/lib/kinetics"
 import { spring, tween } from "@/lib/motion"
@@ -22,7 +21,7 @@ export function ProjectCarousel() {
   const desktop = useIsDesktop()
   const fine = usePointerFine()
   const reduced = !!useReducedMotion()
-  // Gestures on the cards need room, a mouse and motion (SIG-61, SIG-66).
+  // The hover on the active card needs room, a mouse and motion (SIG-122, SIG-126).
   const gestures = desktop && fine && !reduced
   // The track is draggable on desktop (SIG-63, SIG-65), not under reduced motion (SIG-66).
   const draggable = desktop && !reduced
@@ -125,9 +124,7 @@ export function ProjectCarousel() {
                 transition={tween("base", "inOut")}
                 className="w-[88%] shrink-0 snap-center lg:h-[380px] lg:w-[780px]"
               >
-                <TiltCard enabled={gestures && active}>
-                  <ProjectSlide project={project} shutter={moved && active} />
-                </TiltCard>
+                <ProjectSlide project={project} shutter={moved && active} hover={gestures && active} />
               </motion.div>
             )
           })}

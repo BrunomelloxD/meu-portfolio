@@ -21,5 +21,5 @@ export function useMediaQuery(query: string) {
 /** True at >= 1024px. */
 export const useIsDesktop = () => useMediaQuery(DESKTOP_QUERY)
 
-/** True for a mouse or trackpad: the gate for cursor, magnetism and tilt. */
+/** True for a mouse or trackpad: the gate for magnetism and the project hover. */
 export const usePointerFine = () => useMediaQuery(POINTER_FINE_QUERY)

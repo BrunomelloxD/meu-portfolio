@@ -40,9 +40,6 @@ export function magnet(pointer: { x: number; y: number }, box: Box, max: number)
   }
 }
 
-/** Card tilt in degrees for a pointer at (px, py), both 0..1 across the card (SIG-60). */
-export const tilt = (px: number, py: number) => ({ rotateX: (0.5 - py) * 12, rotateY: (px - 0.5) * 12 })
-
 /** Carousel index after a drag (SIG-63): a 120px drag or a 500px/s flick moves one slide. */
 export function dragTarget(index: number, offsetX: number, velocityX: number) {
   if (offsetX < -120 || velocityX < -500) return index + 1

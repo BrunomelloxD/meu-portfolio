@@ -34,7 +34,10 @@ const interactive = { whileHover: "hover", ...press } as const
 const MAGNET_MAX = 12
 const ARROW_EXTRA = 0.6
 
-/** The inspiration's pill + arrow circle, as a single control (one tab stop). */
+/**
+ * The inspiration's pill + arrow circle, as a single control (one tab stop). It owns its hover, so it never
+ * inherits a parent's variant label (the project card's "hover" would fight the magnetic pull).
+ */
 export function CtaButton({ children, className, ...props }: CtaButtonProps) {
   const ref = useRef<HTMLElement>(null)
   const fine = usePointerFine()
@@ -71,6 +74,7 @@ export function CtaButton({ children, className, ...props }: CtaButtonProps) {
         rel="noopener noreferrer"
         className={cn(root, className)}
         variants={lift}
+        inherit={false}
         transition={spring.press}
         {...gestures}
         {...props}
@@ -87,6 +91,7 @@ export function CtaButton({ children, className, ...props }: CtaButtonProps) {
       type={type}
       className={cn(root, className)}
       variants={lift}
+      inherit={false}
       transition={spring.press}
       {...(disabled ? {} : gestures)}
       {...buttonProps}

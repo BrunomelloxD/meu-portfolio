@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import { dragTarget, heroScrollMap, magnet, marqueeStep, tilt } from "../kinetics"
+import { dragTarget, heroScrollMap, magnet, marqueeStep } from "../kinetics"
 
 describe("heroScrollMap (SIG-31)", () => {
   it("scales the title from 1 to 0.84 and moves it from 0 to −6vh over p 0..1", () => {
@@ -53,18 +53,6 @@ describe("magnet (SIG-50)", () => {
     expect(magnet({ x: 324, y: 126 }, box, 12)).toEqual({ x: 12, y: 0 })
     expect(magnet({ x: 325, y: 126 }, box, 12)).toEqual({ x: 0, y: 0 })
     expect(magnet({ x: 200, y: 75 }, box, 12)).toEqual({ x: 0, y: 0 })
-  })
-})
-
-describe("tilt (SIG-60)", () => {
-  it("is flat at the centre", () => {
-    expect(tilt(0.5, 0.5)).toEqual({ rotateX: 0, rotateY: 0 })
-  })
-
-  it("leans ±6° at the edges: rotateX = (0.5 − py) × 12, rotateY = (px − 0.5) × 12", () => {
-    expect(tilt(1, 0)).toEqual({ rotateX: 6, rotateY: 6 })
-    expect(tilt(0, 1)).toEqual({ rotateX: -6, rotateY: -6 })
-    expect(tilt(0.75, 0.25)).toEqual({ rotateX: 3, rotateY: 3 })
   })
 })
 

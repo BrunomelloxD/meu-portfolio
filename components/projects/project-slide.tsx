@@ -12,7 +12,12 @@ interface ProjectSlideProps {
   project: Project
   /** The slide just became the active one: open its picture like a shutter (E13). */
   shutter?: boolean
+  /** Active slide, desktop, fine pointer, no reduced motion: hovering zooms the picture and lifts the CTA (SIG-122). */
+  hover?: boolean
 }
+
+const zoom = { hover: { scale: 1.03 } }
+const lift = { hover: { y: -6 } }
 
 /** Clip opens top to bottom while the picture settles from 1.12; reduced motion only fades it in. */
 function Shutter({ children }: { children: ReactNode }) {
@@ -45,7 +50,7 @@ function Shutter({ children }: { children: ReactNode }) {
   )
 }
 
-export function ProjectSlide({ project, shutter = false }: ProjectSlideProps) {
+export function ProjectSlide({ project, shutter = false, hover = false }: ProjectSlideProps) {
   const [imageFailed, setImageFailed] = useState(false)
   const picture = imageFailed ? (
     <div
@@ -66,9 +71,14 @@ export function ProjectSlide({ project, shutter = false }: ProjectSlideProps) {
   )
 
   return (
-    <article className="flex h-full flex-col overflow-hidden rounded-card border border-line bg-surface md:flex-row">
-      <div className="relative h-[190px] shrink-0 md:h-auto md:w-[340px]">
-        {shutter ? <Shutter>{picture}</Shutter> : picture}
+    <motion.article
+      whileHover={hover ? "hover" : undefined}
+      className="flex h-full flex-col overflow-hidden rounded-card border border-line bg-surface md:flex-row"
+    >
+      <div className="relative h-[190px] shrink-0 overflow-hidden md:h-auto md:w-[340px]">
+        <motion.div data-picture className="absolute inset-0" variants={zoom} transition={tween("base")}>
+          {shutter ? <Shutter>{picture}</Shutter> : picture}
+        </motion.div>
       </div>
 
       <div className="flex flex-1 flex-col gap-4 p-5 md:p-8">
@@ -83,7 +93,7 @@ export function ProjectSlide({ project, shutter = false }: ProjectSlideProps) {
             </li>
           ))}
         </ul>
-        <div className="mt-auto flex flex-col gap-1 pt-2">
+        <motion.div data-cta className="mt-auto flex flex-col gap-1 pt-2" variants={lift} transition={tween("base")}>
           <CtaButton href={project.demo} className="self-start">
             Ver projeto
           </CtaButton>
@@ -103,8 +113,8 @@ export function ProjectSlide({ project, shutter = false }: ProjectSlideProps) {
               ))}
             </div>
           )}
-        </div>
+        </motion.div>
       </div>
-    </article>
+    </motion.article>
   )
 }
