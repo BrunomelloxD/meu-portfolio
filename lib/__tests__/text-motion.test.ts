@@ -13,8 +13,9 @@ const GLYPHS = new Set(SCRAMBLE_GLYPHS)
 describe("scrambleFrame (SIG-40)", () => {
   const word = "Experiência"
 
-  it("uses the charset ▓▒░<>/{}[]_=+*#01", () => {
-    expect(SCRAMBLE_GLYPHS).toBe("▓▒░<>/{}[]_=+*#01")
+  it("uses the ASCII charset <>/{}[]_=+*#01, all in the loaded latin subset", () => {
+    expect(SCRAMBLE_GLYPHS).toBe("<>/{}[]_=+*#01")
+    for (const ch of SCRAMBLE_GLYPHS) expect(ch.charCodeAt(0)).toBeLessThan(0x80)
   })
 
   it("keeps the length of the text at every moment", () => {

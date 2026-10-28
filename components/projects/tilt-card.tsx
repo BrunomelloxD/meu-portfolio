@@ -59,7 +59,7 @@ export function TiltCard({ enabled, children }: TiltCardProps) {
           animate={{ opacity: lit ? 1 : 0 }}
           transition={tween("fast")}
           style={{ x: spotX, y: spotY }}
-          className="pointer-events-none absolute left-0 top-0 h-[420px] w-[420px] rounded-full border border-accent/[0.08] bg-[radial-gradient(circle,rgba(243,243,241,0.06),transparent_70%)]"
+          className="pointer-events-none absolute left-0 top-0 h-[420px] w-[420px] rounded-full bg-[radial-gradient(circle,rgba(243,243,241,0.06),transparent_70%)]"
         />
       )}
     </motion.div>

@@ -6,8 +6,8 @@ import { ease } from "@/lib/motion"
 
 // Thin outline circles from the inspiration, now drawn like a technical sketch (E8). Positions are relative to
 // <main>, which starts under the 72px (96px from md) nav.
-const TOP = "pointer-events-none absolute -top-[222px] left-[200px] h-[360px] w-[360px] md:-top-[346px] md:left-auto md:right-[-190px] md:h-[620px] md:w-[620px]"
-const LOWER = "pointer-events-none absolute right-[-380px] top-[1464px] hidden h-[760px] w-[760px] lg:block"
+const TOP = "pointer-events-none absolute -z-10 -top-[222px] left-[200px] h-[360px] w-[360px] md:-top-[346px] md:left-auto md:right-[-190px] md:h-[620px] md:w-[620px]"
+const LOWER = "pointer-events-none absolute -z-10 right-[-380px] top-[1464px] hidden h-[760px] w-[760px] lg:block"
 
 const ring = { cx: 50, cy: 50, r: 49.5, fill: "none", stroke: "currentColor", strokeWidth: 1, vectorEffect: "non-scaling-stroke" } as const
 

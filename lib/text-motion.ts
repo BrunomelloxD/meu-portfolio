@@ -1,6 +1,8 @@
 /** Text effects (spec portfolio-motion-signature): the scramble of mono titles and the counted stats. */
 
-export const SCRAMBLE_GLYPHS = "▓▒░<>/{}[]_=+*#01"
+// ASCII only: the latin subset of JetBrains Mono that next/font loads has no block elements (▓▒░), and a
+// fallback glyph would change the width the mono face guarantees.
+export const SCRAMBLE_GLYPHS = "<>/{}[]_=+*#01"
 
 /** When character `i` of `n` settles, in ms: section titles resolve left to right after a 280ms lead (SIG-40). */
 export type ResolveAt = (i: number, n: number) => number
