@@ -56,7 +56,7 @@ describe("magnet (SIG-50)", () => {
   })
 })
 
-describe("dragTarget (SIG-63)", () => {
+describe("dragTarget (SIG-121)", () => {
   it("advances after a drag past −120px or a flick under −500px/s", () => {
     expect(dragTarget(2, -121, 0)).toBe(3)
     expect(dragTarget(2, -10, -501)).toBe(3)

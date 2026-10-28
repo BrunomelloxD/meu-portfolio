@@ -359,6 +359,19 @@ describe("drag on desktop (SIG-121, SIG-64, SIG-65, SIG-126)", () => {
     expect(activeTitle()).toBe(within(slides()[0]).getByRole("heading").textContent);
   });
 
+  it("stops at the last slide too: a drag or flick past it stays there (SIG-121)", async () => {
+    setViewport(1440);
+    render(<ProjectCarousel />);
+    await release(-121);
+    await release(-121);
+    expect(trackX()).toBe(-1624);
+    await release(-300);
+    expect(trackX()).toBe(-1624); // still the last slide (wrapping would land on the first)
+    await release(-10, -900);
+    expect(trackX()).toBe(-1624);
+    expect(activeTitle()).toBe("Speed Test");
+  });
+
   it("swallows the click that ends a drag longer than 6px, not a shorter one (SIG-64)", async () => {
     setViewport(1440);
     render(<ProjectCarousel />);

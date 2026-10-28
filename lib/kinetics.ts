@@ -40,7 +40,7 @@ export function magnet(pointer: { x: number; y: number }, box: Box, max: number)
   }
 }
 
-/** Carousel index after a drag (SIG-63): a 120px drag or a 500px/s flick moves one slide. */
+/** Carousel index after a drag (SIG-121): a 120px drag or a 500px/s flick moves one slide. */
 export function dragTarget(index: number, offsetX: number, velocityX: number) {
   if (offsetX < -120 || velocityX < -500) return index + 1
   if (offsetX > 120 || velocityX > 500) return index - 1
