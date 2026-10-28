@@ -2,9 +2,50 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
+import { renderToString } from "react-dom/server";
+import { useReducedMotion, useScroll, useSpring, useTransform } from "motion/react";
 import userEvent from "@testing-library/user-event";
 import { HeroSection } from "../HeroSection";
 import { SECTION_IDS, SOCIAL_LINKS } from "@/lib/constants";
+import { spring } from "@/lib/motion";
+
+// next/dynamic stand-in: records the loader options and renders a probe with the props the field receives.
+const dynamicCalls = vi.hoisted(() => [] as { loader: () => Promise<unknown>; options: unknown }[]);
+vi.mock("next/dynamic", async () => {
+  const React = await import("react");
+  return {
+    default: (loader: () => Promise<unknown>, options: unknown) => {
+      dynamicCalls.push({ loader, options });
+      return function FieldProbe(props: Record<string, unknown>) {
+        return React.createElement("div", { "data-testid": "particle-field", "data-props": JSON.stringify(props) });
+      };
+    },
+  };
+});
+
+/** Makes useTransform report what its mapping gives at p = 0, 0.5 and 1, so data-motion shows real values. */
+function evaluateTransforms() {
+  vi.mocked(useTransform).mockImplementation(((_: unknown, map: (p: number) => unknown) => ({
+    __mv: "transform",
+    at: [map(0), map(0.5), map(1)],
+  })) as unknown as typeof useTransform);
+}
+
+function setDesktop(desktop: boolean) {
+  vi.mocked(window.matchMedia).mockImplementation(
+    (query: string) =>
+      ({
+        matches: query === "(min-width: 1024px)" ? desktop : false,
+        media: query,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+      }) as unknown as MediaQueryList,
+  );
+}
+
+const motionOf = (el: Element | null) => JSON.parse(el?.getAttribute("data-motion") ?? "null");
+const fieldProps = () => JSON.parse(screen.getByTestId("particle-field").getAttribute("data-props")!);
+const titleWrapper = () => screen.getByRole("heading", { level: 1 }).parentElement;
 
 const css = readFileSync(resolve(process.cwd(), "app/globals.css"), "utf8");
 const heroSource = readFileSync(resolve(process.cwd(), "components/sections/HeroSection.tsx"), "utf8");
@@ -80,8 +121,11 @@ describe("<HeroSection />", () => {
   });
 
   describe("entrance (MOV-06..MOV-09)", () => {
-    it("does not use Motion: the entrance is CSS only (MOV-06)", () => {
-      expect(heroSource).not.toMatch(/motion\/react|framer-motion/);
+    // MOV-06 is revoked by AD-003 / SIG-36: the hero now uses Motion for the scroll, the entrance stays CSS.
+    it("keeps the entrance in CSS: no Motion initial/animate on the h1 lines (SIG-36)", () => {
+      expect(heroSource).not.toMatch(/framer-motion/);
+      render(<HeroSection onNavigate={() => {}} />);
+      for (const text of ["Engenheiro", "Full Stack"]) expect(screen.getByText(text)).not.toHaveAttribute("data-motion");
     });
 
     it("rises the h1 lines with transform only, 0ms then 110ms (MOV-07)", () => {
@@ -125,6 +169,117 @@ describe("<HeroSection />", () => {
       const selectors = rule![1].split(",").map((sel) => sel.trim());
       expect(selectors).toEqual(expect.arrayContaining([".animate-mask-up", ".animate-fade-up"]));
       expect(rule![2]).toMatch(/animation:\s*none/);
+    });
+  });
+
+  describe("particle field (SIG-10)", () => {
+    it("loads the field with next/dynamic and ssr: false", async () => {
+      expect(dynamicCalls).toHaveLength(1);
+      expect(dynamicCalls[0].options).toEqual({ ssr: false });
+      const mod = (await dynamicCalls[0].loader()) as { default: unknown };
+      const field = await import("@/components/hero/particle-field");
+      expect(mod.default).toBe(field.default);
+    });
+  });
+
+  describe("pin (SIG-30)", () => {
+    it("is 170vh tall from lg up, with the content sticky under the 96px nav for 100dvh", () => {
+      const { container } = render(<HeroSection onNavigate={() => {}} />);
+      const section = container.querySelector("section")!;
+      expect(section).toHaveClass("lg:motion-safe:h-[170vh]");
+      const sticky = section.firstElementChild!;
+      expect(sticky).toHaveClass("lg:motion-safe:sticky", "lg:motion-safe:top-24", "lg:motion-safe:h-[calc(100dvh-96px)]");
+      expect(sticky).toContainElement(screen.getByRole("heading", { level: 1 }));
+      expect(sticky).toContainElement(screen.getByTestId("particle-field"));
+    });
+  });
+
+  describe("scroll while pinned (SIG-31..SIG-33)", () => {
+    it("tracks the hero from its top to the end of the pin, smoothed by the scroll spring (SIG-31)", () => {
+      setDesktop(true);
+      render(<HeroSection onNavigate={() => {}} />);
+      const options = vi.mocked(useScroll).mock.lastCall![0] as { target: { current: Element }; offset: string[] };
+      expect(options.offset).toEqual(["start start", "end end"]);
+      expect(options.target.current.tagName).toBe("SECTION");
+      expect(vi.mocked(useSpring).mock.lastCall).toEqual([{ __mv: "scrollYProgress" }, spring.scroll]);
+    });
+
+    it("scales the title 1 → 0.84 and moves it 0 → −6vh (SIG-31)", () => {
+      setDesktop(true);
+      evaluateTransforms();
+      render(<HeroSection onNavigate={() => {}} />);
+      const style = motionOf(titleWrapper()).style;
+      expect(style.scale.at[0]).toBe(1);
+      expect(style.scale.at[1]).toBeCloseTo(0.92);
+      expect(style.scale.at[2]).toBeCloseTo(0.84);
+      expect(style.y.at).toEqual(["0vh", "-3vh", "-6vh"]);
+    });
+
+    it("fades subtitle, CTA and chips 1 → 0 by p 0.4 (SIG-32)", () => {
+      setDesktop(true);
+      evaluateTransforms();
+      const { container } = render(<HeroSection onNavigate={() => {}} />);
+      const wrappers = container.querySelectorAll("[data-hero-content]");
+      expect(wrappers).toHaveLength(2);
+      for (const wrapper of wrappers) expect(motionOf(wrapper).style.opacity.at).toEqual([1, 0, 0]);
+      expect(wrappers[0]).toContainElement(screen.getByRole("button", { name: "Ver projetos" }));
+      expect(wrappers[1]).toContainElement(screen.getByRole("link", { name: "GitHub" }));
+    });
+
+    it("hands the field spread 1 → 2.4 and opacity 1 → 0 as motion values (SIG-33)", () => {
+      setDesktop(true);
+      evaluateTransforms();
+      render(<HeroSection onNavigate={() => {}} />);
+      const props = fieldProps();
+      expect(props.spread.at[0]).toBe(1);
+      expect(props.spread.at[1]).toBeCloseTo(1 + 1.4 * (0.3 / 0.7));
+      expect(props.spread.at[2]).toBeCloseTo(2.4);
+      expect(props.fieldOpacity.at[0]).toBe(1);
+      expect(props.fieldOpacity.at[2]).toBeCloseTo(0);
+    });
+  });
+
+  describe("below lg (SIG-34)", () => {
+    it("does not transform the title or the content, and still disperses the field", () => {
+      setDesktop(false);
+      evaluateTransforms();
+      const { container } = render(<HeroSection onNavigate={() => {}} />);
+      expect(titleWrapper()).not.toHaveAttribute("data-motion");
+      for (const wrapper of container.querySelectorAll("[data-hero-content]")) expect(wrapper).not.toHaveAttribute("data-motion");
+      expect(fieldProps().spread.at[2]).toBeCloseTo(2.4);
+      expect((vi.mocked(useScroll).mock.lastCall![0] as { offset: string[] }).offset).toEqual(["start start", "end start"]);
+    });
+  });
+
+  describe("reduced motion (SIG-35)", () => {
+    it("has no scroll transform and no dispersion", () => {
+      setDesktop(true);
+      vi.mocked(useReducedMotion).mockReturnValue(true);
+      const { container } = render(<HeroSection onNavigate={() => {}} />);
+      expect(titleWrapper()).not.toHaveAttribute("data-motion");
+      for (const wrapper of container.querySelectorAll("[data-hero-content]")) expect(wrapper).not.toHaveAttribute("data-motion");
+      expect(fieldProps()).toEqual({});
+    });
+
+    it("only pins with motion-safe, so the pin is pure CSS and switches off with the media query", () => {
+      const { container } = render(<HeroSection onNavigate={() => {}} />);
+      const classes = [container.querySelector("section")!, container.querySelector("section")!.firstElementChild!]
+        .flatMap((el) => [...el.classList])
+        .filter((c) => /h-\[170vh\]|sticky|top-24|100dvh/.test(c));
+      expect(classes.length).toBe(4);
+      for (const c of classes) expect(c.startsWith("lg:motion-safe:")).toBe(true);
+    });
+  });
+
+  describe("server HTML (SIG-36)", () => {
+    it("contains the h1 text with no inline opacity:0 or transform", () => {
+      setDesktop(true);
+      const html = renderToString(<HeroSection onNavigate={() => {}} />);
+      const h1 = html.slice(html.indexOf("<h1"), html.indexOf("</h1>"));
+      expect(h1).toContain("Engenheiro");
+      expect(h1).toContain("Full Stack");
+      expect(html).not.toMatch(/opacity:\s*0[;"]/);
+      expect(html).not.toMatch(/transform:/);
     });
   });
 });

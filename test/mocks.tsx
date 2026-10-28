@@ -91,13 +91,14 @@ vi.mock("motion/react", () => {
 
   const useReducedMotion = vi.fn(() => false);
   const useMotionValue = vi.fn((initial: unknown) => React.useState(() => motionValue(initial))[0]);
-  const useTransform = vi.fn((source: unknown, input?: unknown, output?: unknown, options?: unknown) => ({
+  const transform = (source: unknown, input?: unknown, output?: unknown, options?: unknown) => ({
     __mv: "transform",
     source,
     input,
     output,
     options,
-  }));
+  });
+  const useTransform = vi.fn(transform);
   const useVelocity = vi.fn((source: unknown) => ({ __mv: "velocity", source }));
   const useAnimationFrame = vi.fn();
   const useInView = vi.fn(() => false);
@@ -114,6 +115,7 @@ vi.mock("motion/react", () => {
     useSpring.mockImplementation((source: unknown, options?: unknown) => ({ __mv: "spring", source, options }));
     usePresence.mockImplementation(() => [true, vi.fn()]);
     useInView.mockImplementation(() => false);
+    useTransform.mockImplementation(transform);
     animate.mockImplementation(() => ({ stop: vi.fn() }));
   });
 
