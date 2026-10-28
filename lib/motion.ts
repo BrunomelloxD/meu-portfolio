@@ -27,8 +27,6 @@ export const spring = {
   /** For useSpring (no `type`). */
   scroll: { stiffness: 100, damping: 30, mass: 1, restDelta: 0.001 },
   magnetic: { type: "spring", stiffness: 260, damping: 14, mass: 1 },
-  /** For useSpring on the scroll velocity (StatementBand marquee). */
-  velocity: { stiffness: 400, damping: 50 },
 } as const
 
 export type DurationToken = keyof typeof dur

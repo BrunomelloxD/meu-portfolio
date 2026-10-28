@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 
 vi.mock("@emailjs/browser", () => ({ __esModule: true, default: { send: vi.fn() }, send: vi.fn() }));
 
@@ -52,5 +52,16 @@ describe("Home page", () => {
     }
     expect(screen.getByRole("heading", { level: 1 }).querySelector("[data-scramble]")).toBeNull();
   });
-});
 
+  it("has no statement band, and keeps the Serasa/SPC/Unico integration in the work history (SIG-128)", () => {
+    const { container } = render(<Home />);
+    expect(screen.queryByText(/Integrações críticas em produção/)).toBeNull();
+    expect(screen.queryByRole("button", { name: /Pausar faixa|Retomar faixa/ })).toBeNull();
+    expect(container.querySelector("[data-track]")).toBeNull();
+    // The integration is one click away: the Gazin Tech (Júnior III) row lists it when expanded.
+    const work = container.querySelector("section#experiencia") as HTMLElement;
+    const row = within(work).getAllByRole("button", { expanded: false }).find((b) => /Júnior III/.test(b.textContent!))!;
+    fireEvent.click(row);
+    expect(within(work).getByText("Integração do fluxo de cadastro de clientes a três bureaus externos de crédito: Serasa, SPC e Unico.")).toBeInTheDocument();
+  });
+});

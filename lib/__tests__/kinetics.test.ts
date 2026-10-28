@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import { dragTarget, heroScrollMap, magnet, marqueeStep } from "../kinetics"
+import { dragTarget, heroScrollMap, magnet } from "../kinetics"
 
 describe("heroScrollMap (SIG-31)", () => {
   it("scales the title from 1 to 0.84 and moves it from 0 to −6vh over p 0..1", () => {
@@ -71,31 +71,5 @@ describe("dragTarget (SIG-121)", () => {
     expect(dragTarget(2, -120, -500)).toBe(2)
     expect(dragTarget(2, 120, 500)).toBe(2)
     expect(dragTarget(2, 0, 0)).toBe(2)
-  })
-})
-
-describe("marqueeStep (SIG-72)", () => {
-  it("moves 40px/s to the left at rest", () => {
-    expect(marqueeStep(0, 1000, 0, 2000)).toBeCloseTo(-40)
-    expect(marqueeStep(-100, 500, 0, 2000)).toBeCloseTo(-120)
-  })
-
-  it("speeds up by 1 + min(|v| / 1000, 4)", () => {
-    expect(marqueeStep(0, 1000, 2000, 2000)).toBeCloseTo(-120)
-    expect(marqueeStep(0, 1000, 9000, 2000)).toBeCloseTo(-200)
-  })
-
-  it("reverses when the scroll velocity is negative", () => {
-    expect(marqueeStep(-500, 1000, -1000, 2000)).toBeCloseTo(-420)
-  })
-
-  it("wraps into (−copyWidth, 0]", () => {
-    expect(marqueeStep(-1990, 1000, 0, 2000)).toBeCloseTo(-30)
-    expect(marqueeStep(-10, 1000, -1000, 2000)).toBeCloseTo(-1930)
-    expect(marqueeStep(-1960, 1000, 0, 2000)).toBeCloseTo(0)
-  })
-
-  it("leaves x alone until the copy is measured", () => {
-    expect(marqueeStep(-30, 1000, 0, 0)).toBe(-30)
   })
 })

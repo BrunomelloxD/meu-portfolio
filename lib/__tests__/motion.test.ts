@@ -39,10 +39,9 @@ describe("CSS parity (MOV-02)", () => {
 })
 
 describe("gesture springs (SIG-120)", () => {
-  it("defines magnetic and velocity, and no tilt, cursor or snap spring", () => {
+  it("defines magnetic, and no tilt, cursor, snap or velocity spring (SIG-120, SIG-128)", () => {
     expect(spring.magnetic).toEqual({ type: "spring", stiffness: 260, damping: 14, mass: 1 })
-    expect(spring.velocity).toEqual({ stiffness: 400, damping: 50 })
-    for (const gone of ["tilt", "cursor", "snap"]) expect(spring).not.toHaveProperty(gone)
+    for (const gone of ["tilt", "cursor", "snap", "velocity"]) expect(spring).not.toHaveProperty(gone)
   })
 })
 

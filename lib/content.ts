@@ -172,8 +172,3 @@ export const PULL_QUOTE = {
 
 export const SKILLS_CAPTION =
   "A stack que uso todos os dias para construir produtos completos, do banco de dados à interface."
-
-export const HIGHLIGHT = {
-  title: "Integrações críticas em produção",
-  subtitle: "Cadastro de clientes integrado a Serasa, SPC e Unico — Gazin Tech",
-}

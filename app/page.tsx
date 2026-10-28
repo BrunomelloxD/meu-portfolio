@@ -4,7 +4,6 @@ import ContactSection from "@/components/contact-section"
 import { TopNav } from "@/components/navigation/TopNav"
 import { HeroSection } from "@/components/sections/HeroSection"
 import { AboutSection } from "@/components/sections/AboutSection"
-import { StatementBand } from "@/components/sections/StatementBand"
 import { Footer } from "@/components/sections/Footer"
 import { ProjectCarousel } from "@/components/projects/project-carousel"
 import { WorkTable } from "@/components/work/work-table"
@@ -38,7 +37,6 @@ export default function Home() {
         </section>
 
         <AboutSection />
-        <StatementBand />
         <WorkTable />
         <Testimonials />
         <ContactSection />

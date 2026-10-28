@@ -46,19 +46,3 @@ export function dragTarget(index: number, offsetX: number, velocityX: number) {
   if (offsetX > 120 || velocityX > 500) return index - 1
   return index
 }
-
-const MARQUEE_SPEED = 40
-
-/**
- * Next marquee offset (SIG-72): 40px/s to the left, up to 5× faster with the scroll velocity, reversed when
- * scrolling up, wrapped into (−copyWidth, 0] so the second copy takes over seamlessly.
- */
-export function marqueeStep(x: number, dtMs: number, velocity: number, copyWidth: number) {
-  if (copyWidth <= 0) return x
-  const factor = 1 + Math.min(Math.abs(velocity) / 1000, 4)
-  const direction = velocity < 0 ? -1 : 1
-  let next = (x - direction * MARQUEE_SPEED * factor * (dtMs / 1000)) % copyWidth
-  if (next > 0) next -= copyWidth
-  if (next <= -copyWidth) next += copyWidth
-  return next
-}
