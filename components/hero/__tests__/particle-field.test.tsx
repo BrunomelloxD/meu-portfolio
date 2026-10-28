@@ -7,6 +7,7 @@ import ParticleField from "../particle-field"
 function fakeContext() {
   const ctx = {
     fills: [] as string[],
+    fillAlphas: [] as number[],
     arcs: [] as { x: number; y: number }[],
     clears: 0,
     fillStyle: "",
@@ -19,6 +20,7 @@ function fakeContext() {
     clearRect: vi.fn(() => {
       ctx.clears++
       ctx.fills = []
+      ctx.fillAlphas = []
       ctx.arcs = []
       ctx.lines = []
     }),
@@ -27,7 +29,10 @@ function fakeContext() {
     lineTo: vi.fn((x: number, y: number) => ctx.path.push([x, y])),
     stroke: vi.fn(() => ctx.lines.push({ a: ctx.path[0], b: ctx.path[1], alpha: ctx.globalAlpha })),
     arc: vi.fn((x: number, y: number) => ctx.arcs.push({ x, y })),
-    fill: vi.fn(() => ctx.fills.push(ctx.fillStyle)),
+    fill: vi.fn(() => {
+      ctx.fills.push(ctx.fillStyle)
+      ctx.fillAlphas.push(ctx.globalAlpha)
+    }),
   }
   return ctx
 }
@@ -349,6 +354,21 @@ describe("ParticleField — pointer on a spread field (SIG-15, SIG-33)", () => {
     // to the right, drawn twice as long, on top of the drift.
     const drift = Math.cos(Math.PI * 1.5) * (0.08 + 0.75 * 0.17)
     expect(ctx.arcs[0].x - before.x).toBeCloseTo(2 * (drift + 1.2 * (1 - 10 / 140)), 1)
+  })
+})
+
+describe("ParticleField — partial field opacity (SIG-33)", () => {
+  it("scales lines and points by the field opacity: 0.5 × 0.18 × (1 − d / 110) and 0.5 × the point's alpha", () => {
+    vi.spyOn(Math, "random").mockReturnValue(0.5) // ink points get alpha 0.35 + 0.5 × 0.35 = 0.525, gold 0.9
+    render(<ParticleField fieldOpacity={mv(0.5)} />)
+    startIdle()
+    flushFrame()
+    expect(ctx.lines.length).toBeGreaterThan(0)
+    for (const { a, b, alpha } of ctx.lines) {
+      const d = Math.hypot(a[0] - b[0], a[1] - b[1])
+      expect(alpha).toBeCloseTo(0.5 * 0.18 * (1 - d / 110), 6)
+    }
+    ctx.fills.forEach((colour, i) => expect(ctx.fillAlphas[i]).toBeCloseTo(0.5 * (colour === "#C9A95C" ? 0.9 : 0.525), 6))
   })
 })
 
