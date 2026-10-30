@@ -1,6 +1,7 @@
 "use client"
 
 import ContactSection from "@/components/contact-section"
+import { CoffeeSection } from "@/components/coffee/coffee-section"
 import { TopNav } from "@/components/navigation/TopNav"
 import { HeroSection } from "@/components/sections/HeroSection"
 import { AboutSection } from "@/components/sections/AboutSection"
@@ -39,6 +40,7 @@ export default function Home() {
         <AboutSection />
         <WorkTable />
         <Testimonials />
+        <CoffeeSection />
         <ContactSection />
       </main>
 
