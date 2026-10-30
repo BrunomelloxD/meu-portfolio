@@ -20,11 +20,11 @@ describe("text selection (SEL-01..SEL-03)", () => {
     expect(unselectable).toEqual(["body"])
   })
 
-  it("gives it back only to the email and phone links and the form fields, at zero specificity (SEL-03)", () => {
+  it("gives it back only to the email and phone links, the form fields and data-selectable text, at zero specificity (SEL-03, PIX-01)", () => {
     const selectable = [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)]
       .filter(([, , body]) => /(?:^|;)\s*(?:-webkit-)?user-select:\s*(?:text|all|auto)/.test(body))
       .map(([, selector]) => selector.trim())
-    expect(selectable).toEqual([':where(a[href^="mailto:"], a[href^="tel:"], input, textarea, [contenteditable])'])
+    expect(selectable).toEqual([':where(a[href^="mailto:"], a[href^="tel:"], input, textarea, [contenteditable], [data-selectable])'])
   })
 
   it("has no component class that brings selection back or takes it from the email and phone (SEL-02, SEL-03)", () => {

@@ -79,8 +79,8 @@
     @apply bg-background text-foreground;
     user-select: none;
   }
-  /* ...except the email, the phone and the form fields. :where keeps it below the Email chip's select-none (SEL-03). */
-  :where(a[href^="mailto:"], a[href^="tel:"], input, textarea, [contenteditable]) {
+  /* ...except the email, the phone, the form fields and data-selectable text such as the Pix key. :where keeps it below the Email chip's select-none (SEL-03, PIX-01). */
+  :where(a[href^="mailto:"], a[href^="tel:"], input, textarea, [contenteditable], [data-selectable]) {
     user-select: text;
   }
   /* Selected text in the theme, not the browser grey (SEL-01). */
