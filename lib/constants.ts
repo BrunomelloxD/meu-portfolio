@@ -5,6 +5,7 @@ export const SECTION_IDS = {
   PROJECTS: "projetos",
   SKILLS: "habilidades",
   TESTIMONIALS: "depoimentos",
+  COFFEE: "cafe",
   CONTACT: "contato",
 } as const
 
@@ -22,6 +23,14 @@ export const SOCIAL_LINKS = {
   github: "https://github.com/BrunomelloxD",
   linkedin: "https://linkedin.com/in/brunomelloxd/",
   email: "brunomello.ti@gmail.com",
+} as const
+
+// The phone key goes into the BR Code as +55 + area code + number; keyLabel is only how it shows on screen.
+export const PIX = {
+  key: "+5519997119007",
+  keyLabel: "+55 (19) 99711-9007",
+  name: "Bruno de Oliveira Mello",
+  city: "Mococa",
 } as const
 
 export const PERSONAL_INFO = {

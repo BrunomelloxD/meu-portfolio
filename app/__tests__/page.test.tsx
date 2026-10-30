@@ -4,12 +4,27 @@ import { fireEvent, render, screen, within } from "@testing-library/react";
 vi.mock("@emailjs/browser", () => ({ __esModule: true, default: { send: vi.fn() }, send: vi.fn() }));
 
 import Home from "../page";
+import { NAVIGATION_ITEMS } from "@/lib/constants";
 
 describe("Home page", () => {
-  it("renders the sections in the redesigned order", () => {
+  it("renders the sections in the redesigned order, with the coffee section before contact (PIX-34)", () => {
     const { container } = render(<Home />);
     const ids = Array.from(container.querySelectorAll("main section[id]")).map((s) => s.id);
-    expect(ids).toEqual(["home", "projetos", "sobre", "experiencia", "depoimentos", "contato"]);
+    expect(ids).toEqual(["home", "projetos", "sobre", "experiencia", "depoimentos", "cafe", "contato"]);
+  });
+
+  it("keeps the same 7 navigation items, none for the coffee section (PIX-35)", () => {
+    const { container } = render(<Home />);
+    expect(NAVIGATION_ITEMS.map((item) => item.id)).toEqual([
+      "home",
+      "sobre",
+      "experiencia",
+      "projetos",
+      "habilidades",
+      "depoimentos",
+      "contato",
+    ]);
+    expect(container.querySelector('a[href="#cafe"]')).toBeNull();
   });
 
   it("renders immediately, without the client-only loading spinner", () => {
